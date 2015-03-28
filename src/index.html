@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
+    <script src="AsyncDownloader.js"></script>
     <script src="MPDDownloader.js"></script>
+    <script src="RepresentationRepository.js"></script>
+    <script src="Player.js"></script>
+    <script>
+        function onLoad() {
+            var video = document.getElementById("video1");
+            var audio = document.getElementById("audio1");
+            Player(video, audio, 1000000).play('https://www.youtube.com/watch?v=_J1m3oOqtqc');
+        }
+    </script>
 </head>
-<body>
+<body onload="onLoad();">
+<video id="video1" controls="controls">
+</video>
+<audio id="audio1">
+</audio>
 <script>
 </script>
 </body>

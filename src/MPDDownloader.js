@@ -1,24 +1,17 @@
-var MPDDownloader = function (mpdFileUrl, isYouTubeVideo) {
+function MPDDownloader(mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
     var youTubeDomain = 'http://www.youtube.com',
         getInfoMapping = '/get_video_info?html5=1&video_id=',
         videoIdPrefix = 'v=',
         mpdEntryPrefix = 'dashmpd=',
 
-
-        downloadMpdFile = function (url) {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, false);
-            request.send(null);
-
-            return request.responseText;
-        },
-
         downloadYouTubeMpdFile = function () {
             var videoId = getYouTubeVideoId(mpdFileUrl);
-            var videoDetails = downloadYouTubeVideoDetails(videoId);
-            var mpdUrl = getMpdUrlFromResponse(videoDetails);
-
-            return downloadMpdFile(mpdUrl);
+            var url = youTubeDomain + getInfoMapping + videoId;
+            AsyncDownloader().download(url, downloadYouTubeVideoDetailsOnReady);
+        },
+        downloadYouTubeVideoDetailsOnReady = function (request) {
+            var mpdUrl = getMpdUrlFromResponse(request.responseText);
+            AsyncDownloader().download(mpdUrl, downloadMpdFileOnReady);
         },
 
         getYouTubeVideoId = function (videoUrl) {
@@ -29,21 +22,6 @@ var MPDDownloader = function (mpdFileUrl, isYouTubeVideo) {
                 }
             }
         },
-
-        downloadYouTubeVideoDetails = function (videoId) {
-            var url = youTubeDomain + getInfoMapping + videoId,
-                request = new XMLHttpRequest();
-
-            request.open('GET', url, false);
-            request.send(null);
-
-            if (request.status === 200) {
-                return request.responseText;
-            } else {
-                throw new Error('Error while obtaining YouTube movie details from url ' + url + ', error code: ' + request.status);
-            }
-        },
-
         getMpdUrlFromResponse = function (movieDetails) {
             var urlParameters = movieDetails.split('&');
             for (var i = 0; i < urlParameters.length; i += 1) {
@@ -54,18 +32,13 @@ var MPDDownloader = function (mpdFileUrl, isYouTubeVideo) {
         };
 
     return {
-        //TODO: consider asynchronous mpd file download (or worker?)
+        //TODO: consider worker
         downloadMpdFile: function () {
-            var mpdFileContent = null;
             if (isYouTubeVideo) {
-                mpdFileContent = downloadYouTubeMpdFile();
+                downloadYouTubeMpdFile();
             } else {
-                mpdFileContent = downloadMpdFile();
+
             }
-            console.log(mpdFileContent);
-            return mpdFileContent;
         }
     }
-};
-
-MPDDownloader('https://www.youtube.com/watch?v=_J1m3oOqtqc', true).downloadMpdFile();
+}

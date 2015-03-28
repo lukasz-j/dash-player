@@ -1,6 +1,6 @@
 # Idea files
 .idea/
-
+*.iml
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
