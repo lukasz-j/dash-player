@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Dash player test</title>
+    <link rel="stylesheet" type="text/css" href="../css/player_style.css"/>
+    <script src="../AsyncDownloader.js"></script>
+    <script src="../MPDDownloader.js"></script>
+    <script src="../RepresentationRepository.js"></script>
+    <script src="../Player.js"></script>
+
+    <script>
+        function loadMedia() {
+            var video = document.getElementById("video");
+            var audio = document.getElementById("audio");
+            var url = document.getElementById("url").value;
+            Player(video, audio, 1000000).play(url);
+        }
+    </script>
+</head>
+<body>
+
+<div id="playerContainer">
+    <h2>DASH player</h2>
+
+    <div id="videoPane">
+        <div id="sourceContainer">
+            <label for="sourceType">Source:</label>
+            <select id="sourceType">
+                <option value="mpd">MPD file</option>
+                <option value="youtube">YouTube</option>
+            </select>
+            <input type="text" id="url">
+            <button onclick="loadMedia()">Load</button>
+        </div>
+
+        <div id="videoContainer">
+            <video id="video" controls="controls">
+            </video>
+            <audio id="audio"></audio>
+        </div>
+    </div>
+
+    <div id="infoPane">
+        <h3>Debug info:</h3>
+
+        <div id="mpdDetails">
+            <h4>MPD details:</h4>
+            <ul>
+                <li id="mpdType">MPD type:</li>
+                <li id="mediaLength">Media length:</li>
+                <li id="videoFormats">Video formats:</li>
+                <li id="audioFormats">Audio:</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

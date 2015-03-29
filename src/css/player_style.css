@@ -1,0 +1,31 @@
+
+#playerContainer {
+
+}
+
+input#url {
+    width: 60%
+}
+
+#videoPane {
+    width: 60%;
+    float: left;
+}
+
+#infoPane {
+    width: 40%;
+    float: left;
+}
+
+video {
+    height: 80%;
+    width: 80%;
+}
+
+#mpdDetails {
+    visibility: hidden;
+}
+
+#currentPlay {
+    visibility: hidden;
+}
