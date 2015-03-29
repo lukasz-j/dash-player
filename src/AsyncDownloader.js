@@ -1,7 +1,10 @@
 var AsyncDownloader = function () {
-    var request = new XMLHttpRequest();
     return {
-        download: function (url, asyncDownloadOnReady, asyncDownloadOnProgress) {
+        download: function (url, isBytes, asyncDownloadOnReady, asyncDownloadOnProgress) {
+            var request = new XMLHttpRequest();
+            if(isBytes) {
+                request.responseType = "arraybuffer";
+            }
             request.open('GET', url, true);
             request.send(null);
             request.onreadystatechange = function (event) {

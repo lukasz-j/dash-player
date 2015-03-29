@@ -24,11 +24,11 @@ var Player = function (video, audio, bitRate) { //TODO: bitRate will be calculat
         //console.log("length = " + length);
         var videoRepresentation = representationRepo.getVideoForBitRate(bitRate * 0.9);
         //console.log("video: bitRate = " + bitRate * 0.9 + ", video bandwidth = " + videoRepresentation.bandwidth);
-        //console.log("video url: " + videoRepresentation.baseUrl);
+        console.log("video url: " + videoRepresentation.baseUrl);
         var audioRepresentation = representationRepo.getAudioForBitRate(bitRate * 0.1);
         //console.log("audio: bitRate = " + bitRate * 0.1 + ", audio bandwidth = " + audioRepresentation.bandwidth);
         //console.log("audio url: " + audioRepresentation.baseUrl);
-        downloadMedia(videoRepresentation, audioRepresentation);
+        //downloadMedia(videoRepresentation, audioRepresentation);
     };
 
     var downloadMedia = function (videoUrl, audioUrl) {

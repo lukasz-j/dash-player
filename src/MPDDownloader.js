@@ -7,11 +7,11 @@ function MPDDownloader(mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
         downloadYouTubeMpdFile = function () {
             var videoId = getYouTubeVideoId(mpdFileUrl);
             var url = youTubeDomain + getInfoMapping + videoId;
-            AsyncDownloader().download(url, downloadYouTubeVideoDetailsOnReady);
+            AsyncDownloader().download(url, false, downloadYouTubeVideoDetailsOnReady);
         },
         downloadYouTubeVideoDetailsOnReady = function (request) {
             var mpdUrl = getMpdUrlFromResponse(request.responseText);
-            AsyncDownloader().download(mpdUrl, downloadMpdFileOnReady);
+            AsyncDownloader().download(mpdUrl, false, downloadMpdFileOnReady);
         },
 
         getYouTubeVideoId = function (videoUrl) {

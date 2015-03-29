@@ -63,4 +63,22 @@ function Representation(representationXML, isVideo) {
     var segmentBase = representationXML.getElementsByTagName("SegmentBase")[0].getAttribute("indexRange").split("-");
     this.segmentBaseStart = parseInt(segmentBase[0]);
     this.segmentBaseEnd = parseInt(segmentBase[1]);
+    this.initialization = [];
+    this.segmentBase = [];
+    this.sampleLengths = [];
+    this.headers = [];
+    var _this = this;
+
+    var setHeaders = function (request) {
+        _this.headers = new Uint8Array(request.response);
+        _this.initialization = _this.headers.subarray(_this.initializationStart, _this.initializationEnd+1);
+        _this.segmentBase = _this.headers.subarray(_this.segmentBaseStart, _this.segmentBaseEnd+1);
+        for(var i=32; i<_this.segmentBase.length; i+=12) {
+            _this.sampleLengths.push( _this.segmentBase[i]*16777216 + _this.segmentBase[i+1]*65536 + _this.segmentBase[i+2]*256 + _this.segmentBase[i+3]);
+        }
+        console.log("samples: " + _this.sampleLengths.length);
+        console.log("first 135 frames size: " + _this.sampleLengths[0]);
+    };
+    AsyncDownloader().download(Utils().addRangeToBaseUrl(this.baseUrl, this.initializationStart, this.segmentBaseEnd), true, setHeaders);
+
 }
