@@ -10,6 +10,14 @@ Dash.model.RangeSegment = function (representation, baseUrl, initializationIndex
         segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1]);
 
     return {
+        /* DEBUG ONLY, use methods instead of fields */
+        _representation: representation,
+        _baseUrl: baseUrl,
+        _initializationIndexRange: initializationIndexRange,
+        _segmentBaseIndexRange: segmentBaseIndexRange,
+        _contentLength: contentLength,
+        /*******/
+
         name: 'RangeSegment',
 
         getRepresentation: function () {

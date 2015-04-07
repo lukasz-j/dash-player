@@ -13,18 +13,24 @@ Dash.model.MPD = function (profiles, type, rawMediaPresentationDuration, minBuff
         return xmlDurationFormat;
     }
 
-    var _period = undefined,
-        _mediaPresentationDuration = convertXMLDurationFormat(rawMediaPresentationDuration);
+    var period = undefined,
+        mediaPresentationDuration = convertXMLDurationFormat(rawMediaPresentationDuration);
 
     return {
+        /* DEBUG ONLY, use methods instead of fields */
+        _period: undefined,
+        _mediaPresentationDuration: mediaPresentationDuration,
+        /*******/
+
         name: 'MPD',
 
-        setPeriod: function (period) {
-            _period = period;
+        setPeriod: function (newPeriod) {
+            period = newPeriod;
+            this._period = newPeriod;
         },
 
         getPeriod: function () {
-            return _period;
+            return period;
         },
 
         getProfiles: function () {
@@ -36,7 +42,7 @@ Dash.model.MPD = function (profiles, type, rawMediaPresentationDuration, minBuff
         },
 
         getMediaPresentationDuration: function () {
-            return _mediaPresentationDuration;
+            return mediaPresentationDuration;
         },
 
         getMinBufferTime: function () {

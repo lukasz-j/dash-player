@@ -1,6 +1,6 @@
 Dash.model.Period = function (mpd) {
 
-    var _adaptationSets = undefined,
+    var adaptationSets = undefined,
 
         isAdaptationSetAudioCondition = function (adaptationSet) {
             return adaptationSet.isAudio();
@@ -12,27 +12,33 @@ Dash.model.Period = function (mpd) {
 
         filterAdaptationSets = function (conditionFunction) {
             var sets = [];
-            for (var i = 0; i < _adaptationSets.length; ++i) {
-                if (conditionFunction(_adaptationSets[i])) {
-                    sets.push(_adaptationSets[i])
+            for (var i = 0; i < adaptationSets.length; ++i) {
+                if (conditionFunction(adaptationSets[i])) {
+                    sets.push(adaptationSets[i])
                 }
             }
             return sets;
         };
 
     return {
+        /* DEBUG ONLY, use methods instead of fields */
+        _adaptationSets: undefined,
+        _mpd: mpd,
+        /*******/
+
         name: 'Period',
 
         getMPD: function () {
             return mpd;
         },
 
-        setAdaptationSets: function (adaptationSets) {
-            _adaptationSets = adaptationSets;
+        setAdaptationSets: function (newAdaptationSets) {
+            adaptationSets = newAdaptationSets;
+            this._adaptationSets = newAdaptationSets;
         },
 
         getAdaptationSets: function () {
-            return _adaptationSets;
+            return adaptationSets;
         },
 
         getAudioAdaptationSets: function () {
@@ -44,17 +50,17 @@ Dash.model.Period = function (mpd) {
         },
 
         getAudioAdaptationSet: function (format) {
-            for (var i = 0; i < _adaptationSets.length; ++i) {
-                if (_adaptationSets[i].isAudio() && _adaptationSets[i].getFormat() === format) {
-                    return _adaptationSets[i];
+            for (var i = 0; i < adaptationSets.length; ++i) {
+                if (adaptationSets[i].isAudio() && adaptationSets[i].getFormat() === format) {
+                    return adaptationSets[i];
                 }
             }
         },
 
         getVideoAdaptationSet: function (format) {
-            for (var i = 0; i < _adaptationSets.length; ++i) {
-                if (_adaptationSets[i].isVideo() && _adaptationSets[i].getFormat() === format) {
-                    return _adaptationSets[i];
+            for (var i = 0; i < adaptationSets.length; ++i) {
+                if (adaptationSets[i].isVideo() && adaptationSets[i].getFormat() === format) {
+                    return adaptationSets[i];
                 }
             }
         }

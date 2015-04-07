@@ -1,26 +1,38 @@
 Dash.model.AdaptationSet = function (period, mimeType) {
-    var _representationList = undefined;
+    var representationList = undefined;
 
     return {
+        /* DEBUG ONLY, use methods instead of fields */
+        _representationList: undefined,
+        _period: period,
+        _mimeType: mimeType,
+        /*******/
+
         name: 'AdaptationSet',
 
         getPeriod: function () {
             return period;
         },
 
-        setRepresentations: function (representationList) {
-            _representationList = representationList;
-            _representationList.sort(function (a, b) {
+        setRepresentations: function (newRepresentationList) {
+            representationList = newRepresentationList;
+            representationList.sort(function (a, b) {
                 return a.getBandwidth() - b.getBandwidth;
             });
+
+            this._representationList = newRepresentationList;
         },
 
         getRepresentations: function () {
-            return _representationList;
+            return representationList;
         },
 
         getMimeType: function () {
             return mimeType;
+        },
+
+        getFormat: function () {
+            return mimeType.split('/')[1];
         },
 
         isAudio: function () {
