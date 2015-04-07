@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../Dash.js"></script>
+
+    <!-- model -->
+    <script src="../model/segment/ListSegment.js"></script>
+    <script src="../model/segment/RangeSegment.js"></script>
+
+    <script src="../model/AdaptationSet.js"></script>
+    <script src="../model/MPD.js"></script>
+    <script src="../model/Period.js"></script>
+    <script src="../model/Representation.js"></script>
+
+    <!-- mpd maintenance -->
+    <script src="../mpd/Downloader.js"></script>
+    <script src="../mpd/Parser.js"></script>
+
+    <!-- Utils -->
+    <script src="../AsyncDownloader.js"></script>
+
+</head>
+<body>
+<script>
+    var downloadMpdFileOnReady = function (request) {
+        Dash.mpd.Parser(request.responseText).generateModel();
+    };
+
+    Dash.mpd.Downloader('https://www.youtube.com/watch?v=_J1m3oOqtqc', true, downloadMpdFileOnReady).downloadMpdFile();
+</script>
+
+</body>
+</html>

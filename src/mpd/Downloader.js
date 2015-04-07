@@ -1,4 +1,4 @@
-function MPDDownloader(mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
+Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
     var youTubeDomain = 'http://www.youtube.com',
         getInfoMapping = '/get_video_info?html5=1&video_id=',
         videoIdPrefix = 'v=',
@@ -41,4 +41,4 @@ function MPDDownloader(mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
             }
         }
     }
-}
+};

@@ -1,28 +1,34 @@
-var AdaptationSet = function () {
+Dash.model.AdaptationSet = function (period, mimeType) {
+    var _representationList = undefined;
 
     return {
-        getPeriod: function () {
+        name: 'AdaptationSet',
 
+        getPeriod: function () {
+            return period;
         },
 
-        getFormat: function () {
+        setRepresentations: function (representationList) {
+            _representationList = representationList;
+            _representationList.sort(function (a, b) {
+                return a.getBandwidth() - b.getBandwidth;
+            });
+        },
 
+        getRepresentations: function () {
+            return _representationList;
         },
 
         getMimeType: function () {
-
+            return mimeType;
         },
 
         isAudio: function () {
-
+            return mimeType.indexOf("audio") === 0;
         },
 
         isVideo: function () {
-
-        },
-
-        getRepresentations: function (sort) {
-
+            return mimeType.indexOf("video") === 0;
         }
     };
 };

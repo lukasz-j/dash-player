@@ -19,7 +19,10 @@ var Player = function (video, audio, bitRate) { //TODO: bitRate will be calculat
     };
 
     var downloadMpdFileOnReady = function (request) {
-        var representationRepo = new RepresentationRepository(request.responseText);
+
+        Dash.mpd.Parser(request.responseText).generateModel();
+
+        /*        var representationRepo = new RepresentationRepository(request.responseText);
         //var length = representationRepo.getVideoLength();
         //console.log("length = " + length);
         var videoRepresentation = representationRepo.getVideoForBitRate(bitRate * 0.9);
@@ -28,7 +31,7 @@ var Player = function (video, audio, bitRate) { //TODO: bitRate will be calculat
         var audioRepresentation = representationRepo.getAudioForBitRate(bitRate * 0.1);
         //console.log("audio: bitRate = " + bitRate * 0.1 + ", audio bandwidth = " + audioRepresentation.bandwidth);
         //console.log("audio url: " + audioRepresentation.baseUrl);
-        //downloadMedia(videoRepresentation, audioRepresentation);
+         //downloadMedia(videoRepresentation, audioRepresentation);*/
     };
 
     var downloadMedia = function (videoUrl, audioUrl) {

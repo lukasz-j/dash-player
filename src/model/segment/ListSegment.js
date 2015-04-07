@@ -1,11 +1,17 @@
-var ListSegment = function () {
+Dash.model.ListSegment = function (representation, headerURL, segmentURLs) {
     return {
-        getHeaderURL: function () {
+        name: 'ListSegment',
 
+        getRepresentation: function () {
+            return representation;
+        },
+
+        getHeaderURL: function () {
+            return headerURL;
         },
 
         getSegmentURLs: function () {
-
+            return segmentURLs;
         }
     };
 };
