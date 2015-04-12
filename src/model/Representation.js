@@ -56,6 +56,11 @@ Dash.model.Representation = function (adaptationSet, id, bandwidth, width, heigh
 
         getAudioSamplingRate: function () {
             return audioSamplingRate;
+        },
+
+        //Different representations should have different ids
+        equals: function (representation) {
+            return id === representation.getId();
         }
     };
 };

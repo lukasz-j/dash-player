@@ -27,6 +27,22 @@ Dash.model.AdaptationSet = function (period, mimeType) {
             return representationList;
         },
 
+        getIndexOfRepresentation: function (representation) {
+            for (var i = 0; i < representationList.length; ++i) {
+                if (representationList[i].equals(representation)) {
+                    return i;
+                }
+            }
+        },
+
+        getLowestRepresentation: function () {
+            return representationList[0];
+        },
+
+        getHighestRepresentation: function () {
+            return representationList[representationList.length - 1];
+        },
+
         getMimeType: function () {
             return mimeType;
         },
