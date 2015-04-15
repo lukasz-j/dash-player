@@ -1,4 +1,4 @@
-var Player = function (video, audio, bitRate) { //TODO: bitRate will be calculated during downloading segments
+Dash.player = function (video, audio, bitRate) { //TODO: bitRate will be calculated during downloading segments
     var addSource = function (mediaElement, src, type) {
         var source = document.createElement('source');
         source.src = src;

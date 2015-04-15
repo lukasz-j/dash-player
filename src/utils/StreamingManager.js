@@ -1,0 +1,3 @@
+Dash.utils.StreamingManager = function () {
+
+};

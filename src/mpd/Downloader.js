@@ -1,17 +1,22 @@
-Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnReady) {
+Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuccess) {
     var youTubeDomain = 'http://www.youtube.com',
         getInfoMapping = '/get_video_info?html5=1&video_id=',
         videoIdPrefix = 'v=',
         mpdEntryPrefix = 'dashmpd=',
 
+        downloadMpdFileFromURL = function () {
+            AsyncDownloader().download(mpdFileUrl, downloadMpdFileOnSuccess);
+        },
+
         downloadYouTubeMpdFile = function () {
             var videoId = getYouTubeVideoId(mpdFileUrl);
             var url = youTubeDomain + getInfoMapping + videoId;
-            AsyncDownloader().download(url, false, downloadYouTubeVideoDetailsOnReady);
+            AsyncDownloader().download(url, downloadYouTubeVideoDetailsOnSuccess);
         },
-        downloadYouTubeVideoDetailsOnReady = function (request) {
+
+        downloadYouTubeVideoDetailsOnSuccess = function (request) {
             var mpdUrl = getMpdUrlFromResponse(request.responseText);
-            AsyncDownloader().download(mpdUrl, false, downloadMpdFileOnReady);
+            AsyncDownloader().download(mpdUrl, downloadMpdFileOnSuccess);
         },
 
         getYouTubeVideoId = function (videoUrl) {
@@ -22,6 +27,7 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnRea
                 }
             }
         },
+
         getMpdUrlFromResponse = function (movieDetails) {
             var urlParameters = movieDetails.split('&');
             for (var i = 0; i < urlParameters.length; i += 1) {
@@ -32,12 +38,11 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnRea
         };
 
     return {
-        //TODO: consider worker
         downloadMpdFile: function () {
             if (isYouTubeVideo) {
                 downloadYouTubeMpdFile();
             } else {
-
+                downloadMpdFileFromURL();
             }
         }
     }
