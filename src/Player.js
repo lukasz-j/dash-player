@@ -1,4 +1,24 @@
-Dash.player = function (video, audio, bitRate) { //TODO: bitRate will be calculated during downloading segments
+Dash.player = function (videoElement, detailsElement) {
+
+    var onSuccessMpdDownloadCallback = function (response, loadedBytes, requestDuration) {
+        var speed = (loadedBytes / 1024) / (requestDuration / 1000);
+        console.log('Mpd file download: ' + speed + "kB/s");
+
+        var mpdModel = Dash.mpd.Parser(response).generateModel();
+
+    };
+
+    return {
+        play: function (url, isYouTube) {
+            Dash.mpd.Downloader(url, isYouTube, onSuccessMpdDownloadCallback).downloadMpdFile();
+        }
+    }
+
+};
+
+/*
+
+ Dash.player = function (video, audio, bitRate) { //TODO: bitRate will be calculated during downloading segments
     var addSource = function (mediaElement, src, type) {
         var source = document.createElement('source');
         source.src = src;
@@ -22,16 +42,16 @@ Dash.player = function (video, audio, bitRate) { //TODO: bitRate will be calcula
 
         Dash.mpd.Parser(request.responseText).generateModel();
 
-        /*        var representationRepo = new RepresentationRepository(request.responseText);
-        //var length = representationRepo.getVideoLength();
-        //console.log("length = " + length);
-        var videoRepresentation = representationRepo.getVideoForBitRate(bitRate * 0.9);
-        //console.log("video: bitRate = " + bitRate * 0.9 + ", video bandwidth = " + videoRepresentation.bandwidth);
-        console.log("video url: " + videoRepresentation.baseUrl);
-        var audioRepresentation = representationRepo.getAudioForBitRate(bitRate * 0.1);
-        //console.log("audio: bitRate = " + bitRate * 0.1 + ", audio bandwidth = " + audioRepresentation.bandwidth);
-        //console.log("audio url: " + audioRepresentation.baseUrl);
-         //downloadMedia(videoRepresentation, audioRepresentation);*/
+ /!*        var representationRepo = new RepresentationRepository(request.responseText);
+ //var length = representationRepo.getVideoLength();
+ //console.log("length = " + length);
+ var videoRepresentation = representationRepo.getVideoForBitRate(bitRate * 0.9);
+ //console.log("video: bitRate = " + bitRate * 0.9 + ", video bandwidth = " + videoRepresentation.bandwidth);
+ console.log("video url: " + videoRepresentation.baseUrl);
+ var audioRepresentation = representationRepo.getAudioForBitRate(bitRate * 0.1);
+ //console.log("audio: bitRate = " + bitRate * 0.1 + ", audio bandwidth = " + audioRepresentation.bandwidth);
+ //console.log("audio url: " + audioRepresentation.baseUrl);
+ //downloadMedia(videoRepresentation, audioRepresentation);*!/
     };
 
     var downloadMedia = function (videoUrl, audioUrl) {
@@ -51,3 +71,4 @@ Dash.player = function (video, audio, bitRate) { //TODO: bitRate will be calcula
         }
     }
 };
+ */

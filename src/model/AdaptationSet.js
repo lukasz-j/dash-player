@@ -43,6 +43,15 @@ Dash.model.AdaptationSet = function (period, mimeType) {
             return representationList[representationList.length - 1];
         },
 
+        getRepresentationByWidth: function (width) {
+            for (var i = 0; i < representationList.length; ++i) {
+                var representation = representationList[i];
+                if (representation.getWidth() === width) {
+                    return representation;
+                }
+            }
+        },
+
         getMimeType: function () {
             return mimeType;
         },

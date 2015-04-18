@@ -21,7 +21,7 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
 
         getYouTubeVideoId = function (videoUrl) {
             var urlParameters = videoUrl.split('?');
-            for (var i = 0; i < urlParameters.length; i += 1) {
+            for (var i = 0; i < urlParameters.length; i++) {
                 if (urlParameters[i].indexOf(videoIdPrefix) === 0) {
                     return urlParameters[i].substring(videoIdPrefix.length)
                 }
@@ -30,11 +30,12 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
 
         getMpdUrlFromResponse = function (movieDetails) {
             var urlParameters = movieDetails.split('&');
-            for (var i = 0; i < urlParameters.length; i += 1) {
+            for (var i = 0; i < urlParameters.length; i++) {
                 if (urlParameters[i].indexOf(mpdEntryPrefix) === 0) {
                     return decodeURIComponent(urlParameters[i].substring(mpdEntryPrefix.length));
                 }
             }
+            throw new Error('Dash file is not available for this video');
         };
 
     return {

@@ -18,9 +18,9 @@ var AsyncDownloader = function () {
         request.onload = function (event) {
             if (request.status === expectedStatusCode) {
                 requestDuration = new Date() - startTime;
-                requestOnSuccess(request.response, event.loaded, requestDuration);
+                requestOnSuccess(request, event.loaded, requestDuration);
             } else {
-                requestOnFailure(request.response, request.status);
+                requestOnFailure(request);
             }
         };
 

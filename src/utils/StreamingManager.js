@@ -1,3 +1,4 @@
-Dash.utils.StreamingManager = function () {
+Dash.utils.StreamingManager = function (MPD, playingMode) {
+
 
 };
