@@ -54,7 +54,7 @@ Dash.mpd.Parser = function (mpdFileContent) {
                 segmentListNode = representationNode.getElementsByTagName('SegmentList')[0];
 
             if (baseURLNode && segmentBaseNode) { //RANGE SEGMENT
-                var decodedBaseURL = decodeURIComponent(baseURLNode.innerHTML),
+                var decodedBaseURL = Dash.utils.CommonUtils.replaceAmpersandsInURL(baseURLNode.innerHTML),
                     initializationRangeIndex = segmentBaseNode.getElementsByTagName('Initialization')[0].getAttribute('range'),
                     segmentBaseRangeIndex = segmentBaseNode.getAttribute("indexRange"),
                     contentLength = parseInt(baseURLNode.getAttribute('yt:contentLength'));
