@@ -9,6 +9,10 @@ Dash.utils.CommonUtils = {
 
     replaceAmpersandsInURL: function (url) {
         return url.replace(/&amp;/g, '&');
+    },
+
+    createSourceBufferInitString: function (adaptationSet, representation) {
+        return adaptationSet.getMimeType() + '; codecs="' + representation.getCodecs() + '"';
     }
 
 };

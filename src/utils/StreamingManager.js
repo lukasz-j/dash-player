@@ -1,13 +1,14 @@
 Dash.utils.StreamingManager = function (mpdModel, playingMode) {
 
-    var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('mp4'),
-        representationManager;
+    var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('webm'),
+        representationManager,
+        videoSource;
 
     switch (playingMode.type) {
         case 'quality':
             representationManager = Dash.utils.RepresentationManager(adaptationSet, function (availableRepresentations) {
                 for (var i = 0; i < availableRepresentations.length; ++i) {
-                    if (availableRepresentations[i].getWidth() === playingMode.width) {
+                    if (availableRepresentations[i].getHeight() === playingMode.height) {
                         return i;
                     }
                 }
@@ -26,13 +27,48 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
     var currentRepresentation = representationManager.getCurrentRepresentation(),
         currentRepresentationSegment = currentRepresentation.getSegment(),
         headerURL = currentRepresentationSegment.getHeaderURL(),
-        currentElementId = 0;
+        currentElementId = -1,
+        segmentURLs;
 
     var onHeaderDownloadSuccess = function (request, loadedBytes, downloadTime) {
         var headers = new Uint8Array(request.response);
-        var segmentURLs = currentRepresentationSegment.getSegmentURLs(headers);
-        console.log();
+        segmentURLs = currentRepresentationSegment.getSegmentURLs(headers);
+        videoSource.appendBuffer(headers);
+        currentElementId += 1;
+
+        AsyncDownloader().downloadBinaryFile(segmentURLs[currentElementId], onSuccessPart);
+
     };
 
-    AsyncDownloader().downloadBinaryFile(headerURL, onHeaderDownloadSuccess);
+    var onSuccessPart = function (request, loadedBytes, downloadTime) {
+        videoSource.appendBuffer(new Uint8Array(request.response));
+        currentElementId += 1;
+
+        if (currentElementId < segmentURLs.length) {
+            AsyncDownloader().downloadBinaryFile(segmentURLs[currentElementId], onSuccessPart);
+        }
+    };
+
+
+    return {
+        startStreaming: function (mediaSource) {
+            mediaSource.addEventListener('sourceopen', function (e) {
+                try {
+                    var mediaSourceInitString =
+                        Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, currentRepresentation);
+                    videoSource = mediaSource.addSourceBuffer(mediaSourceInitString);
+                    AsyncDownloader().downloadBinaryFile(headerURL, onHeaderDownloadSuccess);
+                } catch (e) {
+                    console.log('Exception calling addSourceBuffer for video', e);
+                }
+            }, false);
+
+
+        },
+
+        getRepresentationManager: function () {
+            return representationManager;
+        }
+    }
+
 };

@@ -28,8 +28,13 @@
 </head>
 <body>
 
+<video id="dashVideoElement" controls>
+
+</video>
+
 <script>
-    Dash.player().load('https://www.youtube.com/watch?v=Dpxgaiftl1g', true);
+    var videoElement = document.getElementById('dashVideoElement');
+    Dash.player(videoElement).load('https://www.youtube.com/watch?v=PunJGevSv8w', true);
 </script>
 
 </body>

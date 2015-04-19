@@ -44,7 +44,7 @@ Dash.mpd.Parser = function (mpdFileContent) {
             }
 
             return Dash.model.Representation(
-                adaptationSetElement, id, bandwidth, width, height, frameRate
+                adaptationSetElement, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate
             );
         },
 
