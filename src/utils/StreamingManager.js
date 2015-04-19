@@ -1,6 +1,6 @@
 Dash.utils.StreamingManager = function (mpdModel, playingMode) {
 
-    var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('webm'),
+    var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('mp4'),
         representationManager,
         videoSource;
 
@@ -46,6 +46,9 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
 
         if (currentElementId < segmentURLs.length) {
             AsyncDownloader().downloadBinaryFile(segmentURLs[currentElementId], onSuccessPart);
+        } else {
+            //fixme should it be this way?
+            videoSource.endOfStream();
         }
     };
 
@@ -62,8 +65,6 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
                     console.log('Exception calling addSourceBuffer for video', e);
                 }
             }, false);
-
-
         },
 
         getRepresentationManager: function () {

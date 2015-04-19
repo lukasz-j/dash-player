@@ -3,7 +3,9 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+
     <script src="../Dash.js"></script>
+    <script src="../Player.js"></script>
 
     <!-- model -->
     <script src="../model/segment/ListSegment.js"></script>
@@ -20,15 +22,17 @@
 
     <!-- Utils -->
     <script src="../utils/AsyncDownloader.js"></script>
-
+    <script src="../utils/CommonUtils.js"></script>
+    <script src="../utils/RepresentationManager.js"></script>
+    <script src="../utils/StreamingManager.js"></script>
 </head>
 <body>
-<script>
-    var downloadMpdFileOnReady = function (request) {
-        Dash.mpd.Parser(request.responseText).generateModel();
-    };
 
-    Dash.mpd.Downloader('https://www.youtube.com/watch?v=_J1m3oOqtqc', true, downloadMpdFileOnReady).downloadMpdFile();
+<video id="dashVideoElement" controls></video>
+
+<script>
+    var videoElement = document.getElementById('dashVideoElement');
+    Dash.player(videoElement).load('https://www.youtube.com/watch?v=PunJGevSv8w', true);
 </script>
 
 </body>
