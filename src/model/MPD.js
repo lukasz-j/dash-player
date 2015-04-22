@@ -8,25 +8,21 @@
 
 
 Dash.model.MPD = function (profiles, type, rawMediaPresentationDuration, minBufferTime) {
+    'use strict';
+
     function convertXMLDurationFormat(xmlDurationFormat) {
         //todo implement me and move to separate file with other utils
         return xmlDurationFormat;
     }
 
-    var period = undefined,
+    var period,
         mediaPresentationDuration = convertXMLDurationFormat(rawMediaPresentationDuration);
 
     return {
-        /* DEBUG ONLY, use methods instead of fields */
-        _period: undefined,
-        _mediaPresentationDuration: mediaPresentationDuration,
-        /*******/
-
         name: 'MPD',
 
         setPeriod: function (newPeriod) {
             period = newPeriod;
-            this._period = newPeriod;
         },
 
         getPeriod: function () {

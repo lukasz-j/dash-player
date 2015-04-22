@@ -1,13 +1,9 @@
 Dash.model.AdaptationSet = function (period, mimeType) {
-    var representationList = undefined;
+    'use strict';
+
+    var representationList;
 
     return {
-        /* DEBUG ONLY, use methods instead of fields */
-        _representationList: undefined,
-        _period: period,
-        _mimeType: mimeType,
-        /*******/
-
         name: 'AdaptationSet',
 
         getPeriod: function () {
@@ -19,8 +15,6 @@ Dash.model.AdaptationSet = function (period, mimeType) {
             representationList.sort(function (a, b) {
                 return a.getBandwidth() - b.getBandwidth;
             });
-
-            this._representationList = newRepresentationList;
         },
 
         getRepresentations: function () {
@@ -28,7 +22,7 @@ Dash.model.AdaptationSet = function (period, mimeType) {
         },
 
         getIndexOfRepresentation: function (representation) {
-            for (var i = 0; i < representationList.length; ++i) {
+            for (var i = 0; i < representationList.length; i += 1) {
                 if (representationList[i].equals(representation)) {
                     return i;
                 }
@@ -44,7 +38,7 @@ Dash.model.AdaptationSet = function (period, mimeType) {
         },
 
         getRepresentationByWidth: function (width) {
-            for (var i = 0; i < representationList.length; ++i) {
+            for (var i = 0; i < representationList.length; i += 1) {
                 var representation = representationList[i];
                 if (representation.getWidth() === width) {
                     return representation;

@@ -1,25 +1,13 @@
 Dash.model.Representation = function (adaptationSet, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate) {
+    'use strict';
 
-    var segment = undefined;
+    var segment;
 
     return {
-        /* DEBUG ONLY, use methods instead of fields */
-        _segment: undefined,
-        _adaptationSet: adaptationSet,
-        _id: id,
-        _bandwidth: bandwidth,
-        _width: width,
-        _height: height,
-        _frameRate: frameRate,
-        _codecs: codecs,
-        _audioSamplingRate: audioSamplingRate,
-        /*******/
-
         name: 'Representation',
 
         setSegment: function (newSegment) {
             segment = newSegment;
-            this._segment = newSegment;
         },
 
         getSegment: function () {

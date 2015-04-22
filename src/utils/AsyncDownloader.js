@@ -1,4 +1,5 @@
 var AsyncDownloader = function () {
+    'use strict';
 
     var sendHttpGetRequest = function (url, expectedStatusCode, requestOnSuccess, requestOnFailure, requestOnProgress, responseType) {
         var request = new XMLHttpRequest(),

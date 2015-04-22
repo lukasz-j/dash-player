@@ -1,4 +1,6 @@
 Dash.mpd.Parser = function (mpdFileContent) {
+    'use strict';
+
     var parsedMpdFile = new DOMParser().parseFromString(mpdFileContent, "text/xml"),
 
         createMPDElement = function (mpdNode) {
@@ -7,45 +9,37 @@ Dash.mpd.Parser = function (mpdFileContent) {
                 mediaPresentationDuration = mpdNode.getAttribute("mediaPresentationDuration"),//
                 minBufferTime = mpdNode.getAttribute("minBufferTime");
 
-            return Dash.model.MPD(
-                profiles, type, mediaPresentationDuration, minBufferTime
-            );
+            return Dash.model.MPD(profiles, type, mediaPresentationDuration, minBufferTime);
         },
 
         createPeriodElement = function (periodNode, mpdElement) {
-            return Dash.model.Period(
-                mpdElement
-            );
+            return Dash.model.Period(mpdElement);
         },
 
         createAdaptationSetElement = function (adaptationSetNode, periodElement) {
             var mimeType = adaptationSetNode.getAttribute('mimeType');
 
-            return Dash.model.AdaptationSet(
-                periodElement, mimeType
-            );
+            return Dash.model.AdaptationSet(periodElement, mimeType);
         },
 
         createRepresentationElement = function (representationNode, adaptationSetElement) {
-            var id = parseInt(representationNode.getAttribute('id')),
+            var id = parseInt(representationNode.getAttribute('id'), 10),
                 codecs = representationNode.getAttribute('codecs'),
                 bandwidth = parseInt(representationNode.getAttribute('bandwidth')),
-                width = undefined,
-                height = undefined,
-                frameRate = undefined,
-                audioSamplingRate = undefined;
+                width,
+                height,
+                frameRate,
+                audioSamplingRate;
 
             if (adaptationSetElement.isVideo()) {
-                width = parseInt(representationNode.getAttribute('width'));
-                height = parseInt(representationNode.getAttribute('height'));
-                frameRate = parseInt(representationNode.getAttribute('frameRate'));
+                width = parseInt(representationNode.getAttribute('width'), 10);
+                height = parseInt(representationNode.getAttribute('height'), 10);
+                frameRate = parseInt(representationNode.getAttribute('frameRate'), 10);
             } else if (adaptationSetElement.isAudio()) {
                 audioSamplingRate = parseInt(representationNode.getAttribute('audioSamplingRate'));
             }
 
-            return Dash.model.Representation(
-                adaptationSetElement, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate
-            );
+            return Dash.model.Representation(adaptationSetElement, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate);
         },
 
         createSegmentElement = function (representationNode, representationElement) {
@@ -57,24 +51,20 @@ Dash.mpd.Parser = function (mpdFileContent) {
                 var decodedBaseURL = Dash.utils.CommonUtils.replaceAmpersandsInURL(baseURLNode.innerHTML),
                     initializationRangeIndex = segmentBaseNode.getElementsByTagName('Initialization')[0].getAttribute('range'),
                     segmentBaseRangeIndex = segmentBaseNode.getAttribute("indexRange"),
-                    contentLength = parseInt(baseURLNode.getAttribute('yt:contentLength'));
+                    contentLength = parseInt(baseURLNode.getAttribute('yt:contentLength'), 10);
 
-                return Dash.model.RangeSegment(
-                    representationElement, decodedBaseURL, initializationRangeIndex, segmentBaseRangeIndex, contentLength
-                );
+                return Dash.model.RangeSegment(representationElement, decodedBaseURL, initializationRangeIndex, segmentBaseRangeIndex, contentLength);
             } else if (segmentBaseNode && segmentListNode) { //LIST SEGMENT
                 var initializationNode = segmentBaseNode.getElementsByTagName('Initialization')[0],
                     segmentURLNodeList = segmentListNode.getElementsByTagName('SegmentURL'),
                     segmentURLList = [];
 
-                for (var i = 0; i < segmentURLNodeList.length; ++i) {
+                for (var i = 0; i < segmentURLNodeList.length; i += 1) {
                     segmentURLList.push(decodeURIComponent(segmentURLNodeList[i].getAttribute('media')));
                 }
                 var initializationSegmentURL = decodeURIComponent(initializationNode.getAttribute('sourceURL'));
 
-                return Dash.model.ListSegment(
-                    representationElement, initializationSegmentURL, segmentURLList
-                );
+                return Dash.model.ListSegment(representationElement, initializationSegmentURL, segmentURLList);
             } else {
                 throw Error("Unsupported segment representation");
             }
@@ -102,7 +92,7 @@ Dash.mpd.Parser = function (mpdFileContent) {
                 //REPRESENTATION
                 var representationNodes = adaptationSetNode.getElementsByTagName("Representation"),
                     representationElements = [];
-                for (var j = 0; j < representationNodes.length; ++j) {
+                for (var j = 0; j < representationNodes.length; j += 1) {
                     var representationNode = representationNodes[j],
                         representationElement = createRepresentationElement(representationNode, adaptationSetElement);
 

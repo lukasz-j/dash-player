@@ -1,6 +1,7 @@
 Dash.model.Period = function (mpd) {
+    'use strict';
 
-    var adaptationSets = undefined,
+    var adaptationSets,
 
         isAdaptationSetAudioCondition = function (adaptationSet) {
             return adaptationSet.isAudio();
@@ -12,20 +13,15 @@ Dash.model.Period = function (mpd) {
 
         filterAdaptationSets = function (conditionFunction) {
             var sets = [];
-            for (var i = 0; i < adaptationSets.length; ++i) {
+            for (var i = 0; i < adaptationSets.length; i += 1) {
                 if (conditionFunction(adaptationSets[i])) {
-                    sets.push(adaptationSets[i])
+                    sets.push(adaptationSets[i]);
                 }
             }
             return sets;
         };
 
     return {
-        /* DEBUG ONLY, use methods instead of fields */
-        _adaptationSets: undefined,
-        _mpd: mpd,
-        /*******/
-
         name: 'Period',
 
         getMPD: function () {
@@ -34,7 +30,6 @@ Dash.model.Period = function (mpd) {
 
         setAdaptationSets: function (newAdaptationSets) {
             adaptationSets = newAdaptationSets;
-            this._adaptationSets = newAdaptationSets;
         },
 
         getAdaptationSets: function () {
@@ -50,7 +45,7 @@ Dash.model.Period = function (mpd) {
         },
 
         getAudioAdaptationSet: function (format) {
-            for (var i = 0; i < adaptationSets.length; ++i) {
+            for (var i = 0; i < adaptationSets.length; i += 1) {
                 if (adaptationSets[i].isAudio() && adaptationSets[i].getFormat() === format) {
                     return adaptationSets[i];
                 }
@@ -58,7 +53,7 @@ Dash.model.Period = function (mpd) {
         },
 
         getVideoAdaptationSet: function (format) {
-            for (var i = 0; i < adaptationSets.length; ++i) {
+            for (var i = 0; i < adaptationSets.length; i += 1) {
                 if (adaptationSets[i].isVideo() && adaptationSets[i].getFormat() === format) {
                     return adaptationSets[i];
                 }

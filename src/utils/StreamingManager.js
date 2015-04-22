@@ -1,4 +1,5 @@
 Dash.utils.StreamingManager = function (mpdModel, playingMode) {
+    'use strict';
 
     var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('mp4'),
         representationManager,
@@ -7,7 +8,7 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
     switch (playingMode.type) {
         case 'quality':
             representationManager = Dash.utils.RepresentationManager(adaptationSet, function (availableRepresentations) {
-                for (var i = 0; i < availableRepresentations.length; ++i) {
+                for (var i = 0; i < availableRepresentations.length; i += 1) {
                     if (availableRepresentations[i].getHeight() === playingMode.height) {
                         return i;
                     }
@@ -55,7 +56,7 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
 
     return {
         startStreaming: function (mediaSource) {
-            mediaSource.addEventListener('sourceopen', function (e) {
+            mediaSource.addEventListener('sourceopen', function () {
                 try {
                     var mediaSourceInitString =
                         Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, currentRepresentation);
@@ -70,6 +71,5 @@ Dash.utils.StreamingManager = function (mpdModel, playingMode) {
         getRepresentationManager: function () {
             return representationManager;
         }
-    }
-
+    };
 };

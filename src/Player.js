@@ -1,4 +1,6 @@
 Dash.player = function (videoElement, detailsElement) {
+    'use strict';
+
     var mpdModel,
         mediaSource,
         streamingManager,
@@ -49,5 +51,5 @@ Dash.player = function (videoElement, detailsElement) {
             } else {
             }
         }
-    }
+    };
 };

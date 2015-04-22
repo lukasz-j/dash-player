@@ -1,4 +1,5 @@
 Dash.utils.RepresentationManager = function (adaptationSet, chooseStartRepresentation) {
+    'use strict';
 
     var availableRepresentations = adaptationSet.getRepresentations(),
         currentRepresentationIndex = chooseStartRepresentation(availableRepresentations);
@@ -39,7 +40,5 @@ Dash.utils.RepresentationManager = function (adaptationSet, chooseStartRepresent
 
             return availableRepresentations[currentRepresentationIndex];
         }
-    }
-
-
+    };
 };

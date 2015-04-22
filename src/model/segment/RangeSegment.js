@@ -1,22 +1,16 @@
 Dash.model.RangeSegment = function (representation, baseUrl, initializationIndexRange, segmentBaseIndexRange, contentLength) {
+    'use strict';
 
     var splitInitializationIndexRange = initializationIndexRange.split('-'),
-        splitSegmentBaseIndexRange = segmentBaseIndexRange.split('-');
+        splitSegmentBaseIndexRange = segmentBaseIndexRange.split('-'),
 
-    var initializationStartIndex = parseInt(splitInitializationIndexRange[0]),
-        initializationEndIndex = parseInt(splitInitializationIndexRange[1]);
+        initializationStartIndex = parseInt(splitInitializationIndexRange[0], 10),
+        initializationEndIndex = parseInt(splitInitializationIndexRange[1], 10),
 
-    var segmentBaseStartIndex = parseInt(splitSegmentBaseIndexRange[0]),
-        segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1]);
+        segmentBaseStartIndex = parseInt(splitSegmentBaseIndexRange[0], 10),
+        segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1], 10);
 
     return {
-        /* DEBUG ONLY, use methods instead of fields */
-        _representation: representation,
-        _baseUrl: baseUrl,
-        _initializationIndexRange: initializationIndexRange,
-        _segmentBaseIndexRange: segmentBaseIndexRange,
-        _contentLength: contentLength,
-        /*******/
 
         name: 'RangeSegment',
 
@@ -30,14 +24,17 @@ Dash.model.RangeSegment = function (representation, baseUrl, initializationIndex
 
         getSegmentURLs: function (header) {
             var sampleLengths = [],
-                segmentBase = header.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1);
-            for (var i = 32; i < segmentBase.length; i += 12) {
+                segmentBase = header.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
+
+                segmentURLs = [],
+                startIndex = segmentBaseEndIndex + 1,
+                i;
+
+            for (i = 32; i < segmentBase.length; i += 12) {
                 sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1] * 65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3]);
             }
 
-            var segmentURLs = [],
-                startIndex = segmentBaseEndIndex + 1;
-            for (var i = 0; i < sampleLengths.length; i++) {
+            for (i = 0; i < sampleLengths.length; i += 1) {
                 segmentURLs.push(Dash.utils.CommonUtils.createURLWithRange(baseUrl, startIndex, startIndex + sampleLengths[i]));
                 startIndex += sampleLengths[i] + 1;
             }

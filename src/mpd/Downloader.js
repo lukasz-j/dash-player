@@ -1,4 +1,6 @@
 Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuccess) {
+    'use strict';
+
     var youTubeDomain = 'http://www.youtube.com',
         getInfoMapping = '/get_video_info?html5=1&video_id=',
         videoIdPrefix = 'v=',
@@ -8,9 +10,19 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
             AsyncDownloader().download(mpdFileUrl, downloadMpdFileOnSuccess);
         },
 
+        getMpdUrlFromResponse = function (movieDetails) {
+            var urlParameters = movieDetails.split('&');
+            for (var i = 0; i < urlParameters.length; i += 1) {
+                if (urlParameters[i].indexOf(mpdEntryPrefix) === 0) {
+                    return decodeURIComponent(urlParameters[i].substring(mpdEntryPrefix.length));
+                }
+            }
+            throw new Error('Dash file is not available for this video');
+        },
+
         downloadYouTubeMpdFile = function () {
-            var videoId = getYouTubeVideoId(mpdFileUrl);
-            var url = youTubeDomain + getInfoMapping + videoId;
+            var videoId = getYouTubeVideoId(mpdFileUrl),
+                url = youTubeDomain + getInfoMapping + videoId;
             AsyncDownloader().download(url, downloadYouTubeVideoDetailsOnSuccess);
         },
 
@@ -21,22 +33,13 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
 
         getYouTubeVideoId = function (videoUrl) {
             var urlParameters = videoUrl.split('?');
-            for (var i = 0; i < urlParameters.length; i++) {
+            for (var i = 0; i < urlParameters.length; i += 1) {
                 if (urlParameters[i].indexOf(videoIdPrefix) === 0) {
                     return urlParameters[i].substring(videoIdPrefix.length)
                 }
             }
-        },
-
-        getMpdUrlFromResponse = function (movieDetails) {
-            var urlParameters = movieDetails.split('&');
-            for (var i = 0; i < urlParameters.length; i++) {
-                if (urlParameters[i].indexOf(mpdEntryPrefix) === 0) {
-                    return decodeURIComponent(urlParameters[i].substring(mpdEntryPrefix.length));
-                }
-            }
-            throw new Error('Dash file is not available for this video');
         };
+
 
     return {
         downloadMpdFile: function () {
@@ -46,5 +49,5 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
                 downloadMpdFileFromURL();
             }
         }
-    }
+    };
 };
