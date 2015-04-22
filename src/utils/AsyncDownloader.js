@@ -1,4 +1,4 @@
-var AsyncDownloader = function () {
+Dash.utils.AsyncDownloader = function () {
     'use strict';
 
     var sendHttpGetRequest = function (url, expectedStatusCode, requestOnSuccess, requestOnFailure, requestOnProgress, responseType) {

@@ -3,6 +3,7 @@ var Dash = {
     player: {},
     model: {},
     mpd: {},
+    streaming: {},
     utils: {}
 };
 

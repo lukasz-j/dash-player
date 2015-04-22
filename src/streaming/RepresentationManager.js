@@ -1,4 +1,4 @@
-Dash.utils.RepresentationManager = function (adaptationSet, chooseStartRepresentation) {
+Dash.streaming.RepresentationManager = function (adaptationSet, chooseStartRepresentation) {
     'use strict';
 
     var availableRepresentations = adaptationSet.getRepresentations(),
@@ -14,7 +14,7 @@ Dash.utils.RepresentationManager = function (adaptationSet, chooseStartRepresent
         },
 
         switchRepresentationToHigher: function (hopNumber) {
-            hopNumber = (typeof hopNumber === 'undefined') ? 1 : hopNumber;
+            hopNumber = hopNumber || 1;
 
             if (currentRepresentationIndex + hopNumber >= availableRepresentations.length) {
                 currentRepresentationIndex = availableRepresentations.length - 1;
@@ -30,7 +30,7 @@ Dash.utils.RepresentationManager = function (adaptationSet, chooseStartRepresent
         },
 
         switchRepresentationToLower: function (hopNumber) {
-            hopNumber = (typeof hopNumber === 'undefined') ? 1 : hopNumber;
+            hopNumber = hopNumber || 1;
 
             if (currentRepresentationIndex - hopNumber < 0) {
                 currentRepresentationIndex = 0;

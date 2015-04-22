@@ -25,7 +25,7 @@ Dash.mpd.Parser = function (mpdFileContent) {
         createRepresentationElement = function (representationNode, adaptationSetElement) {
             var id = parseInt(representationNode.getAttribute('id'), 10),
                 codecs = representationNode.getAttribute('codecs'),
-                bandwidth = parseInt(representationNode.getAttribute('bandwidth')),
+                bandwidth = parseInt(representationNode.getAttribute('bandwidth'), 10),
                 width,
                 height,
                 frameRate,

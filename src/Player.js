@@ -1,26 +1,10 @@
 Dash.player = function (videoElement, detailsElement) {
-    'use strict';
 
-    var mpdModel,
-        mediaSource,
-        streamingManager,
-        representationManager;
-
-    var onSuccessMpdDownloadCallback = function (request, loadedBytes, requestDuration) {
-            var downloadSpeed = (loadedBytes / 1024) / (requestDuration / 1000);
-            console.log('Mpd file downloaded: ' + downloadSpeed + "kB/s");
-            mpdModel = Dash.mpd.Parser(request.responseText).generateModel();
-
-            if (typeof mpdModel === 'undefined') {
-                console.log('MPD is not loaded');
-            } else {
-                initializeStreaming();
-            }
-        },
-
-        initializeStreaming = function () {
-            streamingManager = Dash.utils.StreamingManager(mpdModel, {type: 'quality', height: 360});
-            representationManager = streamingManager.getRepresentationManager();
+    var initializeStreaming = function (mpdModel) {
+            var streamingManager = Dash.streaming.StreamingManager(mpdModel, {type: 'quality', height: 360}),
+                representationManager = streamingManager.getRepresentationManager(),
+                mediaSource,
+                url;
 
             if (window.MediaSource) {
                 mediaSource = new window.MediaSource();
@@ -29,7 +13,7 @@ Dash.player = function (videoElement, detailsElement) {
                 return;
             }
 
-            var url = URL.createObjectURL(mediaSource);
+            url = URL.createObjectURL(mediaSource);
 
             videoElement.pause();
             videoElement.src = url;
@@ -37,6 +21,18 @@ Dash.player = function (videoElement, detailsElement) {
             videoElement.height = representationManager.getCurrentRepresentation().getHeight();
 
             streamingManager.startStreaming(mediaSource);
+        },
+
+        onSuccessMpdDownloadCallback = function (request, loadedBytes, requestDuration) {
+            var downloadSpeed = (loadedBytes / 1024) / (requestDuration / 1000),
+                mpdModel = Dash.mpd.Parser(request.responseText).generateModel();
+            console.log('Mpd file downloaded: ' + downloadSpeed + "kB/s");
+
+            if (typeof mpdModel === 'undefined') {
+                console.log('MPD is not loaded');
+            } else {
+                initializeStreaming(mpdModel);
+            }
         };
 
 
