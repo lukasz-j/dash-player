@@ -1,11 +1,11 @@
-Dash.streaming.StreamingManager = function (mpdModel, playingMode) {
+Dash.streaming.StreamingManager = function (mpdModel, options) {
     'use strict';
 
-    var adaptationSet = mpdModel.getPeriod().getVideoAdaptationSet('mp4'),
+    var adaptationSet = mpdModel.getPeriod().getAdaptationSet(options.mediaType, 'mp4'),
         representationManager,
         representationRepository = Dash.streaming.RepresentationRepository(),
         asyncDownloader = Dash.utils.AsyncDownloader(),
-        videoSource,
+        sourceBuffer,
 
         downloadAvailableHeaders = function (onDownloadAllHeadersSuccess) {
             var representationIndex = -1,
@@ -50,34 +50,42 @@ Dash.streaming.StreamingManager = function (mpdModel, playingMode) {
                 var buffer = new Uint8Array(request.response);
 
                 representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
-                videoSource.appendBuffer(buffer);
+                sourceBuffer.appendBuffer(buffer);
 
                 currentElementId += 1;
 
                 if (currentElementId < segmentURLs.length) {
                     asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
                 } else {
-                    videoSource.endOfStream();
+                    sourceBuffer.endOfStream();
                 }
             };
 
-            videoSource.appendBuffer(representationRepository.getHeader(currentRepresentation));
+            sourceBuffer.appendBuffer(representationRepository.getHeader(currentRepresentation));
             currentElementId += 1;
             asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
         },
 
         createRepresentationManager = function () {
-            switch (playingMode.type) {
+            switch (options.initType) {
                 case 'quality':
                     return Dash.streaming.RepresentationManager(adaptationSet, function (availableRepresentations) {
                         for (var i = 0; i < availableRepresentations.length; i += 1) {
-                            if (availableRepresentations[i].getHeight() === playingMode.height) {
+                            if (availableRepresentations[i].getHeight() === options.value) {
                                 return i;
                             }
                         }
                         return 0;
                     });
-                    break;
+                case 'bandwidth':
+                    return Dash.streaming.RepresentationManager(adaptationSet, function (availableRepresentations) {
+                        for (var i = 1; i < availableRepresentations.length; i += 1) {
+                            if (availableRepresentations[i].getBandwidth() > options.value) {
+                                return i - 1;
+                            }
+                        }
+                        return availableRepresentations.length - 1;
+                    });
                 case 'fuzzy':
                     break;
                 case 'pid':
@@ -90,21 +98,33 @@ Dash.streaming.StreamingManager = function (mpdModel, playingMode) {
     representationManager = createRepresentationManager();
 
     return {
-        startStreaming: function (mediaSource) {
-            mediaSource.addEventListener('sourceopen', function () {
-                try {
-                    var mediaSourceInitString =
-                        Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, representationManager.getCurrentRepresentation());
-                    videoSource = mediaSource.addSourceBuffer(mediaSourceInitString);
-                    downloadAvailableHeaders(startStreaming);
-                } catch (e) {
-                    console.log('Exception calling addSourceBuffer for video', e);
-                }
-            }, false);
+        initializeStreaming: function (mediaSource) {
+            if (adaptationSet === undefined) {
+                console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
+                return;
+            }
+
+            try {
+                var mediaSourceInitString =
+                    Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, representationManager.getCurrentRepresentation());
+                sourceBuffer = mediaSource.addSourceBuffer(mediaSourceInitString);
+            } catch (e) {
+                console.log('Exception calling addSourceBuffer for video', e);
+            }
+        },
+
+        startStreaming: function () {
+            if (adaptationSet === undefined) {
+                console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
+                return;
+            }
+
+            downloadAvailableHeaders(startStreaming);
         },
 
         getRepresentationManager: function () {
             return representationManager;
         }
     }
-};
+}
+;

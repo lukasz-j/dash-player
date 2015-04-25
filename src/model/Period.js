@@ -36,6 +36,14 @@ Dash.model.Period = function (mpd) {
             return adaptationSets;
         },
 
+        getAdaptationSet: function (mediaType, format) {
+            if (mediaType === 'video') {
+                return this.getVideoAdaptationSet(format);
+            } else if (mediaType === 'audio') {
+                return this.getAudioAdaptationSet(format);
+            }
+        },
+
         getAudioAdaptationSets: function () {
             return filterAdaptationSets(isAdaptationSetAudioCondition);
         },
