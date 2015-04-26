@@ -2,12 +2,12 @@ Dash.player = function (videoElement, detailsElement) {
 
     var initializeStreaming = function (mpdModel) {
             var videoStreamingManager = Dash.streaming.StreamingManager(mpdModel, {
-                    mediaType: 'video',
+                    mediaType: Dash.model.MediaType.VIDEO,
                     initType: 'quality',
                     value: 360
                 }),
                 audioStreamingManager = Dash.streaming.StreamingManager(mpdModel, {
-                    mediaType: 'audio',
+                    mediaType: Dash.model.MediaType.AUDIO,
                     initType: 'bandwidth',
                     value: 0
                 }),

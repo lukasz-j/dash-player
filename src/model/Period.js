@@ -37,10 +37,12 @@ Dash.model.Period = function (mpd) {
         },
 
         getAdaptationSet: function (mediaType, format) {
-            if (mediaType === 'video') {
+            if (mediaType === Dash.model.MediaType.VIDEO) {
                 return this.getVideoAdaptationSet(format);
-            } else if (mediaType === 'audio') {
+            } else if (mediaType === Dash.model.MediaType.AUDIO) {
                 return this.getAudioAdaptationSet(format);
+            } else {
+                throw new Error('Unsupported adaptation set format - ' + mediaType);
             }
         },
 

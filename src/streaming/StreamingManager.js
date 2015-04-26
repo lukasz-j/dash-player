@@ -1,7 +1,7 @@
 Dash.streaming.StreamingManager = function (mpdModel, options) {
     'use strict';
 
-    var adaptationSet = mpdModel.getPeriod().getAdaptationSet(options.mediaType, 'mp4'),
+    var adaptationSet = mpdModel.getPeriod().getAdaptationSet(options.mediaType, Dash.model.MediaFormat.MP4),
         representationManager,
         representationRepository = Dash.streaming.RepresentationRepository(),
         asyncDownloader = Dash.utils.AsyncDownloader(),
@@ -91,7 +91,7 @@ Dash.streaming.StreamingManager = function (mpdModel, options) {
                 case 'pid':
                     break;
                 default:
-                    throw new Error('Unsupported playing mode ' + playingMode.name);
+                    throw new Error('Unsupported initialization mode ' + options.initType);
             }
         };
 

@@ -1,7 +1,9 @@
 Dash.model.AdaptationSet = function (period, mimeType) {
     'use strict';
 
-    var representationList;
+    var representationList,
+        mediaFormat = Dash.model.MediaFormat.createMediaFormatFromMimeType(mimeType),
+        mediaType = Dash.model.MediaType.createMediaTypeFromMimeType(mimeType);
 
     return {
         name: 'AdaptationSet',
@@ -12,7 +14,7 @@ Dash.model.AdaptationSet = function (period, mimeType) {
 
         setRepresentations: function (newRepresentationList) {
             representationList = newRepresentationList;
-            representationList.sort(function (a, b) {
+            representationList.sort(function (a, b) { //sort representations by bandwidth
                 return a.getBandwidth() - b.getBandwidth;
             });
         },
@@ -51,15 +53,19 @@ Dash.model.AdaptationSet = function (period, mimeType) {
         },
 
         getFormat: function () {
-            return mimeType.split('/')[1];
-        },
-
-        isAudio: function () {
-            return mimeType.indexOf("audio") === 0;
+            return mediaFormat;
         },
 
         isVideo: function () {
-            return mimeType.indexOf("video") === 0;
+            return mediaType === Dash.model.MediaType.VIDEO;
+        },
+
+        isAudio: function () {
+            return mediaType === Dash.model.MediaType.AUDIO;
+        },
+
+        isText: function () {
+            return mediaType === Dash.model.MediaType.TEXT;
         }
     };
 };

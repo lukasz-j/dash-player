@@ -1,6 +1,6 @@
 /* Model structure
  MPD
- |- Period (1:1)
+ |-Period (1:1)
  |-AdaptationSet (1:n)
  |-Representation (1:n)
  |-ListSegment|RangeSegment (1:1)
@@ -16,6 +16,7 @@ Dash.model.MPD = function (profiles, type, rawMediaPresentationDuration, minBuff
     }
 
     var period,
+        mpdType = Dash.model.MPDType.createMPDTypeFromString(type),
         mediaPresentationDuration = convertXMLDurationFormat(rawMediaPresentationDuration);
 
     return {
@@ -34,7 +35,7 @@ Dash.model.MPD = function (profiles, type, rawMediaPresentationDuration, minBuff
         },
 
         getType: function () {
-            return type || "static";
+            return mpdType;
         },
 
         getMediaPresentationDuration: function () {
