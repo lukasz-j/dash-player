@@ -1,12 +1,15 @@
-Dash.player = function (videoElement, detailsElement) {
+Dash.player = function (videoElement, mpdDebugElement, representationDebugElement) {
+    'use strict';
 
-    var initializeStreaming = function (mpdModel) {
-            var videoStreamingManager = Dash.streaming.StreamingManager(mpdModel, {
+    var playbackStatusManager = Dash.utils.PlaybackStatusManager(mpdDebugElement, representationDebugElement),
+
+        initializeStreaming = function (mpdModel) {
+            var videoStreamingManager = Dash.streaming.StreamingManager(mpdModel, playbackStatusManager, {
                     mediaType: Dash.model.MediaType.VIDEO,
                     initType: 'quality',
                     value: 360
                 }),
-                audioStreamingManager = Dash.streaming.StreamingManager(mpdModel, {
+                audioStreamingManager = Dash.streaming.StreamingManager(mpdModel, playbackStatusManager, {
                     mediaType: Dash.model.MediaType.AUDIO,
                     initType: 'bandwidth',
                     value: 0
@@ -44,10 +47,10 @@ Dash.player = function (videoElement, detailsElement) {
             if (typeof mpdModel === 'undefined') {
                 console.log('MPD is not loaded');
             } else {
+                playbackStatusManager.fireMpdFileLoadedEvent(mpdModel);
                 initializeStreaming(mpdModel);
             }
         };
-
 
     return {
         load: function (url, isYouTube) {

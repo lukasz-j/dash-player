@@ -1,8 +1,10 @@
-Dash.streaming.RepresentationManager = function (adaptationSet, chooseStartRepresentation) {
+Dash.streaming.RepresentationManager = function (adaptationSet, playbackStatusManager, chooseStartRepresentation) {
     'use strict';
 
     var availableRepresentations = adaptationSet.getRepresentations(),
         currentRepresentationIndex = chooseStartRepresentation(availableRepresentations);
+
+    playbackStatusManager.fireRepresentationChangedEvent(availableRepresentations[currentRepresentationIndex]);
 
     return {
         getCurrentRepresentation: function () {
@@ -22,7 +24,9 @@ Dash.streaming.RepresentationManager = function (adaptationSet, chooseStartRepre
                 currentRepresentationIndex = currentRepresentationIndex + hopNumber;
             }
 
-            return availableRepresentations[currentRepresentationIndex];
+            var currentRepresentation = availableRepresentations[currentRepresentationIndex];
+            playbackStatusManager.fireRepresentationChangedEvent(currentRepresentation);
+            return currentRepresentation;
         },
 
         isPresentRepresentationLowest: function () {
@@ -38,7 +42,9 @@ Dash.streaming.RepresentationManager = function (adaptationSet, chooseStartRepre
                 currentRepresentationIndex = currentRepresentationIndex - hopNumber;
             }
 
-            return availableRepresentations[currentRepresentationIndex];
+            var currentRepresentation = availableRepresentations[currentRepresentationIndex];
+            playbackStatusManager.fireRepresentationChangedEvent(currentRepresentation);
+            return currentRepresentation;
         }
     };
 };

@@ -32,14 +32,46 @@
     <!-- Utils -->
     <script src="../utils/AsyncDownloader.js"></script>
     <script src="../utils/CommonUtils.js"></script>
+    <script src="../utils/PlaybackStatusManager.js"></script>
 </head>
+
 <body>
 
-<video id="dashVideoElement" controls></video>
+<div class="dashPlayerContainer">
+    <div class="sourceContainer">
+        <label for="sourceType">Source:</label>
+        <select id="sourceType">
+            <option value="youtube">YouTube</option>
+            <option value="mpd">MPD file</option>
+        </select>
+        <input type="text" id="sourceURL">
+        <button onclick="initializeDashPlayer()">Load</button>
+    </div>
+
+    <div class="videoContainer">
+        <video id="dashVideo" controls></video>
+    </div>
+
+    <div class="dashDebug">
+        <div id="mpdDebug"></div>
+        <div id="representationDebug"></div>
+    </div>
+</div>
 
 <script>
-    var videoElement = document.getElementById('dashVideoElement');
-    Dash.player(videoElement).load('https://www.youtube.com/watch?v=PunJGevSv8w', true);
+    var videoElement = document.getElementById('dashVideo'),
+            mpdDebugElement = document.getElementById('mpdDebug'),
+            representationDebugElement = document.getElementById('representationDebug'),
+            sourceURLNode = document.getElementById('sourceURL'),
+            sourceTypeNode = document.getElementById('sourceType');
+
+    var player = Dash.player(videoElement, mpdDebugElement, representationDebugElement);
+
+    function initializeDashPlayer() {
+        var url = sourceURLNode.value,
+                type = sourceTypeNode.value;
+        player.load(url, (type === 'youtube'));
+    }
 </script>
 
 </body>

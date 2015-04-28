@@ -6,7 +6,7 @@ Dash.utils.CommonUtils = {
 
     computeDownloadSpeed: function (bytes, miliseconds) {
         'use strict';
-        return (bytes / 1024) / (miliseconds / 1000);
+        return (bytes * 8) / (miliseconds / 1000); // bits per second
     },
 
     replaceAmpersandsInURL: function (url) {

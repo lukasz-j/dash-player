@@ -1,4 +1,4 @@
-Dash.streaming.StreamingManager = function (mpdModel, options) {
+Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, options) {
     'use strict';
 
     var adaptationSet = mpdModel.getPeriod().getAdaptationSet(options.mediaType, Dash.model.MediaFormat.MP4),
@@ -44,22 +44,22 @@ Dash.streaming.StreamingManager = function (mpdModel, options) {
             var currentElementId = -1,
                 currentRepresentation = representationManager.getCurrentRepresentation(),
                 currentHeader = representationRepository.getHeader(currentRepresentation),
-                segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader);
+                segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader),
 
-            var onDownloadSuccess = function (request, loadedBytes, downloadTime) {
-                var buffer = new Uint8Array(request.response);
+                onDownloadSuccess = function (request, loadedBytes, downloadTime) {
+                    var buffer = new Uint8Array(request.response);
 
-                representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
-                sourceBuffer.appendBuffer(buffer);
+                    representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
+                    sourceBuffer.appendBuffer(buffer);
 
-                currentElementId += 1;
+                    currentElementId += 1;
 
-                if (currentElementId < segmentURLs.length) {
-                    asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
-                } else {
-                    sourceBuffer.endOfStream();
-                }
-            };
+                    if (currentElementId < segmentURLs.length) {
+                        asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
+                    } else {
+                        sourceBuffer.endOfStream();
+                    }
+                };
 
             sourceBuffer.appendBuffer(representationRepository.getHeader(currentRepresentation));
             currentElementId += 1;
@@ -69,23 +69,25 @@ Dash.streaming.StreamingManager = function (mpdModel, options) {
         createRepresentationManager = function () {
             switch (options.initType) {
                 case 'quality':
-                    return Dash.streaming.RepresentationManager(adaptationSet, function (availableRepresentations) {
-                        for (var i = 0; i < availableRepresentations.length; i += 1) {
-                            if (availableRepresentations[i].getHeight() === options.value) {
-                                return i;
+                    return Dash.streaming.RepresentationManager(adaptationSet, playbackStatusManager,
+                        function (availableRepresentations) {
+                            for (var i = 0; i < availableRepresentations.length; i += 1) {
+                                if (availableRepresentations[i].getHeight() === options.value) {
+                                    return i;
+                                }
                             }
-                        }
-                        return 0;
-                    });
+                            return 0;
+                        });
                 case 'bandwidth':
-                    return Dash.streaming.RepresentationManager(adaptationSet, function (availableRepresentations) {
-                        for (var i = 1; i < availableRepresentations.length; i += 1) {
-                            if (availableRepresentations[i].getBandwidth() > options.value) {
-                                return i - 1;
+                    return Dash.streaming.RepresentationManager(adaptationSet, playbackStatusManager,
+                        function (availableRepresentations) {
+                            for (var i = 1; i < availableRepresentations.length; i += 1) {
+                                if (availableRepresentations[i].getBandwidth() > options.value) {
+                                    return i - 1;
+                                }
                             }
-                        }
-                        return availableRepresentations.length - 1;
-                    });
+                            return availableRepresentations.length - 1;
+                        });
                 case 'fuzzy':
                     break;
                 case 'pid':
