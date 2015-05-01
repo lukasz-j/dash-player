@@ -52,20 +52,20 @@
         <video id="dashVideo" controls></video>
     </div>
 
-    <div class="dashDebug">
-        <div id="mpdDebug"></div>
-        <div id="representationDebug"></div>
+    <div id="debugInfo">
+    </div>
+
+    <div id="playerController">
     </div>
 </div>
 
 <script>
     var videoElement = document.getElementById('dashVideo'),
-            mpdDebugElement = document.getElementById('mpdDebug'),
-            representationDebugElement = document.getElementById('representationDebug'),
+            debugInfoElement = document.getElementById('debugInfo'),
             sourceURLNode = document.getElementById('sourceURL'),
             sourceTypeNode = document.getElementById('sourceType');
 
-    var player = Dash.player(videoElement, mpdDebugElement, representationDebugElement);
+    var player = Dash.Player(videoElement, debugInfoElement);
 
     function initializeDashPlayer() {
         var url = sourceURLNode.value,

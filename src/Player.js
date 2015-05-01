@@ -1,7 +1,7 @@
-Dash.player = function (videoElement, mpdDebugElement, representationDebugElement) {
+Dash.Player = function (videoElement, debugInfoElement) {
     'use strict';
 
-    var playbackStatusManager = Dash.utils.PlaybackStatusManager(mpdDebugElement, representationDebugElement),
+    var playbackStatusManager = Dash.utils.PlaybackStatusManager(debugInfoElement),
 
         initializeStreaming = function (mpdModel) {
             var videoStreamingManager = Dash.streaming.StreamingManager(mpdModel, playbackStatusManager, {

@@ -1,8 +1,13 @@
-Dash.utils.PlaybackStatusManager = function (mpdLoadedElement, representationChangedElement) {
+Dash.utils.PlaybackStatusManager = function (debugInfoContainerNode) {
     'use strict';
 
     var mpdLoadedEventName = 'mpdLoadedEvent',
         representationChangedEventName = 'representationChangedEvent',
+
+        mpdInfoNodeId = 'mpdInfo',
+        representationInfoNodeId = 'representationInfo',
+        videoRepresentationNodeId = 'videoRepresentation',
+        audioRepresentationNodeId = 'audioRepresentation',
 
         createListNode = function (parent, property, value) {
             var node = document.createElement('li'),
@@ -44,10 +49,30 @@ Dash.utils.PlaybackStatusManager = function (mpdLoadedElement, representationCha
             createListNode(listParent, 'Sampling rate', representation.getAudioSamplingRate());
         },
 
+        createContainerWithTitle = function (parent, containerId, title) {
+            var previousContainer = document.getElementById(containerId),
+                updatedContainer = document.createElement('div'),
+                titleNode = document.createElement('p');
+
+            updatedContainer.setAttribute('id', containerId);
+            titleNode.innerHTML = title;
+            updatedContainer.appendChild(titleNode);
+
+            if (previousContainer) {
+                parent.replaceChild(updatedContainer, previousContainer);
+            } else {
+                parent.appendChild(updatedContainer);
+            }
+
+            return updatedContainer;
+        },
+
         updateMPDInfo = function (event) {
-            var parentDiv = this,
-                listParent = document.createElement('ul'),
-                mpdModel = event.detail;
+            var listParent = document.createElement('ul'),
+                mpdModel = event.detail,
+                parentDiv = createContainerWithTitle(this, mpdInfoNodeId, 'MPD info');
+
+            createContainerWithTitle(this, representationInfoNodeId, 'Current representation');
 
             createListNode(listParent, 'MPD type', mpdModel.getType().name);
             createListNode(listParent, 'Profiles', mpdModel.getProfiles());
@@ -55,27 +80,41 @@ Dash.utils.PlaybackStatusManager = function (mpdLoadedElement, representationCha
             createListNode(listParent, 'Video sets', getMimesForAdaptationSets(mpdModel.getPeriod().getVideoAdaptationSets()));
             createListNode(listParent, 'Audio sets', getMimesForAdaptationSets(mpdModel.getPeriod().getAudioAdaptationSets()));
 
-            removeContent(parentDiv);
             parentDiv.appendChild(listParent);
         },
 
         updateRepresentationInfo = function (event) {
-            var parentDiv = this,
-                listParent = document.createElement('ul'),
-                representation = event.detail;
+            var listParent = document.createElement('ul'),
+                representation = event.detail,
+                representationDiv = document.getElementById(representationInfoNodeId),
+                title,
+                containerId,
+                parentDiv,
+                createSpecificInformationForRepresentation;
 
-            createCommonInformationForRepresentation(listParent, representation);
             if (representation.getAdaptationSet().isVideo()) {
-                createInformationForVideoRepresentation(listParent, representation);
+                containerId = videoRepresentationNodeId;
+                title = 'Video';
+                createSpecificInformationForRepresentation = createInformationForVideoRepresentation;
             } else if (representation.getAdaptationSet().isAudio()) {
-                createInformationForAudioRepresentation(listParent, representation);
+                containerId = audioRepresentationNodeId;
+                title = 'Audio';
+                createSpecificInformationForRepresentation = createInformationForAudioRepresentation;
+            } else {
+                console.log('Unsupported format found while updating current representation info - '
+                    + representation.getAdaptationSet().getMimeType());
+                return;
             }
+
+            parentDiv = createContainerWithTitle(representationDiv, containerId, title);
+            createCommonInformationForRepresentation(listParent, representation);
+            createSpecificInformationForRepresentation(listParent, representation);
 
             parentDiv.appendChild(listParent);
         };
 
-    mpdLoadedElement.addEventListener(mpdLoadedEventName, updateMPDInfo, false);
-    representationChangedElement.addEventListener(representationChangedEventName, updateRepresentationInfo, false);
+    debugInfoContainerNode.addEventListener(mpdLoadedEventName, updateMPDInfo, false);
+    debugInfoContainerNode.addEventListener(representationChangedEventName, updateRepresentationInfo, false);
 
 
     return {
@@ -89,7 +128,7 @@ Dash.utils.PlaybackStatusManager = function (mpdLoadedElement, representationCha
                 }
             );
 
-            mpdLoadedElement.dispatchEvent(event);
+            debugInfoContainerNode.dispatchEvent(event);
         },
 
         fireRepresentationChangedEvent: function (representation) {
@@ -102,7 +141,7 @@ Dash.utils.PlaybackStatusManager = function (mpdLoadedElement, representationCha
                 }
             );
 
-            representationChangedElement.dispatchEvent(event);
+            debugInfoContainerNode.dispatchEvent(event);
         }
     };
 };
