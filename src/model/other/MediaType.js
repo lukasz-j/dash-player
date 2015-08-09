@@ -1,7 +1,7 @@
 Dash.model.MediaType = {
-    VIDEO: {id: 1, name: 'video'},
-    AUDIO: {id: 2, name: 'audio'},
-    TEXT: {id: 3, name: 'text'},
+    VIDEO: {value: 1, name: 'video'},
+    AUDIO: {value: 2, name: 'audio'},
+    TEXT: {value: 3, name: 'text'},
 
     createMediaTypeFromMimeType: function (mimeType) {
         'use strict';

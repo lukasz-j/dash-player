@@ -18,7 +18,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
 
                     if (representationIndex < availableRepresentations.length) {
                         currentRepresentation = availableRepresentations[representationIndex];
-                        headerURL = currentRepresentation.getSegment().getHeaderURL();
+                        headerURL = currentRepresentation.getSegment().getInitializationURL();
                         return true;
                     } else {
                         return false;

@@ -1,6 +1,6 @@
 Dash.model.MPDType = {
-    STATIC: {id: 1, name: 'static'},
-    DYNAMIC: {id: 2, name: 'dynamic'},
+    STATIC: {value: 1, name: 'static'},
+    DYNAMIC: {value: 2, name: 'dynamic'},
 
     createMPDTypeFromString: function (stringMPDType) {
         'use strict';

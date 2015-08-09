@@ -1,7 +1,12 @@
-Dash.model.RangeSegment = function (representation, baseUrl, initializationIndexRange, segmentBaseIndexRange, contentLength) {
+Dash.model.RangeSegment = function (segmentBaseNode, representation) {
     'use strict';
 
-    var splitInitializationIndexRange = initializationIndexRange.split('-'),
+    var initializationIndexRange = segmentBaseNode.getElementsByTagName('Initialization')[0].getAttribute('range'),
+        segmentBaseIndexRange = segmentBaseNode.getAttribute("indexRange"),
+
+        baseURL = representation.getBaseURL(),
+
+        splitInitializationIndexRange = initializationIndexRange.split('-'),
         splitSegmentBaseIndexRange = segmentBaseIndexRange.split('-'),
 
         initializationStartIndex = parseInt(splitInitializationIndexRange[0], 10),
@@ -18,13 +23,13 @@ Dash.model.RangeSegment = function (representation, baseUrl, initializationIndex
             return representation;
         },
 
-        getHeaderURL: function () {
-            return Dash.utils.CommonUtils.createURLWithRange(baseUrl, initializationStartIndex, segmentBaseEndIndex);
+        getInitializationURL: function () {
+            return Dash.utils.CommonUtils.createURLWithRange(baseURL, initializationStartIndex, segmentBaseEndIndex);
         },
 
-        getSegmentURLs: function (header) {
+        getSegmentURLs: function (initialization) {
             var sampleLengths = [],
-                segmentBase = header.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
+                segmentBase = initialization.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
 
                 segmentURLs = [],
                 startIndex = segmentBaseEndIndex + 1,
@@ -35,15 +40,11 @@ Dash.model.RangeSegment = function (representation, baseUrl, initializationIndex
             }
 
             for (i = 0; i < sampleLengths.length; i += 1) {
-                segmentURLs.push(Dash.utils.CommonUtils.createURLWithRange(baseUrl, startIndex, startIndex + sampleLengths[i]));
+                segmentURLs.push(Dash.utils.CommonUtils.createURLWithRange(baseURL, startIndex, startIndex + sampleLengths[i]));
                 startIndex += sampleLengths[i] + 1;
             }
 
             return segmentURLs;
-        },
-
-        getBaseURL: function () {
-            return baseUrl;
         },
 
         getHeaderStartIndex: function () {
@@ -68,11 +69,6 @@ Dash.model.RangeSegment = function (representation, baseUrl, initializationIndex
 
         getSegmentBaseEndIndex: function () {
             return segmentBaseEndIndex;
-        },
-
-        //Only YouTube
-        getContentLength: function () {
-            return contentLength;
         }
     };
 };

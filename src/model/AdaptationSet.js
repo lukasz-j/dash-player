@@ -1,47 +1,54 @@
-Dash.model.AdaptationSet = function (period, mimeType) {
+Dash.model.AdaptationSet = function (adaptationSetNode, period) {
     'use strict';
 
-    var representationList,
+    var representations,
+        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(adaptationSetNode),
+        mimeType = adaptationSetNode.getAttribute('mimeType'),
         mediaFormat = Dash.model.MediaFormat.createMediaFormatFromMimeType(mimeType),
         mediaType = Dash.model.MediaType.createMediaTypeFromMimeType(mimeType);
+
 
     return {
         name: 'AdaptationSet',
 
-        getPeriod: function () {
-            return period;
-        },
-
-        setRepresentations: function (newRepresentationList) {
-            representationList = newRepresentationList;
-            representationList.sort(function (a, b) { //sort representations by bandwidth
+        setRepresentations: function (newRepresentation) {
+            representations = newRepresentation;
+            representations.sort(function (a, b) { //sort representations by bandwidth
                 return a.getBandwidth() - b.getBandwidth;
             });
         },
 
         getRepresentations: function () {
-            return representationList;
+            return representations;
+        },
+
+        getParent: function () {
+            return period;
+        },
+
+        getBaseURL: function () {
+            return baseURL;
         },
 
         getIndexOfRepresentation: function (representation) {
-            for (var i = 0; i < representationList.length; i += 1) {
-                if (representationList[i].equals(representation)) {
+            for (var i = 0; i < representations.length; i += 1) {
+                if (representations[i].equals(representation)) {
                     return i;
                 }
             }
         },
 
         getLowestRepresentation: function () {
-            return representationList[0];
+            return representations[0];
         },
 
         getHighestRepresentation: function () {
-            return representationList[representationList.length - 1];
+            return representations[representations.length - 1];
         },
 
         getRepresentationByWidth: function (width) {
-            for (var i = 0; i < representationList.length; i += 1) {
-                var representation = representationList[i];
+            for (var i = 0; i < representations.length; i += 1) {
+                var representation = representations[i];
                 if (representation.getWidth() === width) {
                     return representation;
                 }
@@ -69,3 +76,4 @@ Dash.model.AdaptationSet = function (period, mimeType) {
         }
     };
 };
+

@@ -1,14 +1,16 @@
-Dash.model.Period = function (mpd) {
+Dash.model.Period = function (periodNode, mpdElement) {
     'use strict';
 
-    var adaptationSets,
-
-        isAdaptationSetAudioCondition = function (adaptationSet) {
+    var isAdaptationSetAudioCondition = function (adaptationSet) {
             return adaptationSet.isAudio();
         },
 
         isAdaptationSetVideoCondition = function (adaptationSet) {
             return adaptationSet.isVideo();
+        },
+
+        isAdaptationSetTextCondition = function (adaptationSet) {
+            return adaptationSet.isText();
         },
 
         filterAdaptationSets = function (conditionFunction) {
@@ -21,12 +23,11 @@ Dash.model.Period = function (mpd) {
             return sets;
         };
 
+    var adaptationSets,
+        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(periodNode);
+
     return {
         name: 'Period',
-
-        getMPD: function () {
-            return mpd;
-        },
 
         setAdaptationSets: function (newAdaptationSets) {
             adaptationSets = newAdaptationSets;
@@ -34,6 +35,14 @@ Dash.model.Period = function (mpd) {
 
         getAdaptationSets: function () {
             return adaptationSets;
+        },
+
+        getParent: function () {
+            return mpdElement;
+        },
+
+        getBaseURL: function () {
+            return baseURL;
         },
 
         getAdaptationSet: function (mediaType, format) {
@@ -52,6 +61,10 @@ Dash.model.Period = function (mpd) {
 
         getVideoAdaptationSets: function () {
             return filterAdaptationSets(isAdaptationSetVideoCondition);
+        },
+
+        getTextAdaptationSets: function () {
+            return filterAdaptationSets(isAdaptationSetTextCondition);
         },
 
         getAudioAdaptationSet: function (format) {

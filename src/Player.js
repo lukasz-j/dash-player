@@ -41,8 +41,8 @@ Dash.Player = function (videoElement, debugInfoElement) {
             }, false);
         },
 
-        onSuccessMpdDownloadCallback = function (request, loadedBytes, requestDuration) {
-            var mpdModel = Dash.mpd.Parser(request.responseText).generateModel();
+        onSuccessMpdDownloadCallback = function (request, loadedBytes, options) {
+            var mpdModel = Dash.mpd.Parser(request.responseText, options.url).generateModel();
 
             if (typeof mpdModel === 'undefined') {
                 console.log('MPD is not loaded');

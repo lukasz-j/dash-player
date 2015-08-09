@@ -1,17 +1,41 @@
-Dash.model.Representation = function (adaptationSet, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate) {
+Dash.model.Representation = function (representationNode, adaptationSet) {
     'use strict';
 
-    var segment;
+    var getDigitAttribute = function (node, attributeName) {
+        var attributeValue = node.getAttribute(attributeName);
+
+        if (typeof attributeValue !== 'undefined') {
+            return parseInt(attributeValue, 10);
+        }
+    };
+
+    var segment,
+        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(representationNode),
+        id = getDigitAttribute(representationNode, 'id'),
+        codecs = representationNode.getAttribute('codecs'),
+        bandwidth = getDigitAttribute(representationNode, 'bandwidth'),
+        width = getDigitAttribute(representationNode, 'width'),
+        height = getDigitAttribute(representationNode, 'height'),
+        frameRate = getDigitAttribute(representationNode, 'frameRate'),
+        audioSamplingRate = getDigitAttribute(representationNode, 'audioSamplingRate');
 
     return {
         name: 'Representation',
 
-        setSegment: function (newSegment) {
-            segment = newSegment;
+        setSegment: function ($segment) {
+            segment = $segment;
         },
 
         getSegment: function () {
             return segment;
+        },
+
+        getParent: function () {
+            return adaptationSet;
+        },
+
+        getBaseURL: function () {
+            return baseURL;
         },
 
         getAdaptationSet: function () {

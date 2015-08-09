@@ -1,6 +1,6 @@
 Dash.model.MediaFormat = {
-    MP4: {id: 1, name: 'mp4'},
-    WEBM: {id: 2, name: 'webm'},
+    MP4: {value: 1, name: 'mp4'},
+    WEBM: {value: 2, name: 'webm'},
 
     createMediaFormatFromMimeType: function (mimeType) {
         'use strict';

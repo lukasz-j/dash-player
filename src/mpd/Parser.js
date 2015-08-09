@@ -1,70 +1,39 @@
-Dash.mpd.Parser = function (mpdFileContent) {
+Dash.mpd.Parser = function (mpdFileContent, mpdFileURL) {
     'use strict';
 
     var parsedMpdFile = new DOMParser().parseFromString(mpdFileContent, "text/xml"),
 
         createMPDElement = function (mpdNode) {
-            var profiles = mpdNode.getAttribute("profiles"),
-                type = mpdNode.getAttribute("type"),
-                mediaPresentationDuration = mpdNode.getAttribute("mediaPresentationDuration"),//
-                minBufferTime = mpdNode.getAttribute("minBufferTime");
-
-            return Dash.model.MPD(profiles, type, mediaPresentationDuration, minBufferTime);
+            return Dash.model.MPD(mpdNode, mpdFileURL);
         },
 
         createPeriodElement = function (periodNode, mpdElement) {
-            return Dash.model.Period(mpdElement);
+            return Dash.model.Period(periodNode, mpdElement);
         },
 
         createAdaptationSetElement = function (adaptationSetNode, periodElement) {
-            var mimeType = adaptationSetNode.getAttribute('mimeType');
-
-            return Dash.model.AdaptationSet(periodElement, mimeType);
+            return Dash.model.AdaptationSet(adaptationSetNode, periodElement);
         },
 
         createRepresentationElement = function (representationNode, adaptationSetElement) {
-            var id = parseInt(representationNode.getAttribute('id'), 10),
-                codecs = representationNode.getAttribute('codecs'),
-                bandwidth = parseInt(representationNode.getAttribute('bandwidth'), 10),
-                width,
-                height,
-                frameRate,
-                audioSamplingRate;
-
-            if (adaptationSetElement.isVideo()) {
-                width = parseInt(representationNode.getAttribute('width'), 10);
-                height = parseInt(representationNode.getAttribute('height'), 10);
-                frameRate = parseInt(representationNode.getAttribute('frameRate'), 10);
-            } else if (adaptationSetElement.isAudio()) {
-                audioSamplingRate = parseInt(representationNode.getAttribute('audioSamplingRate'));
-            }
-
-            return Dash.model.Representation(adaptationSetElement, id, bandwidth, width, height, frameRate, codecs, audioSamplingRate);
+            return Dash.model.Representation(representationNode, adaptationSetElement);
         },
 
         createSegmentElement = function (representationNode, representationElement) {
-            var baseURLNode = representationNode.getElementsByTagName('BaseURL')[0],
+            var baseURL = representationElement.getBaseURL(),
+                segmentTemplateNode = representationNode.getElementsByTagName('SegmentTemplate')[0],
                 segmentBaseNode = representationNode.getElementsByTagName('SegmentBase')[0],
                 segmentListNode = representationNode.getElementsByTagName('SegmentList')[0];
 
-            if (baseURLNode && segmentBaseNode) { //RANGE SEGMENT
-                var decodedBaseURL = Dash.utils.CommonUtils.replaceAmpersandsInURL(baseURLNode.innerHTML),
-                    initializationRangeIndex = segmentBaseNode.getElementsByTagName('Initialization')[0].getAttribute('range'),
-                    segmentBaseRangeIndex = segmentBaseNode.getAttribute("indexRange"),
-                    contentLength = parseInt(baseURLNode.getAttribute('yt:contentLength'), 10);
-
-                return Dash.model.RangeSegment(representationElement, decodedBaseURL, initializationRangeIndex, segmentBaseRangeIndex, contentLength);
-            } else if (segmentBaseNode && segmentListNode) { //LIST SEGMENT
-                var initializationNode = segmentBaseNode.getElementsByTagName('Initialization')[0],
-                    segmentURLNodeList = segmentListNode.getElementsByTagName('SegmentURL'),
-                    segmentURLList = [];
-
-                for (var i = 0; i < segmentURLNodeList.length; i += 1) {
-                    segmentURLList.push(decodeURIComponent(segmentURLNodeList[i].getAttribute('media')));
-                }
-                var initializationSegmentURL = decodeURIComponent(initializationNode.getAttribute('sourceURL'));
-
-                return Dash.model.ListSegment(representationElement, initializationSegmentURL, segmentURLList);
+            if (baseURL && segmentBaseNode && !segmentTemplateNode && !segmentListNode) {
+                //RANGE SEGMENT
+                return Dash.model.RangeSegment(segmentBaseNode, representationElement);
+            } else if (segmentListNode) {
+                //LIST SEGMENT
+                return Dash.model.ListSegment(segmentListNode, representationElement);
+            } else if (segmentTemplateNode) {
+                //TEMPLATE SEGMENT
+                return Dash.model.TemplateSegment(segmentTemplateNode, representationElement);
             } else {
                 throw Error("Unsupported segment representation");
             }
@@ -74,7 +43,7 @@ Dash.mpd.Parser = function (mpdFileContent) {
         generateModel: function () {
             //MPD
             var mpdNode = parsedMpdFile.getElementsByTagName("MPD")[0],
-                mpdElement = createMPDElement(mpdNode);
+                mpdElement = createMPDElement(mpdNode, mpdFileURL);
 
             // PERIOD
             var periodNode = mpdNode.getElementsByTagName("Period")[0],
@@ -84,9 +53,11 @@ Dash.mpd.Parser = function (mpdFileContent) {
             //ADAPTATION SET
             var adaptationSetNodes = periodNode.getElementsByTagName("AdaptationSet"),
                 adaptationSetElements = [];
+
             for (var i = 0; i < adaptationSetNodes.length; ++i) {
                 var adaptationSetNode = adaptationSetNodes[i],
                     adaptationSetElement = createAdaptationSetElement(adaptationSetNode, periodElement);
+
                 adaptationSetElements.push(adaptationSetElement);
 
                 //REPRESENTATION
