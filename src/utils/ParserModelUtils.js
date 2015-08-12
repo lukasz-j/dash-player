@@ -50,7 +50,7 @@ Dash.utils.ParserModelUtils = {
         if (this.isURLAbsolute(rawURL)) {
             return rawURL;
         } else {
-            return rawURL + '/' + rawURL;
+            return baseURL + '/' + rawURL;
         }
     }
 };

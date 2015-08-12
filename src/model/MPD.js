@@ -10,7 +10,7 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
     'use strict';
 
     var findBaseURL = function (baseURLNode, mpdFileURL) {
-        if (typeof(baseURLNode) !== 'undefined') {
+        if (typeof baseURLNode === 'undefined') {
             //if base URL node is absent then use url from mpd file
             var lastSlash = mpdFileURL.lastIndexOf('/');
             return mpdFileURL.substr(0, lastSlash);

@@ -9,9 +9,9 @@ Dash.streaming.RepresentationRepository = function () {
         };
 
     return {
-        addRepresentation: function (representation, header) {
+        addRepresentation: function (representation, header, url) {
             var representationId = representation.getId();
-            repository[representationId] = {header: header, buffer: []};
+            repository[representationId] = {header: header, buffer: [], url: url};
         },
 
         appendBuffer: function (representation, partId, bufferPart) {
@@ -35,6 +35,13 @@ Dash.streaming.RepresentationRepository = function () {
             checkIfRepresentationIsInitialized(representationId);
 
             return repository[representationId].header;
+        },
+
+        getHeaderUrl: function (representation) {
+            var representationId = representation.getId();
+            checkIfRepresentationIsInitialized(representationId);
+
+            return repository[representationId].url;
         },
 
         getBuffer: function (representation, partId) {

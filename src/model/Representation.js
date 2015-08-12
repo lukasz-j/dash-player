@@ -11,13 +11,14 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
 
     var segment,
         baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(representationNode),
-        id = getDigitAttribute(representationNode, 'id'),
+        id = representationNode.getAttribute('id'),
         codecs = representationNode.getAttribute('codecs'),
         bandwidth = getDigitAttribute(representationNode, 'bandwidth'),
         width = getDigitAttribute(representationNode, 'width'),
         height = getDigitAttribute(representationNode, 'height'),
         frameRate = getDigitAttribute(representationNode, 'frameRate'),
-        audioSamplingRate = getDigitAttribute(representationNode, 'audioSamplingRate');
+        audioSamplingRate = getDigitAttribute(representationNode, 'audioSamplingRate'),
+        mimeType = representationNode.getAttribute('mimeType');
 
     return {
         name: 'Representation',
@@ -40,6 +41,10 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
 
         getAdaptationSet: function () {
             return adaptationSet;
+        },
+
+        getMimeType: function () {
+            return mimeType;
         },
 
         getId: function () {

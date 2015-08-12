@@ -3,19 +3,36 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
     var representations,
         baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(adaptationSetNode),
-        mimeType = adaptationSetNode.getAttribute('mimeType'),
-        mediaFormat = Dash.model.MediaFormat.createMediaFormatFromMimeType(mimeType),
-        mediaType = Dash.model.MediaType.createMediaTypeFromMimeType(mimeType);
+        mimeType,
+        mediaFormat,
+        mediaType;
 
+    var sortRepresentationByBandwidth = function (representations) {
+            representations.sort(function (a, b) {
+                return a.getBandwidth() - b.getBandwidth;
+            });
+        },
+
+        initializeMediaInformationBaseOnRepresentations = function (representations) {
+            //temporary fix
+            //YouTube stores mimeType element in adaptationSetNode, but ISO allows mimeType only in representationNode
+            if (adaptationSetNode.hasAttribute('mimeType')) {
+                mimeType = adaptationSetNode.getAttribute('mimeType');
+            } else {
+                mimeType = representations[0].getMimeType();
+            }
+
+            mediaFormat = Dash.model.MediaFormat.createMediaFormatFromMimeType(mimeType);
+            mediaType = Dash.model.MediaType.createMediaTypeFromMimeType(mimeType);
+        };
 
     return {
         name: 'AdaptationSet',
 
         setRepresentations: function (newRepresentation) {
             representations = newRepresentation;
-            representations.sort(function (a, b) { //sort representations by bandwidth
-                return a.getBandwidth() - b.getBandwidth;
-            });
+            sortRepresentationByBandwidth(representations);
+            initializeMediaInformationBaseOnRepresentations(representations);
         },
 
         getRepresentations: function () {

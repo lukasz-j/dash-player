@@ -25,9 +25,9 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                     }
                 },
 
-                onDownloadSuccess = function (request) {
+                onDownloadSuccess = function (request, loaded, options) {
                     var header = new Uint8Array(request.response);
-                    representationRepository.addRepresentation(currentRepresentation, header);
+                    representationRepository.addRepresentation(currentRepresentation, header, options.url);
 
                     if (moveToNextRepresentation()) {
                         asyncDownloader.downloadBinaryFile(headerURL, onDownloadSuccess);
@@ -46,11 +46,12 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                 currentHeader = representationRepository.getHeader(currentRepresentation),
                 segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader),
 
-                onDownloadSuccess = function (request, loadedBytes, downloadTime) {
+                onDownloadSuccess = function (request, loadedBytes, options) {
                     var buffer = new Uint8Array(request.response);
 
                     representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
                     sourceBuffer.appendBuffer(buffer);
+                    console.log("Appending buffer from " + options.url);
 
                     currentElementId += 1;
 
@@ -61,6 +62,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                     }
                 };
 
+            console.log("Adding initialization from " + representationRepository.getHeaderUrl(currentRepresentation));
             sourceBuffer.appendBuffer(representationRepository.getHeader(currentRepresentation));
             currentElementId += 1;
             asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
