@@ -4,10 +4,38 @@ Dash.utils.ParserModelUtils = {
         return (URL.indexOf('http://') === 0 || URL.indexOf('https://') === 0);
     },
 
-    convertXMLDurationFormat: function (xmlDurationFormat) {
+    convertXMLDurationFormat: function (xmlFormatDuration) {
         'use strict';
-        //todo implement me and move to separate file with other utils
-        return xmlDurationFormat;
+
+        var computeValueFromGroup = function (durationMatchedGroup, index) {
+            if (typeof  durationMatchedGroup === 'undefined') {
+                return 0;
+            } else {
+                var value = parseFloat(durationMatchedGroup.substr(0, durationMatchedGroup.length - 1));
+                if (index === 1) {
+                    return value * 3600;
+                } else if (index === 2) {
+                    return value * 60;
+                } else {
+                    return value;
+                }
+            }
+        };
+
+        var value = 0,
+            index = 0,
+            xmlFormatPattern = /PT(\d+H)?(\d+M)?(\d+(\.\d+)?S)/i,
+            matchArrayResult = xmlFormatPattern.exec(xmlFormatDuration);
+
+        if (matchArrayResult !== null) {
+            for (index = 1; index <= 3; index += 1) {
+                value += computeValueFromGroup(matchArrayResult[index], index);
+            }
+        } else {
+            throw new Error('Wrong format for xml duration - ' + xmlFormatDuration);
+        }
+
+        return value;
     },
 
     replaceAmpersandsInURL: function (url) {
