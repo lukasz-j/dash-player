@@ -110,5 +110,10 @@ Dash.utils.ParserModelUtils = {
         if (typeof attributeValue !== 'undefined') {
             return parseInt(attributeValue, 10);
         }
+    },
+
+    createURLWithRange: function (baseURL, startIndex, endIndex) {
+        'use strict';
+        return baseURL + '&range=' + startIndex + '-' + endIndex;
     }
 };

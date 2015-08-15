@@ -29,7 +29,10 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
 
         downloadYouTubeVideoDetailsOnSuccess = function (request) {
             var mpdUrl = getMpdUrlFromResponse(request.responseText);
-            asyncDownloader.download(mpdUrl, downloadMpdFileOnSuccess);
+            asyncDownloader.download(mpdUrl, function (request, loadedBytes, options) {
+                options.isYouTube = true;
+                downloadMpdFileOnSuccess(request, loadedBytes, options);
+            });
         },
 
         getYouTubeVideoId = function (videoUrl) {

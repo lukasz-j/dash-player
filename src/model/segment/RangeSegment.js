@@ -1,4 +1,4 @@
-Dash.model.RangeSegment = function (segmentBaseNode, representation) {
+Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRangeInURL) {
     'use strict';
 
     var initializationIndexRange = segmentBaseNode.getElementsByTagName('Initialization')[0].getAttribute('range'),
@@ -15,23 +15,19 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation) {
         segmentBaseStartIndex = parseInt(splitSegmentBaseIndexRange[0], 10),
         segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1], 10);
 
-    return {
-
-        name: 'RangeSegment',
-
-        getRepresentation: function () {
-            return representation;
+    var toRangeString = function (rangeObject) {
+            return rangeObject.begin + '-' + rangeObject.end;
         },
 
-        getInitializationURL: function () {
-            return Dash.utils.CommonUtils.createURLWithRange(baseURL, initializationStartIndex, segmentBaseEndIndex);
+        getInitializationSegmentRange = function () {
+            return {begin: initializationStartIndex, end: segmentBaseEndIndex};
         },
 
-        getSegmentURLs: function (initialization) {
+        getSegmentsRange = function (initialization) {
             var sampleLengths = [],
                 segmentBase = initialization.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
 
-                segmentURLs = [],
+                segmentRanges = [],
                 startIndex = segmentBaseEndIndex + 1,
                 i;
 
@@ -40,11 +36,52 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation) {
             }
 
             for (i = 0; i < sampleLengths.length; i += 1) {
-                segmentURLs.push(Dash.utils.CommonUtils.createURLWithRange(baseURL, startIndex, startIndex + sampleLengths[i]));
+                segmentRanges.push({begin: startIndex, end: startIndex + sampleLengths[i]});
                 startIndex += sampleLengths[i] + 1;
             }
 
-            return segmentURLs;
+            return segmentRanges;
+        };
+
+
+    if (!Dash.utils.ParserModelUtils.isURLAbsolute(baseURL)) {
+        var url = Dash.utils.ParserModelUtils.findBaseURLInModel(representation.getParent().getParent());
+        baseURL = Dash.utils.ParserModelUtils.resolveAttributeURL(url, baseURL);
+    }
+
+    return {
+        name: 'RangeSegment',
+
+        getRepresentation: function () {
+            return representation;
+        },
+
+        getInitializationURL: function () {
+            var initializationRange = getInitializationSegmentRange();
+
+            if (useBytesRangeInURL) {
+                return Dash.utils.ParserModelUtils.createURLWithRange(baseURL, initializationRange.begin, initializationRange.end);
+            } else {
+                return {url: baseURL, range: toRangeString(initializationRange)};
+            }
+        },
+
+        getSegmentURLs: function (initialization) {
+            var segmentsRange = getSegmentsRange(initialization),
+                segmentURLsWithRanges = [],
+                index;
+
+            if (useBytesRangeInURL) {
+                for (index = 0; index < segmentsRange.length; index += 1) {
+                    segmentURLsWithRanges.push(Dash.utils.ParserModelUtils.createURLWithRange(baseURL, segmentsRange[index].begin, segmentsRange[index].end));
+                }
+            } else {
+                for (index = 0; index < segmentsRange.length; index += 1) {
+                    segmentURLsWithRanges.push({url: baseURL, range: toRangeString(segmentsRange[index])});
+                }
+            }
+
+            return segmentURLsWithRanges;
         },
 
         getHeaderStartIndex: function () {

@@ -1,4 +1,4 @@
-Dash.mpd.Parser = function (mpdFileContent, mpdFileURL) {
+Dash.mpd.Parser = function (mpdFileContent, mpdFileURL, isYouTube) {
     'use strict';
 
     var parsedMpdFile = new DOMParser().parseFromString(mpdFileContent, "text/xml"),
@@ -27,7 +27,7 @@ Dash.mpd.Parser = function (mpdFileContent, mpdFileURL) {
 
             if (baseURL && segmentBaseNode && !segmentTemplateNode && !segmentListNode) {
                 //RANGE SEGMENT
-                return Dash.model.RangeSegment(segmentBaseNode, representationElement);
+                return Dash.model.RangeSegment(segmentBaseNode, representationElement, isYouTube);
             } else if (segmentListNode) {
                 //LIST SEGMENT
                 return Dash.model.ListSegment(segmentListNode, representationElement);

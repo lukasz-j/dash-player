@@ -1,9 +1,4 @@
 Dash.utils.CommonUtils = {
-    createURLWithRange: function (baseURL, startIndex, endIndex) {
-        'use strict';
-        return baseURL + '&range=' + startIndex + '-' + endIndex;
-    },
-
     computeDownloadSpeed: function (bytes, miliseconds) {
         'use strict';
         return (bytes * 8) / (miliseconds / 1000); // bits per second

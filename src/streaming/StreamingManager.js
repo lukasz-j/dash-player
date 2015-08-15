@@ -7,6 +7,14 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
         asyncDownloader = Dash.utils.AsyncDownloader(),
         sourceBuffer,
 
+        downloadBinaryFile = function (url, onSuccess, onFailure, onProgress) {
+            if (typeof url === 'string') {
+                asyncDownloader.downloadBinaryFile(url, onSuccess, onFailure, onProgress);
+            } else {
+                asyncDownloader.downloadBinaryFilePart(url.url, onSuccess, onProgress, onProgress, url.range);
+            }
+        },
+
         downloadAvailableHeaders = function (onDownloadAllHeadersSuccess) {
             var representationIndex = -1,
                 currentRepresentation,
@@ -30,14 +38,14 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                     representationRepository.addRepresentation(currentRepresentation, header, options.url);
 
                     if (moveToNextRepresentation()) {
-                        asyncDownloader.downloadBinaryFile(headerURL, onDownloadSuccess);
+                        downloadBinaryFile(headerURL, onDownloadSuccess);
                     } else {
                         onDownloadAllHeadersSuccess();
                     }
                 };
 
             moveToNextRepresentation();
-            asyncDownloader.downloadBinaryFile(headerURL, onDownloadSuccess);
+            downloadBinaryFile(headerURL, onDownloadSuccess);
         },
 
         startStreaming = function () {
@@ -56,7 +64,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                     currentElementId += 1;
 
                     if (currentElementId < segmentURLs.length) {
-                        asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
+                        downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
                     } else {
                         sourceBuffer.endOfStream();
                     }
@@ -65,7 +73,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
             console.log("Adding initialization from " + representationRepository.getHeaderUrl(currentRepresentation));
             sourceBuffer.appendBuffer(representationRepository.getHeader(currentRepresentation));
             currentElementId += 1;
-            asyncDownloader.downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess);
+            downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
         },
 
         createRepresentationManager = function () {
@@ -103,7 +111,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
 
     return {
         initializeStreaming: function (mediaSource) {
-            if (adaptationSet === undefined) {
+            if (typeof adaptationSet === 'undefined') {
                 console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
                 return;
             }
@@ -118,7 +126,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
         },
 
         startStreaming: function () {
-            if (adaptationSet === undefined) {
+            if (typeof adaptationSet === 'undefined') {
                 console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
                 return;
             }
