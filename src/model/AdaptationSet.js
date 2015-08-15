@@ -2,7 +2,12 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
     'use strict';
 
     var representations,
-        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(adaptationSetNode),
+        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromNode(adaptationSetNode),
+        codecs = adaptationSetNode.getAttribute('codecs'),
+        width = Dash.utils.ParserModelUtils.getDigitAttribute(adaptationSetNode, 'width'),
+        height = Dash.utils.ParserModelUtils.getDigitAttribute(adaptationSetNode, 'height'),
+        frameRate = Dash.utils.ParserModelUtils.getDigitAttribute(adaptationSetNode, 'frameRate'),
+        audioSamplingRate = Dash.utils.ParserModelUtils.getDigitAttribute(adaptationSetNode, 'audioSamplingRate'),
         mimeType,
         mediaFormat,
         mediaType;
@@ -15,7 +20,6 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
         initializeMediaInformationBaseOnRepresentations = function (representations) {
             //temporary fix
-            //YouTube stores mimeType element in adaptationSetNode, but ISO allows mimeType only in representationNode
             if (adaptationSetNode.hasAttribute('mimeType')) {
                 mimeType = adaptationSetNode.getAttribute('mimeType');
             } else {
@@ -78,6 +82,26 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
         getFormat: function () {
             return mediaFormat;
+        },
+
+        getCodecs: function () {
+            return codecs;
+        },
+
+        getWidth: function () {
+            return width;
+        },
+
+        getHeight: function () {
+            return height;
+        },
+
+        getFrameRate: function () {
+            return frameRate;
+        },
+
+        getAudioSamplingRate: function () {
+            return audioSamplingRate;
         },
 
         isVideo: function () {

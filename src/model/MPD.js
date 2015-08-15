@@ -10,7 +10,7 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
     'use strict';
 
     var findBaseURL = function (baseURLNode, mpdFileURL) {
-        if (typeof baseURLNode === 'undefined') {
+        if (typeof baseURLNode === 'undefined' || baseURLNode.innerHTML === './') {
             //if base URL node is absent then use url from mpd file
             var lastSlash = mpdFileURL.lastIndexOf('/');
             return mpdFileURL.substr(0, lastSlash);
@@ -23,7 +23,7 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
         typeAttribute = mpdNode.getAttribute("type"),
         mediaPresentationDurationAttribute = mpdNode.getAttribute("mediaPresentationDuration"),//
         minBufferTimeAttribute = mpdNode.getAttribute("minBufferTime"),
-        baseURLNode = mpdNode.getElementsByTagName('BaseURL')[0];
+        baseURLNode = Dash.utils.ParserModelUtils.findDirectChildByTagName(mpdNode, 'BaseURL');
 
     var period,
         baseURL = findBaseURL(baseURLNode, mpdFileURL),

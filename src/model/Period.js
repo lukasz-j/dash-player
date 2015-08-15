@@ -24,7 +24,7 @@ Dash.model.Period = function (periodNode, mpdElement) {
         };
 
     var adaptationSets,
-        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromParentNode(periodNode);
+        baseURL = Dash.utils.ParserModelUtils.getBaseURLFromNode(periodNode);
 
     return {
         name: 'Period',

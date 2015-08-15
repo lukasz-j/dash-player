@@ -1,12 +1,12 @@
 Dash.utils.AsyncDownloader = function () {
     'use strict';
 
-    var sendHttpGetRequest = function (url, expectedStatusCode, requestOnSuccess, requestOnFailure, requestOnProgress, responseType) {
+    var sendHttpGetRequest = function (url, expectedStatusCode, requestOnSuccess, requestOnFailure, requestOnProgress, responseType, range) {
         var request = new XMLHttpRequest(),
             startTime,
             requestDuration;
 
-        expectedStatusCode = (expectedStatusCode) ? expectedStatusCode : 200;
+        expectedStatusCode = expectedStatusCode || 200;
 
         if (responseType) {
             request.responseType = responseType;
@@ -27,13 +27,16 @@ Dash.utils.AsyncDownloader = function () {
 
         startTime = new Date();
         request.open('GET', url, true);
+        if (range) {
+            request.setRequestHeader('Range', 'bytes=' + range);
+        }
         request.send();
     };
 
 
     return {
-        downloadBinaryFilePart: function (url, requestOnSuccess, requestOnFailure, requestOnProgress) {
-            sendHttpGetRequest(url, 206, requestOnSuccess, requestOnFailure, requestOnProgress, "arraybuffer");
+        downloadBinaryFilePart: function (url, requestOnSuccess, requestOnFailure, requestOnProgress, range) {
+            sendHttpGetRequest(url, 206, requestOnSuccess, requestOnFailure, requestOnProgress, "arraybuffer", range);
         },
 
         downloadBinaryFile: function (url, requestOnSuccess, requestOnFailure, requestOnProgress) {

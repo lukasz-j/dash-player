@@ -34,8 +34,11 @@ Dash.mpd.Parser = function (mpdFileContent, mpdFileURL) {
             } else if (segmentTemplateNode) {
                 //TEMPLATE SEGMENT
                 return Dash.model.TemplateSegment(segmentTemplateNode, representationElement);
+            } else if (baseURL) {
+                //fixme to skip throwing exception for text/vtt
+                return;
             } else {
-                throw Error("Unsupported segment representation");
+                throw new Error("Unsupported segment representation");
             }
         };
 

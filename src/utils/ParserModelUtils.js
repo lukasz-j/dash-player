@@ -43,11 +43,11 @@ Dash.utils.ParserModelUtils = {
         return url.replace(/&amp;/g, '&');
     },
 
-    getBaseURLFromParentNode: function (parentNode) {
+    getBaseURLFromNode: function (node) {
         'use strict';
 
-        var baseURLNode = parentNode.getElementsByTagName('BaseURL')[0];
-        if (typeof (baseURLNode) !== 'undefined') {
+        var baseURLNode = this.findDirectChildByTagName(node, 'BaseURL');
+        if (typeof baseURLNode !== 'undefined') {
             return this.replaceAmpersandsInURL(baseURLNode.innerHTML);
         }
     },
@@ -79,6 +79,36 @@ Dash.utils.ParserModelUtils = {
             return rawURL;
         } else {
             return baseURL + '/' + rawURL;
+        }
+    },
+
+    findDirectChildrenByTagName: function (node, tagName) {
+        'use strict';
+
+        var children = node.children,
+            matchingNodes = [];
+        for (var i = 0; i < children.length; i += 1) {
+            if (children[i].tagName === tagName) {
+                matchingNodes.push(children[i]);
+            }
+        }
+
+        return matchingNodes;
+    },
+
+    findDirectChildByTagName: function (node, tagName) {
+        'use strict';
+
+        return this.findDirectChildrenByTagName(node, tagName)[0];
+    },
+
+    getDigitAttribute: function (node, attributeName) {
+        'use strict';
+
+        var attributeValue = node.getAttribute(attributeName);
+
+        if (typeof attributeValue !== 'undefined') {
+            return parseInt(attributeValue, 10);
         }
     }
 };
