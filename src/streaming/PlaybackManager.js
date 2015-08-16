@@ -9,7 +9,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
 
         alreadyFinishedManagers = 0,
 
-        processDownload = function () {
+        appendNextSegmentForStreamingManagers = function () {
             if (streamingManagers.length > 0) {
                 var index = streamingManagers.length - 1;
                 while (index >= 0) {
@@ -23,6 +23,11 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             }
         },
 
+        onInitializationCompleted = function () {
+            alreadyFinishedManagers = 0;
+            appendNextSegmentForStreamingManagers();
+        },
+
         onInitializationAppended = function () {
             alreadyFinishedManagers += 1;
 
@@ -31,8 +36,9 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             }
         },
 
-        onInitializationCompleted = function () {
+        onSegmentAppendedCompleted = function () {
             alreadyFinishedManagers = 0;
+            appendNextSegmentForStreamingManagers();
         },
 
         onSegmentAppended = function (request, loaded, options) {
@@ -41,11 +47,6 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             if (alreadyFinishedManagers === streamingManagers.length) {
                 onSegmentAppendedCompleted();
             }
-        },
-
-        onSegmentAppendedCompleted = function () {
-            alreadyFinishedManagers = 0;
-            processDownload();
         },
 
         getAdaptationSetForVideo = function (period) {

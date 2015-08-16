@@ -2,20 +2,10 @@ Dash.Player = function (videoElement, debugInfoElement) {
     'use strict';
 
     var playbackStatusManager = Dash.utils.PlaybackStatusManager(debugInfoElement),
+        playbackManager,
 
         initializeStreaming = function (mpdModel) {
-            var videoStreamingManager = Dash.streaming.StreamingManager(mpdModel, playbackStatusManager, {
-                    mediaType: Dash.model.MediaType.VIDEO,
-                    initType: 'quality',
-                    value: 360
-                }),
-                audioStreamingManager = Dash.streaming.StreamingManager(mpdModel, playbackStatusManager, {
-                    mediaType: Dash.model.MediaType.AUDIO,
-                    initType: 'bandwidth',
-                    value: 0
-                }),
-                videoRepresentationManager = videoStreamingManager.getRepresentationManager(),
-                mediaSource,
+            var mediaSource,
                 url;
 
             if (window.MediaSource) {
@@ -29,15 +19,9 @@ Dash.Player = function (videoElement, debugInfoElement) {
 
             videoElement.pause();
             videoElement.src = url;
-            videoElement.width = videoRepresentationManager.getCurrentRepresentation().getWidth();
-            videoElement.height = videoRepresentationManager.getCurrentRepresentation().getHeight();
 
             mediaSource.addEventListener('sourceopen', function () {
-                videoStreamingManager.initializeStreaming(mediaSource);
-                audioStreamingManager.initializeStreaming(mediaSource);
-
-                videoStreamingManager.startStreaming();
-                audioStreamingManager.startStreaming();
+                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource);
             }, false);
         },
 
@@ -57,11 +41,21 @@ Dash.Player = function (videoElement, debugInfoElement) {
             Dash.mpd.Downloader(url, isYouTube, onSuccessMpdDownloadCallback).downloadMpdFile();
         },
 
-        play: function (playingMode) {
-            if (typeof mpdModel === 'undefined') {
-                console.log('MPD is not loaded');
-            } else {
-            }
+        changeRepresentationToHigher: function (mediaType, steps) {
+            playbackManager.changeRepresentationToHigher(mediaType, steps);
+        },
+
+        changeRepresentationToLower: function (mediaType, steps) {
+            playbackManager.changeRepresentationToLower(mediaType, steps);
+        },
+
+        enableAdaptation: function (adaptationManager) {
+            playbackManager.enableAdaptation(adaptationManager);
+        },
+
+        disableAdaptation: function () {
+            playbackManager.disableAdaptation();
         }
+
     };
 };

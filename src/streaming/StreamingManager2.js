@@ -14,7 +14,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         availableSegmentURLs,
         currentSegmentIndex = 0,
         isInitialized = false,
-
+        pendingRepresentationChange = {available: false, index: 0},
 
         downloadBinaryFile = function (url, onSuccess, onFailure, onProgress) {
             if (typeof url === 'string') {
@@ -25,19 +25,28 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         onSegmentDownload = function (request, loaded, options) {
+            console.info('Downloaded segment ' + currentSegmentIndex + ' for ' + adaptationSet.getMimeType() + ' ' + options.url);
             var arrayBuffer = new Uint8Array(request.response);
 
             bufferManager.appendBuffer(arrayBuffer);
             representationRepository.appendBuffer(currentRepresentation, currentSegmentIndex, arrayBuffer);
 
+            if (pendingRepresentationChange.available && pendingRepresentationChange.index !== currentRepresentationIndex) {
+                updateValuesAfterChangingRepresentation(pendingRepresentationChange.index);
+                pendingRepresentationChange.available = false;
+            }
+
             segmentDownloadCallback.call(this, request, loaded, options);
         },
 
         updateValuesAfterChangingRepresentation = function (changedRepresentationIndex) {
+            console.info('Representation changed to ' + changedRepresentationIndex);
             currentRepresentationIndex = changedRepresentationIndex;
             currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
             currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-            availableSegmentURLs = currentRepresentation.getSegmentURLs(currentInitializationHeader);
+            availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
+
+            bufferManager.appendBuffer(currentInitializationHeader);
         },
 
         changeRepresentation = function (steps) {
@@ -49,7 +58,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 changedRepresentationIndex = highestRepresentationIndex;
             }
 
-            updateValuesAfterChangingRepresentation(changedRepresentationIndex);
+            pendingRepresentationChange.available = true;
+            pendingRepresentationChange.index = changedRepresentationIndex;
         },
 
         downloadAvailableHeaders = function () {
@@ -95,7 +105,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 }, 500);
             } else {
                 currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-                availableSegmentURLs = currentRepresentation.getSegmentURLs(currentInitializationHeader);
+                availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
                 bufferManager.appendBuffer(currentInitializationHeader);
                 initializationCallback.call(this);
             }
