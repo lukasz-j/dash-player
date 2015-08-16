@@ -6,7 +6,14 @@ Dash.utils.CommonUtils = {
 
     createSourceBufferInitString: function (adaptationSet, representation) {
         'use strict';
-        return adaptationSet.getMimeType() + '; codecs="' + representation.getCodecs() + '"';
+        var codecs;
+        if (adaptationSet.getCodecs()) {
+            codecs = adaptationSet.getCodecs();
+        } else {
+            codecs = representation.getCodecs();
+        }
+
+        return adaptationSet.getMimeType() + '; codecs="' + codecs + '"';
     },
 
     escapeRegExp: function (string) {
