@@ -5,7 +5,7 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
         representationManager,
         representationRepository = Dash.streaming.RepresentationRepository(),
         asyncDownloader = Dash.utils.AsyncDownloader(),
-        sourceBuffer,
+        bufferManager,
 
         downloadBinaryFile = function (url, onSuccess, onFailure, onProgress) {
             if (typeof url === 'string') {
@@ -58,20 +58,29 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
                     var buffer = new Uint8Array(request.response);
 
                     representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
-                    sourceBuffer.appendBuffer(buffer);
+                    bufferManager.appendBuffer(buffer);
                     console.log("Appending buffer from " + options.url);
+
+
+                    //REPRESENTATION CHANGE TEST
+                    if (currentElementId === 10) {
+                        currentRepresentation = representationManager.switchRepresentationToHigher(11);
+                        currentHeader = representationRepository.getHeader(currentRepresentation);
+                        segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader);
+                        bufferManager.appendBuffer(currentHeader);
+                    }
 
                     currentElementId += 1;
 
                     if (currentElementId < segmentURLs.length) {
                         downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
                     } else {
-                        sourceBuffer.endOfStream();
+                        bufferManager.endOfStream();
                     }
                 };
 
             console.log("Adding initialization from " + representationRepository.getHeaderUrl(currentRepresentation));
-            sourceBuffer.appendBuffer(representationRepository.getHeader(currentRepresentation));
+            bufferManager.appendBuffer(representationRepository.getHeader(currentRepresentation));
             currentElementId += 1;
             downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
         },
@@ -118,8 +127,10 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
 
             try {
                 var mediaSourceInitString =
-                    Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, representationManager.getCurrentRepresentation());
-                sourceBuffer = mediaSource.addSourceBuffer(mediaSourceInitString);
+                        Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, representationManager.getCurrentRepresentation()),
+                    sourceBuffer = mediaSource.addSourceBuffer(mediaSourceInitString);
+
+                bufferManager = Dash.streaming.BufferManager(sourceBuffer);
             } catch (e) {
                 console.log('Exception calling addSourceBuffer for video', e);
             }
