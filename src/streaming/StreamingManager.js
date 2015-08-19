@@ -1,11 +1,20 @@
-Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, options) {
+Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, sourceBuffer,
+                                            initializationCallback, segmentDownloadCallback) {
     'use strict';
 
-    var adaptationSet = mpdModel.getPeriod().getAdaptationSet(options.mediaType, Dash.model.MediaFormat.MP4),
-        representationManager,
+    var bufferManager = Dash.streaming.BufferManager(sourceBuffer),
         representationRepository = Dash.streaming.RepresentationRepository(),
         asyncDownloader = Dash.utils.AsyncDownloader(),
-        bufferManager,
+        currentRepresentation = initRepresentation,
+        currentRepresentationIndex = adaptationSet.getIndexOfRepresentation(initRepresentation),
+        availableRepresentationSortedByBandwidth = adaptationSet.getRepresentations(),
+        lowestRepresentationIndex = 0,
+        highestRepresentationIndex = availableRepresentationSortedByBandwidth.length - 1,
+        currentInitializationHeader,
+        availableSegmentURLs,
+        currentSegmentIndex = 0,
+        isInitialized = false,
+        pendingRepresentationChange = {available: false, index: 0},
 
         downloadBinaryFile = function (url, onSuccess, onFailure, onProgress) {
             if (typeof url === 'string') {
@@ -15,18 +24,55 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
             }
         },
 
-        downloadAvailableHeaders = function (onDownloadAllHeadersSuccess) {
-            var representationIndex = -1,
-                currentRepresentation,
-                headerURL,
-                availableRepresentations = adaptationSet.getRepresentations(),
+        updateValuesAfterChangingRepresentation = function (changedRepresentationIndex) {
+            console.info('Representation changed to ' + changedRepresentationIndex);
+            currentRepresentationIndex = changedRepresentationIndex;
+            currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
+            currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
+            availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
+
+            bufferManager.appendBuffer(currentInitializationHeader);
+        },
+
+        onSegmentDownload = function (request, loaded, options) {
+            console.info('Downloaded segment ' + currentSegmentIndex + ' for ' + adaptationSet.getMimeType() + ' ' + options.url);
+            var arrayBuffer = new Uint8Array(request.response);
+
+            bufferManager.appendBuffer(arrayBuffer);
+            representationRepository.appendBuffer(currentRepresentation, currentSegmentIndex, arrayBuffer);
+
+            if (pendingRepresentationChange.available && pendingRepresentationChange.index !== currentRepresentationIndex) {
+                updateValuesAfterChangingRepresentation(pendingRepresentationChange.index);
+                pendingRepresentationChange.available = false;
+            }
+
+            segmentDownloadCallback.call(this, request, loaded, options);
+        },
+
+        changeRepresentation = function (steps) {
+            var changedRepresentationIndex = currentRepresentationIndex + steps;
+
+            if (changedRepresentationIndex < lowestRepresentationIndex) {
+                changedRepresentationIndex = 0;
+            } else if (changedRepresentationIndex > highestRepresentationIndex) {
+                changedRepresentationIndex = highestRepresentationIndex;
+            }
+
+            pendingRepresentationChange.available = true;
+            pendingRepresentationChange.index = changedRepresentationIndex;
+        },
+
+        downloadAvailableHeaders = function () {
+            var index = -1,
+                representation,
+                initializationURL,
 
                 moveToNextRepresentation = function () {
-                    representationIndex += 1;
+                    index += 1;
 
-                    if (representationIndex < availableRepresentations.length) {
-                        currentRepresentation = availableRepresentations[representationIndex];
-                        headerURL = currentRepresentation.getSegment().getInitializationURL();
+                    if (index < availableRepresentationSortedByBandwidth.length) {
+                        representation = availableRepresentationSortedByBandwidth[index];
+                        initializationURL = representation.getSegment().getInitializationURL();
                         return true;
                     } else {
                         return false;
@@ -35,119 +81,62 @@ Dash.streaming.StreamingManager = function (mpdModel, playbackStatusManager, opt
 
                 onDownloadSuccess = function (request, loaded, options) {
                     var header = new Uint8Array(request.response);
-                    representationRepository.addRepresentation(currentRepresentation, header, options.url);
+                    representationRepository.addRepresentation(representation, header, options.url);
 
                     if (moveToNextRepresentation()) {
-                        downloadBinaryFile(headerURL, onDownloadSuccess);
+                        downloadBinaryFile(initializationURL, onDownloadSuccess);
                     } else {
-                        onDownloadAllHeadersSuccess();
+                        isInitialized = true;
                     }
                 };
 
             moveToNextRepresentation();
-            downloadBinaryFile(headerURL, onDownloadSuccess);
-        },
-
-        startStreaming = function () {
-            var currentElementId = -1,
-                currentRepresentation = representationManager.getCurrentRepresentation(),
-                currentHeader = representationRepository.getHeader(currentRepresentation),
-                segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader),
-
-                onDownloadSuccess = function (request, loadedBytes, options) {
-                    var buffer = new Uint8Array(request.response);
-
-                    representationRepository.appendBuffer(currentRepresentation, currentElementId, buffer);
-                    bufferManager.appendBuffer(buffer);
-                    console.log("Appending buffer from " + options.url);
-
-
-                    //REPRESENTATION CHANGE TEST
-                    if (currentElementId === 10) {
-                        currentRepresentation = representationManager.switchRepresentationToHigher(11);
-                        currentHeader = representationRepository.getHeader(currentRepresentation);
-                        segmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentHeader);
-                        bufferManager.appendBuffer(currentHeader);
-                    }
-
-                    currentElementId += 1;
-
-                    if (currentElementId < segmentURLs.length) {
-                        downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
-                    } else {
-                        bufferManager.endOfStream();
-                    }
-                };
-
-            console.log("Adding initialization from " + representationRepository.getHeaderUrl(currentRepresentation));
-            bufferManager.appendBuffer(representationRepository.getHeader(currentRepresentation));
-            currentElementId += 1;
-            downloadBinaryFile(segmentURLs[currentElementId], onDownloadSuccess, null, null);
-        },
-
-        createRepresentationManager = function () {
-            switch (options.initType) {
-                case 'quality':
-                    return Dash.streaming.RepresentationManager(adaptationSet, playbackStatusManager,
-                        function (availableRepresentations) {
-                            for (var i = 0; i < availableRepresentations.length; i += 1) {
-                                if (availableRepresentations[i].getHeight() === options.value) {
-                                    return i;
-                                }
-                            }
-                            return 0;
-                        });
-                case 'bandwidth':
-                    return Dash.streaming.RepresentationManager(adaptationSet, playbackStatusManager,
-                        function (availableRepresentations) {
-                            for (var i = 1; i < availableRepresentations.length; i += 1) {
-                                if (availableRepresentations[i].getBandwidth() > options.value) {
-                                    return i - 1;
-                                }
-                            }
-                            return availableRepresentations.length - 1;
-                        });
-                case 'fuzzy':
-                    break;
-                case 'pid':
-                    break;
-                default:
-                    throw new Error('Unsupported initialization mode ' + options.initType);
-            }
+            downloadBinaryFile(initializationURL, onDownloadSuccess);
         };
 
-    representationManager = createRepresentationManager();
+    downloadAvailableHeaders();
 
     return {
-        initializeStreaming: function (mediaSource) {
-            if (typeof adaptationSet === 'undefined') {
-                console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
-                return;
-            }
-
-            try {
-                var mediaSourceInitString =
-                        Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, representationManager.getCurrentRepresentation()),
-                    sourceBuffer = mediaSource.addSourceBuffer(mediaSourceInitString);
-
-                bufferManager = Dash.streaming.BufferManager(sourceBuffer);
-            } catch (e) {
-                console.log('Exception calling addSourceBuffer for video', e);
+        appendInitialization: function () {
+            var self = this;
+            if (!isInitialized) {
+                setTimeout(function () {
+                    self.appendInitialization();
+                }, 500);
+            } else {
+                currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
+                availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
+                bufferManager.appendBuffer(currentInitializationHeader);
+                initializationCallback.call(this);
             }
         },
 
-        startStreaming: function () {
-            if (typeof adaptationSet === 'undefined') {
-                console.log('Adaptation set for type ' + options.mediaType + ' is not available - cannot initialize streaming');
-                return;
+        appendNextSegment: function () {
+            if (!this.isStreamingFinished()) {
+                var segmentURL = availableSegmentURLs[currentSegmentIndex];
+                downloadBinaryFile(segmentURL, onSegmentDownload);
+                currentSegmentIndex += 1;
+            } else {
+                //TODO exception or log, stream is already full
             }
-
-            downloadAvailableHeaders(startStreaming);
         },
 
-        getRepresentationManager: function () {
-            return representationManager;
+        isStreamingFinished: function () {
+            return currentSegmentIndex === availableSegmentURLs.length;
+        },
+
+        changeRepresentationToHigher: function (steps) {
+            if (!steps || steps < 0) {
+                steps = 1;
+            }
+            changeRepresentation(steps);
+        },
+
+        changeRepresentationToLower: function (steps) {
+            if (!steps || steps < 0) {
+                steps = 1;
+            }
+            changeRepresentation(-steps);
         }
-    }
-}
-;
+    };
+};

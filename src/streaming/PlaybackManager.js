@@ -1,10 +1,9 @@
 Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationManager, chooseAdaptationSet, chooseInitRepresentation) {
-
+    'use strict';
 
     var videoStreamingManager,
         audioStreamingManager,
         textStreamingManager,
-        adaptationManager,
         streamingManagers = [],
 
         alreadyFinishedManagers = 0,
@@ -14,7 +13,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
                 var index = streamingManagers.length - 1;
                 while (index >= 0) {
                     if (streamingManagers[index].isStreamingFinished()) {
-                        streamingManagers = streamingManagers.slice(index, 1);
+                        streamingManagers = streamingManagers.slice(0, index);
                     } else {
                         streamingManagers[index].appendNextSegment();
                     }
@@ -49,36 +48,52 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             }
         },
 
-        getAdaptationSetForVideo = function (period) {
+        getAdaptationSetForMedia = function (period, mediaType) {
             if (chooseAdaptationSet) {
                 return chooseAdaptationSet(period.getAdaptationSets(), Dash.model.MediaType.VIDEO);
             } else {
-                return period.getVideoAdaptationSet(Dash.model.MediaFormat.MP4);
+                if (mediaType === Dash.model.MediaType.VIDEO) {
+                    return period.getVideoAdaptationSet(Dash.model.MediaFormat.MP4);
+                } else if (mediaType === Dash.model.MediaType.AUDIO) {
+                    return period.getAudioAdaptationSet(Dash.model.MediaFormat.MP4);
+                } else if (mediaType === Dash.model.MediaType.TEXT) {
+                    return;
+                } else {
+                    throw new Error('Not supported media type');
+                }
             }
         },
 
+        getAdaptationSetForVideo = function (period) {
+            return getAdaptationSetForMedia(period, Dash.model.MediaType.VIDEO);
+        },
+
         getAdaptationSetForAudio = function (period) {
-            if (chooseAdaptationSet) {
-                return chooseAdaptationSet(period.getAdaptationSets(), Dash.model.MediaType.AUDIO);
+            return getAdaptationSetForMedia(period, Dash.model.MediaType.AUDIO);
+        },
+
+        getAdaptationSetForText = function (period) {
+            return getAdaptationSetForMedia(period, Dash.model.MediaType.TEXT);
+        },
+
+        getInitRepresentationForMedia = function (adaptationSet, mediaType) {
+            if (chooseInitRepresentation) {
+                return chooseInitRepresentation(adaptationSet.getRepresentations(), mediaType);
             } else {
-                return period.getAudioAdaptationSet(Dash.model.MediaFormat.MP4);
+                return adaptationSet.getRepresentations()[0];
             }
         },
 
         getInitRepresentationForVideo = function (adaptationSet) {
-            if (chooseInitRepresentation) {
-                return chooseInitRepresentation(adaptationSet.getRepresentations(), Dash.model.MediaType.VIDEO);
-            } else {
-                return adaptationSet.getRepresentations()[0];
-            }
+            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.VIDEO);
         },
 
         getInitRepresentationForAudio = function (adaptationSet) {
-            if (chooseInitRepresentation) {
-                return chooseInitRepresentation(adaptationSet.getRepresentations(), Dash.model.MediaType.AUDIO);
-            } else {
-                return adaptationSet.getRepresentations()[0];
-            }
+            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.AUDIO);
+        },
+
+        getInitRepresentationForText = function (adaptationSet) {
+            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.TEXT);
         },
 
         createSourceBufferObject = function (adaptationSet, initRepresentation) {
@@ -87,32 +102,50 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             return mediaSource.addSourceBuffer(mediaSourceInitString);
         },
 
+        initializeStreamingForMediaType = function (adaptationSet, mediaType) {
+            var initRepresentation = getInitRepresentationForMedia(adaptationSet, mediaType),
+                sourceBuffer = createSourceBufferObject(adaptationSet, initRepresentation);
+            return Dash.streaming.StreamingManager(adaptationSet, initRepresentation, sourceBuffer,
+                onInitializationAppended, onSegmentAppended);
+        },
+
+        getStreamingManagerForMediaType = function (mediaType) {
+            if (mediaType === Dash.model.MediaType.AUDIO && audioStreamingManager) {
+                audioStreamingManager.changeRepresentationToHigher(steps);
+            } else if (mediaType === Dash.model.MediaType.VIDEO && videoStreamingManager) {
+                videoStreamingManager.changeRepresentationToHigher(steps);
+            } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
+                textStreamingManager.changeRepresentationToHigher(steps);
+            } else {
+                console.warn('Unsupported media type found while changing representation to higher - ' + mediaType);
+            }
+        },
+
         initializeStreamingManagers = function () {
             var period = mpdModel.getPeriod(),
                 videoAdaptationSet = getAdaptationSetForVideo(period),
-                audioAdaptationSet = getAdaptationSetForAudio(period);
+                audioAdaptationSet = getAdaptationSetForAudio(period),
+                textAdaptationSet = getAdaptationSetForText(period);
 
             if (videoAdaptationSet) {
-                var videoInitRepresentation = getInitRepresentationForVideo(videoAdaptationSet),
-                    videoSourceBuffer = createSourceBufferObject(videoAdaptationSet, videoInitRepresentation);
-                videoStreamingManager = Dash.streaming.StreamingManager(videoAdaptationSet, videoInitRepresentation,
-                    videoSourceBuffer, onInitializationAppended, onSegmentAppended);
+                videoStreamingManager = initializeStreamingForMediaType(videoAdaptationSet, Dash.model.MediaType.VIDEO);
                 streamingManagers.push(videoStreamingManager);
             }
 
             if (audioAdaptationSet) {
-                var audioInitRepresentation = getInitRepresentationForAudio(audioAdaptationSet),
-                    audioSourceBuffer = createSourceBufferObject(audioAdaptationSet, audioInitRepresentation);
-                audioStreamingManager = Dash.streaming.StreamingManager(audioAdaptationSet, audioInitRepresentation,
-                    audioSourceBuffer, onInitializationAppended, onSegmentAppended);
+                audioStreamingManager = initializeStreamingForMediaType(audioAdaptationSet, Dash.model.MediaType.AUDIO);
                 streamingManagers.push(audioStreamingManager);
+            }
+
+            if (textAdaptationSet) {
+                textStreamingManager = initializeStreamingForMediaType(textAdaptationSet, Dash.model.MediaType.TEXT);
+                streamingManagers.push(textStreamingManager);
             }
 
             for (var i = 0; i < streamingManagers.length; i += 1) {
                 streamingManagers[i].appendInitialization();
             }
         };
-
 
     initializeStreamingManagers();
 
@@ -125,7 +158,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
                 textStreamingManager.changeRepresentationToHigher(steps);
             } else {
-                throw new Error();
+                console.warn('Unsupported media type found while changing representation to higher - ' + mediaType);
             }
         },
 
@@ -137,7 +170,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
                 textStreamingManager.changeRepresentationToLower(steps);
             } else {
-                throw new Error();
+                console.warn('Unsupported media type found while changing representation to lower - ' + mediaType);
             }
         },
 
