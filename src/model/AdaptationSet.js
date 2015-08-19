@@ -14,7 +14,7 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
     var sortRepresentationByBandwidth = function (representations) {
             representations.sort(function (a, b) {
-                return a.getBandwidth() - b.getBandwidth;
+                return a.getBandwidth() - b.getBandwidth();
             });
         },
 
