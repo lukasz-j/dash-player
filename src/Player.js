@@ -1,15 +1,14 @@
-Dash.Player = function (videoElement, debugInfoElement) {
+Dash.Player = function (videoElement, $window, eventBus) {
     'use strict';
 
-    var playbackStatusManager = Dash.utils.PlaybackStatusManager(debugInfoElement),
-        playbackManager,
+    var playbackManager,
 
         initializeStreaming = function (mpdModel) {
             var mediaSource,
                 url;
 
-            if (window.MediaSource) {
-                mediaSource = new window.MediaSource();
+            if ($window.MediaSource) {
+                mediaSource = new $window.MediaSource();
             } else {
                 console.log("MediaSource is not available");
                 return;
@@ -31,7 +30,7 @@ Dash.Player = function (videoElement, debugInfoElement) {
             if (typeof mpdModel === 'undefined') {
                 console.log('MPD is not loaded');
             } else {
-                playbackStatusManager.fireMpdFileLoadedEvent(mpdModel);
+                eventBus.dispatchEvent({type: Dash.event.Events.MPD_LOADED, value: mpdModel});
                 initializeStreaming(mpdModel);
             }
         };
@@ -56,6 +55,5 @@ Dash.Player = function (videoElement, debugInfoElement) {
         disableAdaptation: function () {
             playbackManager.disableAdaptation();
         }
-
     };
 };

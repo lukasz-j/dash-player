@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <!-- react.js -->
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+
+    <script src="../Dash.js"></script>
+    <script src="../Player.js"></script>
+
+    <!-- Model -->
+    <script src="../model/segment/ListSegment.js"></script>
+    <script src="../model/segment/RangeSegment.js"></script>
+    <script src="../model/segment/TemplateSegment.js"></script>
+
+    <script src="../model/AdaptationSet.js"></script>
+    <script src="../model/MPD.js"></script>
+    <script src="../model/Period.js"></script>
+    <script src="../model/Representation.js"></script>
+
+    <script src="../model/other/MediaFormat.js"></script>
+    <script src="../model/other/MediaType.js"></script>
+    <script src="../model/other/MPDType.js"></script>
+    <script src="../model/other/MPDProfile.js"></script>
+
+    <!-- MPD maintenance -->
+    <script src="../mpd/Downloader.js"></script>
+    <script src="../mpd/Parser.js"></script>
+
+    <!-- Streaming -->
+    <script src="../streaming/RepresentationRepository.js"></script>
+    <script src="../streaming/RepresentationManager.js"></script>
+    <script src="../streaming/StreamingManager.js"></script>
+    <script src="../streaming/BufferManager.js"></script>
+    <script src="../streaming/PlaybackManager.js"></script>
+
+    <!-- Utils -->
+    <script src="../utils/AsyncDownloader.js"></script>
+    <script src="../utils/CommonUtils.js"></script>
+    <script src="../utils/ParserModelUtils.js"></script>
+    <script src="../utils/PlaybackStatusManager.js"></script>
+
+
+    <!-- Events -->
+    <script src="../events/EventBus.js"></script>
+    <script src="../events/Events.js"></script>
+
+    <!-- View -->
+    <script src="../view/PlayerView.jsx" type="text/jsx"></script>
+</head>
+
+<body>
+<div id="content"></div>
+<script type="text/jsx">
+    React.render(
+            <PlayerView />,
+            document.getElementById("content")
+    );
+
+    /* events that may come from player and must be dispatched by react components */
+    var eventBus = Dash.event.EventBus();
+    eventBus.addEventListener(Dash.event.Events.MPD_LOADED, reactUpdateComponentCallbacks.mpdLoaded);
+    eventBus.addEventListener(Dash.event.Events.ADAPTATION_SETS_INITIALIZED, reactUpdateComponentCallbacks.adaptationSetInitialized);
+    eventBus.addEventListener(Dash.event.Events.REPRESENTATIONS_INITIALIZED, reactUpdateComponentCallbacks.representationsInitialized);
+    eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, reactUpdateComponentCallbacks.representationChanged);
+
+    var videoElement = document.getElementById('dashVideoElement');
+    var dashPlayer = Dash.Player(videoElement, window, eventBus);
+
+</script>
+</body>
+</html>

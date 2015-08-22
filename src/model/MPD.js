@@ -10,14 +10,19 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
     'use strict';
 
     var findBaseURL = function (baseURLNode, mpdFileURL) {
-        if (typeof baseURLNode === 'undefined' || baseURLNode.innerHTML === './') {
-            //if base URL node is absent then use url from mpd file
-            var lastSlash = mpdFileURL.lastIndexOf('/');
-            return mpdFileURL.substr(0, lastSlash);
-        } else {
-            return Dash.utils.ParserModelUtils.replaceAmpersandsInURL(baseURLNode.innerHTML);
-        }
-    };
+            if (typeof baseURLNode === 'undefined' || baseURLNode.innerHTML === './') {
+                //if base URL node is absent then use url from mpd file
+                var lastSlash = mpdFileURL.lastIndexOf('/');
+                return mpdFileURL.substr(0, lastSlash);
+            } else {
+                return Dash.utils.ParserModelUtils.replaceAmpersandsInURL(baseURLNode.innerHTML);
+            }
+        },
+
+        getAllProfilesFromAttribute = function (profilesAttribute) {
+            //fixme
+            return [Dash.model.MPDProfile.createMPDProfileFromString(profilesAttribute)];
+        };
 
     var profilesAttribute = mpdNode.getAttribute("profiles"),
         typeAttribute = mpdNode.getAttribute("type"),
@@ -30,7 +35,7 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
         type = Dash.model.MPDType.createMPDTypeFromString(typeAttribute),
         mediaPresentationDuration = Dash.utils.ParserModelUtils.convertXMLDurationFormat(mediaPresentationDurationAttribute),
         minBufferTime = Dash.utils.ParserModelUtils.convertXMLDurationFormat(minBufferTimeAttribute),
-        profiles = Dash.model.MPDProfile.createMPDProfileFromString(profilesAttribute);
+        profiles = getAllProfilesFromAttribute(profilesAttribute);
 
     return {
         name: 'MPD',
@@ -47,6 +52,15 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
             return profiles;
         },
 
+        getProfilesAsString: function () {
+            var stringProfiles = '';
+
+            profiles.forEach(function (element) {
+                stringProfiles += element.name + ' ';
+            });
+            return stringProfiles;
+        },
+
         getType: function () {
             return type;
         },
@@ -59,8 +73,16 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
             return mediaPresentationDuration;
         },
 
+        getMediaPresentationDurationFormatted: function () {
+            return Dash.utils.CommonUtils.convertDurationInSecondsToPrettyString(mediaPresentationDuration);
+        },
+
         getMinBufferTime: function () {
             return minBufferTime;
+        },
+
+        getMinBufferTimeFormatted: function () {
+            return Dash.utils.CommonUtils.convertDurationInSecondsToPrettyString(minBufferTime);
         }
     };
 };

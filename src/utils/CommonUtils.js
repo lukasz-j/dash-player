@@ -24,5 +24,36 @@ Dash.utils.CommonUtils = {
     replaceAll: function (string, find, replace) {
         'use strict';
         return string.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+    },
+
+    convertDurationInSecondsToPrettyString: function (durationInSeconds) {
+        'use strict';
+        var hours = Math.floor(durationInSeconds / 3600),
+            minutes = Math.floor(durationInSeconds / 60),
+            seconds = Math.floor(durationInSeconds % 60),
+            milliSeconds = Math.floor((durationInSeconds % 1) * 100),
+            outputString = '',
+
+            fillNumberWithZeros = function (number) {
+                if (number < 10) {
+                    return '0' + number;
+                } else {
+                    return number.toString();
+                }
+            };
+
+        if (hours !== 0) {
+            outputString += fillNumberWithZeros(hours) + ':';
+        }
+        if (minutes !== 0) {
+            outputString += fillNumberWithZeros(minutes) + ':';
+        }
+        outputString += fillNumberWithZeros(seconds);
+
+        if (milliSeconds !== 0) {
+            outputString += '.' + milliSeconds;
+        }
+
+        return outputString;
     }
 };
