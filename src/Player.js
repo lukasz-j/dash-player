@@ -25,7 +25,7 @@ Dash.Player = function (videoElement, $window, eventBus) {
         },
 
         onSuccessMpdDownloadCallback = function (request, loadedBytes, options) {
-            var mpdModel = Dash.mpd.Parser(request.responseText, options.url, options.isYouTube).generateModel();
+            var mpdModel = Dash.mpd.Parser().generateModel(request.responseText, options.url, options.isYouTube);
 
             if (typeof mpdModel === 'undefined') {
                 console.log('MPD is not loaded');

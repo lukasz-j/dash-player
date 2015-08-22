@@ -109,8 +109,8 @@ var MpdDetailsView = React.createClass({
         this.setState({
             type: mpdModel.getType().name,
             profiles: mpdModel.getProfilesAsString(),
-            duration: mpdModel.getMediaPresentationDurationFormatted(),
-            minBuffer: mpdModel.getMinBufferTimeFormatted(),
+            duration: mpdModel.getMediaPresentationDurationFormatted() + ' s',
+            minBuffer: mpdModel.getMinBufferTimeFormatted() + ' s',
             videoSets: this.adaptationSetsToString(videoAdaptationSets),
             audioSets: this.adaptationSetsToString(audioAdaptationSets),
             textSets: this.adaptationSetsToString(textAdaptationSets)

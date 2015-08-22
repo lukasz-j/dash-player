@@ -34,8 +34,8 @@ Dash.utils.CommonUtils = {
             milliSeconds = Math.floor((durationInSeconds % 1) * 100),
             outputString = '',
 
-            fillNumberWithZeros = function (number) {
-                if (number < 10) {
+            fillNumberWithZeros = function (number, isFirst) {
+                if (number < 10 && !isFirst) {
                     return '0' + number;
                 } else {
                     return number.toString();
@@ -43,12 +43,12 @@ Dash.utils.CommonUtils = {
             };
 
         if (hours !== 0) {
-            outputString += fillNumberWithZeros(hours) + ':';
+            outputString += fillNumberWithZeros(hours, true) + ':';
         }
         if (minutes !== 0) {
-            outputString += fillNumberWithZeros(minutes) + ':';
+            outputString += fillNumberWithZeros(minutes, outputString.length === 0) + ':';
         }
-        outputString += fillNumberWithZeros(seconds);
+        outputString += fillNumberWithZeros(seconds, outputString.length === 0);
 
         if (milliSeconds !== 0) {
             outputString += '.' + milliSeconds;

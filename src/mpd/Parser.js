@@ -1,9 +1,7 @@
-Dash.mpd.Parser = function (mpdFileContent, mpdFileURL, isYouTube) {
+Dash.mpd.Parser = function () {
     'use strict';
 
-    var parsedMpdFile = new DOMParser().parseFromString(mpdFileContent, "text/xml"),
-
-        createMPDElement = function (mpdNode) {
+    var createMPDElement = function (mpdNode, mpdFileURL) {
             return Dash.model.MPD(mpdNode, mpdFileURL);
         },
 
@@ -19,7 +17,7 @@ Dash.mpd.Parser = function (mpdFileContent, mpdFileURL, isYouTube) {
             return Dash.model.Representation(representationNode, adaptationSetElement);
         },
 
-        createSegmentElement = function (representationNode, representationElement) {
+        createSegmentElement = function (representationNode, representationElement, isYouTube) {
             var baseURL = representationElement.getBaseURL(),
                 segmentTemplateNode = representationNode.getElementsByTagName('SegmentTemplate')[0],
                 segmentBaseNode = representationNode.getElementsByTagName('SegmentBase')[0],
@@ -43,7 +41,9 @@ Dash.mpd.Parser = function (mpdFileContent, mpdFileURL, isYouTube) {
         };
 
     return {
-        generateModel: function () {
+        generateModel: function (mpdFileContent, mpdFileURL, isYouTube) {
+            var parsedMpdFile = new DOMParser().parseFromString(mpdFileContent, "text/xml");
+
             //MPD
             var mpdNode = parsedMpdFile.getElementsByTagName("MPD")[0],
                 mpdElement = createMPDElement(mpdNode, mpdFileURL);
@@ -70,7 +70,7 @@ Dash.mpd.Parser = function (mpdFileContent, mpdFileURL, isYouTube) {
                     var representationNode = representationNodes[j],
                         representationElement = createRepresentationElement(representationNode, adaptationSetElement);
 
-                    var segmentElement = createSegmentElement(representationNode, representationElement);
+                    var segmentElement = createSegmentElement(representationNode, representationElement, isYouTube);
 
                     representationElement.setSegment(segmentElement);
 
