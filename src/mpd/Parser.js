@@ -76,6 +76,16 @@ Dash.mpd.Parser = function () {
 
                     representationElements.push(representationElement);
                 }
+
+                //sort representations and add them order indexes
+                representationElements.sort(function (a, b) {
+                    return a.getBandwidth() - b.getBandwidth();
+                });
+
+                representationElements.forEach(function (element, index) {
+                    element.orderNumber = index + 1;
+                });
+
                 adaptationSetElement.setRepresentations(representationElements);
             }
 

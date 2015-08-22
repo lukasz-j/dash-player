@@ -12,13 +12,7 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
         mediaFormat,
         mediaType;
 
-    var sortRepresentationByBandwidth = function (representations) {
-            representations.sort(function (a, b) {
-                return a.getBandwidth() - b.getBandwidth();
-            });
-        },
-
-        initializeMediaInformationBaseOnRepresentations = function (representations) {
+    var initializeMediaInformationBaseOnRepresentations = function (representations) {
             //temporary fix
             if (adaptationSetNode.hasAttribute('mimeType')) {
                 mimeType = adaptationSetNode.getAttribute('mimeType');
@@ -35,7 +29,6 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
         setRepresentations: function (newRepresentation) {
             representations = newRepresentation;
-            sortRepresentationByBandwidth(representations);
             initializeMediaInformationBaseOnRepresentations(representations);
         },
 

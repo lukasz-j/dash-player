@@ -1,14 +1,6 @@
 Dash.model.Representation = function (representationNode, adaptationSet) {
     'use strict';
 
-    var getDigitAttribute = function (node, attributeName) {
-        var attributeValue = node.getAttribute(attributeName);
-
-        if (typeof attributeValue !== 'undefined') {
-            return parseInt(attributeValue, 10);
-        }
-    };
-
     var segment,
         baseURL = Dash.utils.ParserModelUtils.getBaseURLFromNode(representationNode),
         id = representationNode.getAttribute('id'),
@@ -22,6 +14,8 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
 
     return {
         name: 'Representation',
+
+        orderNumber: 0,
 
         setSegment: function ($segment) {
             segment = $segment;
