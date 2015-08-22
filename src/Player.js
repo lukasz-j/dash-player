@@ -40,20 +40,24 @@ Dash.Player = function (videoElement, $window, eventBus) {
             Dash.mpd.Downloader(url, isYouTube, onSuccessMpdDownloadCallback).downloadMpdFile();
         },
 
-        changeRepresentationToHigher: function (mediaType, steps) {
-            playbackManager.changeRepresentationToHigher(mediaType, steps);
-        },
-
         changeRepresentationToLower: function (mediaType, steps) {
+            console.log('Changing representation to lower for ' + mediaType);
             playbackManager.changeRepresentationToLower(mediaType, steps);
         },
 
-        enableAdaptation: function (adaptationManager) {
-            playbackManager.enableAdaptation(adaptationManager);
+        changeRepresentationToHigher: function (mediaType, steps) {
+            console.log('Changing representation to higher for ' + mediaType);
+            playbackManager.changeRepresentationToHigher(mediaType, steps);
         },
 
         disableAdaptation: function () {
+            console.log('Disabling automatic adaptation');
             playbackManager.disableAdaptation();
+        },
+
+        enableAdaptation: function (adaptationAlgorithmName) {
+            console.log('Changing adaptation algorithm to ' + adaptationAlgorithmName);
+            playbackManager.enableAdaptation(adaptationAlgorithmName);
         }
     };
 };

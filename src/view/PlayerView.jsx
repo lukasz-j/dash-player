@@ -75,9 +75,43 @@ var VideoControlContainer = React.createClass({
     render: function () {
         return (
             <div>
+                <AdaptationController />
                 <MpdDetailsView/>
             </div>
         )
+    }
+});
+
+var AdaptationController = React.createClass({
+    getInitialState: function () {
+        return {
+            value: 'Off'
+        };
+    },
+
+    adaptationChanged: function (event) {
+        var adaptationValue = event.target.value;
+        this.setState({value: adaptationValue});
+
+        if (adaptationValue === 'Off') {
+            player.disableAdaptation();
+        } else {
+            player.enableAdaptation(adaptationValue);
+        }
+    },
+
+    render: function () {
+        return (
+            <div>
+                <span>Adaptation algorithm:</span>
+                <input type="button" value="Off" disabled={this.state.value === "Off"}
+                       onClick={this.adaptationChanged}/>
+                <input type="button" value="PID" disabled={this.state.value === "PID"}
+                       onClick={this.adaptationChanged}/>
+                <input type="button" value="Fuzzy" disabled={this.state.value === "Fuzzy"}
+                       onClick={this.adaptationChanged}/>
+            </div>
+        );
     }
 });
 

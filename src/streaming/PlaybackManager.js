@@ -178,8 +178,9 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, adaptationMana
             adaptationManager = undefined;
         },
 
-        setAdaptationAlgorithm: function ($adaptationManager) {
-            adaptationManager = $adaptationManager;
+        enableAdaptation: function (adaptationAlgorithmName) {
+            //FIXME implement me
+            adaptationManager = null;
         }
     };
 };
