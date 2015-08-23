@@ -53,12 +53,9 @@ Dash.model.MPD = function (mpdNode, mpdFileURL) {
         },
 
         getProfilesAsString: function () {
-            var stringProfiles = '';
-
-            profiles.forEach(function (element) {
-                stringProfiles += element.name + ' ';
+            return profiles.map(function (element) {
+                return element.name + ' ';
             });
-            return stringProfiles;
         },
 
         getType: function () {

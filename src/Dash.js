@@ -3,6 +3,7 @@ var Dash = {
     model: {},
     mpd: {},
     streaming: {},
+    log: {},
     utils: {},
     event: {}
 };

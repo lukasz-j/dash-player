@@ -125,12 +125,11 @@ var MpdDetailsView = React.createClass({
         var string = adaptationSets.length.toString();
 
         if (adaptationSets.length > 0) {
-            var adaptationSetsMimes = [];
-            adaptationSets.forEach(function (element) {
-                adaptationSetsMimes.push(element.getMimeType());
-            });
+            var adaptationSetsMimes = adaptationSets.map(function (element) {
+                return element.getMimeType();
+            }).join(', ');
 
-            string += ' (' + adaptationSetsMimes.join(', ') + ')';
+            string += ' (' + adaptationSetsMimes + ')';
         }
         return string;
     },
@@ -229,7 +228,8 @@ var RepresentationsContainer = React.createClass({
 var RepresentationController = React.createClass({
     getInitialState: function () {
         return {
-            representationNumber: 0
+            representationNumber: 0,
+            representationChanging: false
         };
     },
 
@@ -237,6 +237,7 @@ var RepresentationController = React.createClass({
         var representation = event.value;
         if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
             this.setState({
+                representationChanging: false,
                 representationNumber: representation.orderNumber,
                 id: representation.getId(),
                 mimeType: representation.getMimeType(),
@@ -251,8 +252,8 @@ var RepresentationController = React.createClass({
     },
 
     buttonType: {
-        LEFT: 0,
-        RIGHT: 1
+        LOWER: 0,
+        HIGHER: 1
     },
 
     printRepresentationPropertiesIfInitialized: function () {
@@ -278,22 +279,37 @@ var RepresentationController = React.createClass({
         }
     },
 
-    changeRepresentation: function (event) {
-        //fixme ugly as fuck
-        var buttonInnerHtml = event.target.innerHTML;
+    changeRepresentationToLower: function () {
+        this.setState({representationChanging: true});
+        dashPlayer.changeRepresentationToLower(this.props.mediaType, 1);
+    },
 
-        if (buttonInnerHtml === '&lt;') {
-            dashPlayer.changeRepresentationToLower(this.props.mediaType, 1);
-        } else if (buttonInnerHtml === '&gt;') {
-            dashPlayer.changeRepresentationToHigher(this.props.mediaType, 1);
+    changeRepresentationToHigher: function () {
+        this.setState({representationChanging: true});
+        dashPlayer.changeRepresentationToHigher(this.props.mediaType, 1);
+    },
+
+    showAlertAboutChangingRepresentation: function () {
+        if (this.state.representationChanging) {
+            return (
+                <div>
+                    Representation is being changed
+                </div>
+            )
+        } else {
+            return '';
         }
     },
 
     shouldButtonBeDisabled: function (buttonType) {
-        if (buttonType === this.buttonType.LEFT) {
-            return this.state.representationNumber === 0 || this.state.representationNumber === 1;
-        } else if (buttonType === this.buttonType.RIGHT) {
-            return this.state.representationNumber === 0 || this.state.representationNumber === this.props.totalRepresentationsNumber;
+        if (this.state.representationChanging || this.state.representationNumber === 0) {
+            return true;
+        }
+
+        if (buttonType === this.buttonType.LOWER) {
+            return this.state.representationNumber === 1;
+        } else if (buttonType === this.buttonType.HIGHER) {
+            return this.state.representationNumber === this.props.totalRepresentationsNumber;
         }
     },
 
@@ -304,13 +320,16 @@ var RepresentationController = React.createClass({
         return (
             <div>
                 <div>
-                    <button onClick={this.changeRepresentation}
-                            disabled={this.shouldButtonBeDisabled(this.buttonType.LEFT)}>&lt;</button>
+                    <button onClick={this.changeRepresentationToLower}
+                            disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
+
                     <span>{this.props.mediaType.name}</span>
                     <span>{this.state.representationNumber} / {this.props.totalRepresentationsNumber} </span>
-                    <button onClick={this.changeRepresentation}
-                            disabled={this.shouldButtonBeDisabled(this.buttonType.RIGHT)}>&gt;</button>
+
+                    <button onClick={this.changeRepresentationToHigher}
+                            disabled={this.shouldButtonBeDisabled(this.buttonType.HIGHER)}>&gt;</button>
                 </div>
+                {this.showAlertAboutChangingRepresentation()}
                 {this.printRepresentationPropertiesIfInitialized()}
             </div>
         );
