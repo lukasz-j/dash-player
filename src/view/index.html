@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <title></title>
 
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
     <!-- react.js -->
     <script src="https://fb.me/react-0.13.3.js"></script>
     <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
 
+    <!-- Dash player scripts -->
     <script src="../Dash.js"></script>
     <script src="../Player.js"></script>
 
@@ -46,6 +51,10 @@
     <script src="../events/EventBus.js"></script>
     <script src="../events/Events.js"></script>
 
+    <!-- Logging -->
+    <script src="../log/ConsoleLogger.js"></script>
+    <script src="../log/LogLevel.js"></script>
+
     <!-- View -->
     <script src="../view/PlayerView.jsx" type="text/jsx"></script>
 </head>
@@ -54,6 +63,9 @@
 <div id="content"></div>
 <script type="text/jsx">
     var eventBus = Dash.event.EventBus();
+    var consoleLogger = Dash.log.ConsoleLogger(console);
+
+    eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, consoleLogger.onMessageReceived);
 
     React.render(
             <PlayerView />,
@@ -62,7 +74,6 @@
 
     var videoElement = document.getElementById('dashVideoElement');
     var dashPlayer = Dash.Player(videoElement, window, eventBus);
-
 </script>
 </body>
 </html>

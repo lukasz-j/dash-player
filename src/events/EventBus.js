@@ -41,6 +41,10 @@ Dash.event.EventBus = function () {
             for (var i = 0; i < availableListeners.length; i += 1) {
                 availableListeners[i].call(this, event);
             }
+        },
+
+        dispatchLogEvent: function (level, message) {
+            this.dispatchEvent({type: Dash.event.Events.LOG_MESSAGE, value: {level: level, message: message}});
         }
     };
 };

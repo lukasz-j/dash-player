@@ -1,4 +1,4 @@
-Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuccess) {
+Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuccess, eventBus) {
     'use strict';
 
     var youTubeDomain = 'http://www.youtube.com',
@@ -15,7 +15,9 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
             var urlParameters = movieDetails.split('&');
             for (var i = 0; i < urlParameters.length; i += 1) {
                 if (urlParameters[i].indexOf(mpdEntryPrefix) === 0) {
-                    return decodeURIComponent(urlParameters[i].substring(mpdEntryPrefix.length));
+                    var mpdUrl = decodeURIComponent(urlParameters[i].substring(mpdEntryPrefix.length));
+                    eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, 'MPD url find in response from YouTube, ' + mpdUrl);
+                    return mpdUrl;
                 }
             }
             throw new Error('Dash file is not available for this video');

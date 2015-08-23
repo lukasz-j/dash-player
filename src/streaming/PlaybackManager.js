@@ -8,11 +8,28 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
 
         alreadyFinishedManagers = 0,
 
+        onAdaptationSetChosen = function (chosenAdaptationSet) {
+            var logMessage = 'Adaptation set has been chosen for ' + chosenAdaptationSet.getMediaType().name
+                + ', mime type: ' + chosenAdaptationSet.getMimeType() + ' representations count: ' + chosenAdaptationSet.getRepresentations().length;
+
+            eventBus.dispatchEvent({type: Dash.event.Events.ADAPTATION_SET_INITIALIZED, value: chosenAdaptationSet});
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
+        },
+
+        onInitRepresentationChosen = function (chosenRepresentation) {
+            var logMessage = 'Init representation has been chosen for ' + chosenRepresentation.getAdaptationSet().getMediaType().name
+                + ', number: ' + chosenRepresentation.orderNumber + ', id: ' + chosenRepresentation.getId() + ', bandwidth: ' + chosenRepresentation.getBandwidth();
+
+            eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_INITIALIZED, value: chosenRepresentation});
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
+        },
+
         appendNextSegmentForStreamingManagers = function () {
             if (streamingManagers.length > 0) {
                 var index = streamingManagers.length - 1;
                 while (index >= 0) {
                     if (streamingManagers[index].isStreamingFinished()) {
+                        eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, 'Streaming for ' + streamingManagers[index].getMediaType().name + ' has finished');
                         streamingManagers = streamingManagers.slice(0, index);
                     } else {
                         streamingManagers[index].appendNextSegment();
@@ -23,6 +40,8 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         },
 
         onInitializationCompleted = function () {
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
+                'Streaming initialization has finished. All initialization headers for representations have been downloaded');
             alreadyFinishedManagers = 0;
             appendNextSegmentForStreamingManagers();
         },
@@ -65,7 +84,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
                 }
             }
 
-            eventBus.dispatchEvent({type: Dash.event.Events.ADAPTATION_SET_INITIALIZED, value: adaptationSet});
+            onAdaptationSetChosen(adaptationSet);
             return adaptationSet;
         },
 
@@ -90,45 +109,25 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
                 representation = adaptationSet.getRepresentations()[0];
             }
 
-            eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_INITIALIZED, value: representation});
+            onInitRepresentationChosen(representation);
             return representation;
-        },
-
-        getInitRepresentationForVideo = function (adaptationSet) {
-            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.VIDEO);
-        },
-
-        getInitRepresentationForAudio = function (adaptationSet) {
-            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.AUDIO);
-        },
-
-        getInitRepresentationForText = function (adaptationSet) {
-            return getInitRepresentationForMedia(adaptationSet, Dash.model.MediaType.TEXT);
         },
 
         createSourceBufferObject = function (adaptationSet, initRepresentation) {
             var mediaSourceInitString =
                 Dash.utils.CommonUtils.createSourceBufferInitString(adaptationSet, initRepresentation);
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO,
+                'Creating source buffer object using init string "' + mediaSourceInitString + '"');
             return mediaSource.addSourceBuffer(mediaSourceInitString);
         },
 
         initializeStreamingForMediaType = function (adaptationSet, mediaType) {
+            eventBus.dispatchEvent(Dash.log.LogLevel.DEBUG, 'Creating streaming manager for ' + mediaType.name);
+
             var initRepresentation = getInitRepresentationForMedia(adaptationSet, mediaType),
                 sourceBuffer = createSourceBufferObject(adaptationSet, initRepresentation);
             return Dash.streaming.StreamingManager(adaptationSet, initRepresentation, sourceBuffer,
                 onInitializationAppended, onSegmentAppended, eventBus);
-        },
-
-        getStreamingManagerForMediaType = function (mediaType) {
-            if (mediaType === Dash.model.MediaType.AUDIO && audioStreamingManager) {
-                audioStreamingManager.changeRepresentationToHigher(steps);
-            } else if (mediaType === Dash.model.MediaType.VIDEO && videoStreamingManager) {
-                videoStreamingManager.changeRepresentationToHigher(steps);
-            } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
-                textStreamingManager.changeRepresentationToHigher(steps);
-            } else {
-                console.warn('Unsupported media type found while changing representation to higher - ' + mediaType);
-            }
         },
 
         initializeStreamingManagers = function () {
@@ -168,7 +167,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
             } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
                 textStreamingManager.changeRepresentationToHigher(steps);
             } else {
-                console.warn('Unsupported media type found while changing representation to higher - ' + mediaType);
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Unsupported media type found while changing representation to higher ' + mediaType);
             }
         },
 
@@ -180,16 +179,19 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
             } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
                 textStreamingManager.changeRepresentationToLower(steps);
             } else {
-                console.warn('Unsupported media type found while changing representation to lower - ' + mediaType);
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Unsupported media type found while changing representation to lower ' + mediaType);
             }
         },
 
         disableAdaptation: function () {
+            eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been disabled by user');
             adaptationManager = undefined;
         },
 
         enableAdaptation: function (adaptationAlgorithmName) {
             //FIXME implement me
+            eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been enabled using algorithm ' + adaptationAlgorithmName);
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Dynamic adaptation is not supported for now');
             adaptationManager = null;
         }
     };

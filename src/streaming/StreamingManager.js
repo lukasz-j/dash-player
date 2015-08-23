@@ -24,18 +24,34 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             }
         },
 
+        notifyRepresentationChange = function (changedRepresentation) {
+            var logMessage = 'Representation changed for ' + adaptationSet.getMediaType().name
+                + ', number: ' + changedRepresentation.orderNumber + ', id: ' + changedRepresentation.getId() + ', bandwidth: ' + changedRepresentation.getBandwidth();
+
+            eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_CHANGED, value: currentRepresentation});
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
+        },
+
         updateValuesAfterChangingRepresentation = function (changedRepresentationIndex) {
-            console.info('Representation changed to ' + changedRepresentationIndex);
             currentRepresentationIndex = changedRepresentationIndex;
             currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
             currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
             availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
-            eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_CHANGED, value: currentRepresentation});
+
+            notifyRepresentationChange(currentRepresentation);
             bufferManager.appendBuffer(currentInitializationHeader);
         },
 
+        notifySuccessfulSegmentDownload = function (requestOptions) {
+            var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length
+                + ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url;
+
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, logMessage);
+        },
+
         onSegmentDownload = function (request, loaded, options) {
-            console.info('Downloaded segment ' + currentSegmentIndex + ' for ' + adaptationSet.getMimeType() + ' ' + options.url);
+            notifySuccessfulSegmentDownload(options);
+
             var arrayBuffer = new Uint8Array(request.response);
 
             bufferManager.appendBuffer(arrayBuffer);
@@ -80,6 +96,12 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 },
 
                 onDownloadSuccess = function (request, loaded, options) {
+                    var logMessage = 'Initialization header successfully downloaded for ' + adaptationSet.getMediaType().name
+                        + ' representation, number: ' + representation.orderNumber + ', id: ' + representation.getId()
+                        + ', bandwidth: ' + representation.getBandwidth() + ', url: ' + options.url;
+
+                    eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
+
                     var header = new Uint8Array(request.response);
                     representationRepository.addRepresentation(representation, header, options.url);
 
@@ -90,6 +112,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     }
                 };
 
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Starting downloading headers for all available representations for ' + adaptationSet.getMediaType().name);
             moveToNextRepresentation();
             downloadBinaryFile(initializationURL, onDownloadSuccess);
         };
@@ -97,6 +120,10 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
     downloadAvailableHeaders();
 
     return {
+        getMediaType: function () {
+            return adaptationSet.getMediaType();
+        },
+
         appendInitialization: function () {
             var self = this;
             if (!isInitialized) {
@@ -104,6 +131,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     self.appendInitialization();
                 }, 500);
             } else {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Appending initialization header to source buffer for ' + adaptationSet.getMediaType().name);
                 currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
                 availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
                 bufferManager.appendBuffer(currentInitializationHeader);

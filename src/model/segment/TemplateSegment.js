@@ -1,6 +1,5 @@
 Dash.model.TemplateSegment = function (segmentTemplateNode, representation) {
     'use strict';
-    //todo implement me
 
     var identifiers = {
             doubleDollar: '$$',
@@ -40,7 +39,8 @@ Dash.model.TemplateSegment = function (segmentTemplateNode, representation) {
         computeNumberBasedSegmentURLs = function (template, baseURL, startSegment, numberOfSegments) {
             var segmentURLList = [];
             for (var i = 0; i < numberOfSegments; i += 1) {
-                //fixme
+                //fixme this approach has not been tested yet
+                //Is it a proper way of resolving number identifier in template?
                 var replacementNumberValue = i + startSegment;
 
                 var replacedCommonIdentifiers = substituteCommonIdentifiersInURL(template, representation.getId(), representation.getBandwidth()),
@@ -72,17 +72,25 @@ Dash.model.TemplateSegment = function (segmentTemplateNode, representation) {
 
         segmentURLs = computeTimeBasedSegmentURLs(templateURL, baseURL, segmentDuration, numberOfSegments);
     } else if (templateURL.indexOf(identifiers.number) > -1) {
+        //fixme implement support for number based templates
+        var startNumber = parseInt(segmentTemplateNode.getElementsByTagName('startNumber')[0], 10) || 1,
+            segmentDuration = parseInt(segmentTemplateNode.getAttribute('duration'), 10),
+            numberOfSegments = computeSegmentCount(duration, segmentDuration, timescale);
 
+        segmentURLs = computeNumberBasedSegmentURLs(templateURL, baseURL, startNumber, numberOfSegments);
     } else {
-        throw new Error();
+        throw new Error('Error template url format ' + templateURL);
     }
-
 
     return {
         name: 'TemplateSegment',
 
         getRepresentation: function () {
             return representation;
+        },
+
+        getTemplateURL: function () {
+            return templateURL;
         },
 
         getInitializationURL: function () {
