@@ -1,5 +1,5 @@
 Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, sourceBuffer,
-                                            initializationCallback, segmentDownloadCallback) {
+                                            initializationCallback, segmentDownloadCallback, eventBus) {
     'use strict';
 
     var bufferManager = Dash.streaming.BufferManager(sourceBuffer),
@@ -30,7 +30,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
             currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
             availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
-
+            eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_CHANGED, value: currentRepresentation});
             bufferManager.appendBuffer(currentInitializationHeader);
         },
 

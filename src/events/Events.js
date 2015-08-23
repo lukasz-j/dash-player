@@ -1,6 +1,6 @@
 Dash.event.Events = {
     MPD_LOADED: 'mpdLoaded',
-    ADAPTATION_SETS_INITIALIZED: 'adaptationSetsInitialized',
-    REPRESENTATIONS_INITIALIZED: 'representationsInitialized',
+    ADAPTATION_SET_INITIALIZED: 'adaptationSetInitialized',
+    REPRESENTATION_INITIALIZED: 'representationInitialized',
     REPRESENTATION_CHANGED: 'representationChanged'
 };

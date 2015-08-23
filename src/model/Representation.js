@@ -38,7 +38,7 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
         },
 
         getMimeType: function () {
-            return mimeType;
+            return mimeType || adaptationSet.getMimeType();
         },
 
         getId: function () {

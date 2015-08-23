@@ -7,6 +7,7 @@ var PlayerView = React.createClass({
             <div>
                 <VideoMainView />
                 <VideoControlContainer />
+                <RepresentationsContainer />
             </div>
         )
     }
@@ -94,9 +95,9 @@ var AdaptationController = React.createClass({
         this.setState({value: adaptationValue});
 
         if (adaptationValue === 'Off') {
-            player.disableAdaptation();
+            dashPlayer.disableAdaptation();
         } else {
-            player.enableAdaptation(adaptationValue);
+            dashPlayer.enableAdaptation(adaptationValue);
         }
     },
 
@@ -152,9 +153,9 @@ var MpdDetailsView = React.createClass({
     },
 
     render: function () {
-        reactUpdateComponentCallbacks.mpdLoaded = this.updateMpdModelFromEvent;
+        eventBus.addEventListener(Dash.event.Events.MPD_LOADED, this.updateMpdModelFromEvent);
 
-        if (this.state) { //TODO should it be this way?
+        if (this.state) {
             return (
                 <div>
                     <h1>MPD Info</h1>
@@ -186,69 +187,135 @@ var PropertyElement = React.createClass({
     }
 });
 
-/*
- var RepresentationsContainer = React.createClass({
- getInitialState: function () {
- return {
- videoAdaptationSet: { getRepresentations: function(){return [1,2]}},
- audioAdaptationSet: undefined,
- textAdaptationSet: undefined
- }
- },
+var RepresentationsContainer = React.createClass({
+    getInitialState: function () {
+        return {
+            videoAdaptationSet: null,
+            audioAdaptationSet: null,
+            textAdaptationSet: null
+        }
+    },
 
- render: function () {
- return (
- <div>
- {this.state.videoAdaptationSet ? <RepresentationController mediaType=" video"
- availableRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
- {this.state.audioAdaptationSet ? <RepresentationController mediaType=" audio"/> : null }
- {this.state.textAdaptationSet ? <RepresentationController mediaType=" text"/> : null }
- </div>
- )
- }
- });
+    updateAdaptationSetFromEvent: function (event) {
+        var adaptationSet = event.value;
+        if (adaptationSet.isVideo()) {
+            this.setState({videoAdaptationSet: adaptationSet})
+        } else if (adaptationSet.isAudio()) {
+            this.setState({audioAdaptationSet: adaptationSet})
+        } else if (adaptationSet.isText()) {
+            this.setState({textAdaptationSet: adaptationSet})
+        }
+    },
 
- var RepresentationController = React.createClass({
- getInitialState: function () {
- return {
- id: ""
- };
- },
+    render: function () {
+        eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, this.updateAdaptationSetFromEvent);
 
- updateCurrentRepresentation: function (representation) {
- var adaptationSet = representation.getAdaptationSet(),
- availableRepresentations = representation.getAdaptationSet().getRepresentations();
+        return (
+            <div>
+                {this.state.videoAdaptationSet ?
+                    <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
+                                              totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
+                {this.state.audioAdaptationSet ?
+                    <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
+                                              totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
+                {this.state.textAdaptationSet ?
+                    <RepresentationController mediaType={Dash.model.MediaType.TEXT}
+                                              totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
+            </div>
+        )
+    }
+});
 
- this.setState({
- currentRepresentationNumber = availableRepresentations.indexOf(representation),
- availableRepresentationsNumber = availableRepresentations.length,
+var RepresentationController = React.createClass({
+    getInitialState: function () {
+        return {
+            representationNumber: 0
+        };
+    },
 
- id: representation.getId(),
- mimeType: representation.getMimeType(),
- codecs: representation.getCodecs(),
- bandwidth: representation.getBandwidth(),
- width: representation.getWidth(),
- height: representation.getHeight(),
- frameRate: representation.getFrameRate(),
- audioSamplingRate: representation.getAudioSamplingRate()
- });
- },
+    updateRepresentationFromEvent: function (event) {
+        var representation = event.value;
+        if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
+            this.setState({
+                representationNumber: representation.orderNumber,
+                id: representation.getId(),
+                mimeType: representation.getMimeType(),
+                codecs: representation.getCodecs(),
+                bandwidth: representation.getBandwidth(),
+                width: representation.getWidth(),
+                height: representation.getHeight(),
+                frameRate: representation.getFrameRate(),
+                audioSamplingRate: representation.getAudioSamplingRate()
+            });
+        }
+    },
 
- render: function () {
- return (
- <div>
- <button>&lt;</button>
- <span>{this.props.mediaType}</span>
- <span>{this.state.currentRepresentationNumber} / {this.props.availableRepresentationsNumber} </span>
- <button>&gt;</button>
- <ul>
- <li>{this.state.id}</li>
- </ul>
- </div>
- );
- }
- });
- */
+    buttonType: {
+        LEFT: 0,
+        RIGHT: 1
+    },
+
+    printRepresentationPropertiesIfInitialized: function () {
+        if (this.state.id) {
+            return (
+                <div>
+                    <PropertyElement name="Id" value={this.state.id}/>
+                    <PropertyElement name="Mime" value={this.state.mimeType}/>
+                    <PropertyElement name="Codecs" value={this.state.codecs}/>
+                    <PropertyElement name="Bandwidth" value={this.state.bandwidth}/>
+                    {this.state.frameRate ?
+                        <PropertyElement name='Frame rate' value={this.state.frameRate}/> : null}
+                    {this.state.height ?
+                        <PropertyElement name='Height' value={this.state.height}/> : null}
+                    {this.state.width ?
+                        <PropertyElement name='Width' value={this.state.width}/> : null}
+                    {this.state.audioSamplingRate ?
+                        <PropertyElement name='Audio sampling rate' value={this.state.audioSamplingRate}/> : null}
+                </div>
+            )
+        } else {
+            return '';
+        }
+    },
+
+    changeRepresentation: function (event) {
+        //fixme ugly as fuck
+        var buttonInnerHtml = event.target.innerHTML;
+
+        if (buttonInnerHtml === '&lt;') {
+            dashPlayer.changeRepresentationToLower(this.props.mediaType, 1);
+        } else if (buttonInnerHtml === '&gt;') {
+            dashPlayer.changeRepresentationToHigher(this.props.mediaType, 1);
+        }
+    },
+
+    shouldButtonBeDisabled: function (buttonType) {
+        if (buttonType === this.buttonType.LEFT) {
+            return this.state.representationNumber === 0 || this.state.representationNumber === 1;
+        } else if (buttonType === this.buttonType.RIGHT) {
+            return this.state.representationNumber === 0 || this.state.representationNumber === this.props.totalRepresentationsNumber;
+        }
+    },
+
+    render: function () {
+        eventBus.addEventListener(Dash.event.Events.REPRESENTATION_INITIALIZED, this.updateRepresentationFromEvent);
+        eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.updateRepresentationFromEvent);
+
+        return (
+            <div>
+                <div>
+                    <button onClick={this.changeRepresentation}
+                            disabled={this.shouldButtonBeDisabled(this.buttonType.LEFT)}>&lt;</button>
+                    <span>{this.props.mediaType.name}</span>
+                    <span>{this.state.representationNumber} / {this.props.totalRepresentationsNumber} </span>
+                    <button onClick={this.changeRepresentation}
+                            disabled={this.shouldButtonBeDisabled(this.buttonType.RIGHT)}>&gt;</button>
+                </div>
+                {this.printRepresentationPropertiesIfInitialized()}
+            </div>
+        );
+    }
+});
 
 
 

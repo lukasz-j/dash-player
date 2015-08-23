@@ -53,17 +53,12 @@
 <body>
 <div id="content"></div>
 <script type="text/jsx">
+    var eventBus = Dash.event.EventBus();
+
     React.render(
             <PlayerView />,
             document.getElementById("content")
     );
-
-    /* events that may come from player and must be dispatched by react components */
-    var eventBus = Dash.event.EventBus();
-    eventBus.addEventListener(Dash.event.Events.MPD_LOADED, reactUpdateComponentCallbacks.mpdLoaded);
-    eventBus.addEventListener(Dash.event.Events.ADAPTATION_SETS_INITIALIZED, reactUpdateComponentCallbacks.adaptationSetInitialized);
-    eventBus.addEventListener(Dash.event.Events.REPRESENTATIONS_INITIALIZED, reactUpdateComponentCallbacks.representationsInitialized);
-    eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, reactUpdateComponentCallbacks.representationChanged);
 
     var videoElement = document.getElementById('dashVideoElement');
     var dashPlayer = Dash.Player(videoElement, window, eventBus);

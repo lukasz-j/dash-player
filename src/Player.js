@@ -20,7 +20,7 @@ Dash.Player = function (videoElement, $window, eventBus) {
             videoElement.src = url;
 
             mediaSource.addEventListener('sourceopen', function () {
-                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource);
+                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, eventBus);
             }, false);
         },
 

@@ -10,9 +10,9 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
         audioSamplingRate = Dash.utils.ParserModelUtils.getDigitAttribute(adaptationSetNode, 'audioSamplingRate'),
         mimeType,
         mediaFormat,
-        mediaType;
+        mediaType,
 
-    var initializeMediaInformationBaseOnRepresentations = function (representations) {
+        initializeMediaInformationBaseOnRepresentations = function (representations) {
             //temporary fix
             if (adaptationSetNode.hasAttribute('mimeType')) {
                 mimeType = adaptationSetNode.getAttribute('mimeType');
@@ -95,6 +95,10 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
 
         getAudioSamplingRate: function () {
             return audioSamplingRate;
+        },
+
+        getMediaType: function () {
+            return mediaType;
         },
 
         isVideo: function () {
