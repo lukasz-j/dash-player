@@ -1,4 +1,4 @@
-Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adaptationManager, chooseAdaptationSet, chooseInitRepresentation) {
+Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adaptationManager, adaptationSetPicker, initRepresentationPicker) {
     'use strict';
 
     var videoStreamingManager,
@@ -70,8 +70,8 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         getAdaptationSetForMedia = function (period, mediaType) {
             var adaptationSet = null;
 
-            if (chooseAdaptationSet) {
-                adaptationSet = chooseAdaptationSet(period.getAdaptationSets(), Dash.model.MediaType.VIDEO);
+            if (adaptationSetPicker) {
+                adaptationSet = adaptationSetPicker.chooseAdaptationSet(period.getAdaptationSets(), Dash.model.MediaType.VIDEO);
             } else {
                 if (mediaType === Dash.model.MediaType.VIDEO) {
                     adaptationSet = period.getVideoAdaptationSet(Dash.model.MediaFormat.MP4);
@@ -103,9 +103,12 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         getInitRepresentationForMedia = function (adaptationSet, mediaType) {
             var representation;
 
-            if (chooseInitRepresentation) {
-                representation = chooseInitRepresentation(adaptationSet.getRepresentations(), mediaType);
+            if (initRepresentationPicker) {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Using InitRepresentation for choosing init representation for ' + mediaType.name);
+                representation = initRepresentationPicker.chooseInitRepresentation(adaptationSet.getRepresentations(), mediaType);
             } else {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
+                    'InitRepresentaionPicker is not defined, representation with lowest bandwidth will be chosen for ' + mediaType.name);
                 representation = adaptationSet.getRepresentations()[0];
             }
 

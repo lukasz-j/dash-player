@@ -2,6 +2,9 @@ Dash.Player = function (videoElement, $window, eventBus) {
     'use strict';
 
     var playbackManager,
+        adaptationManager,
+        adaptationSetPicker,
+        initRepresentationPicker,
 
         initializeStreaming = function (mpdModel) {
             var mediaSource,
@@ -19,9 +22,12 @@ Dash.Player = function (videoElement, $window, eventBus) {
             videoElement.pause();
             videoElement.src = url;
 
+            initRepresentationPicker = Dash.streaming.DefaultInitRepresentationPicker();
+
             mediaSource.addEventListener('sourceopen', function () {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'MediaSource successfully open');
-                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, eventBus);
+                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, eventBus, adaptationManager,
+                    adaptationSetPicker, initRepresentationPicker);
             }, false);
         },
 
