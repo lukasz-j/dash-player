@@ -6,13 +6,11 @@ var PlayerView = React.createClass({
 
                 <VideoMainView />
 
-                <div className="row">
-                    <RepresentationsContainer />
-                </div>
+                <RepresentationsContainer />
 
-
+                <LogContainer />
             </div>
-        )
+        );
     }
 });
 
@@ -92,7 +90,7 @@ var VideoElement = React.createClass({
     render: function () {
         return (
             <div className="col-md-8">
-                <video id="dashVideoElement" width="640" height="360" controls></video>
+                <video id="dashVideoElement" width="100%" height="100%" controls></video>
             </div>
         )
     }
@@ -101,9 +99,12 @@ var VideoElement = React.createClass({
 var VideoControlContainer = React.createClass({
     render: function () {
         return (
-            <div classname="col-md-4">
-                <AdaptationController />
-                <MpdDetailsView/>
+            <div className="col-md-4 panel panel-default">
+                <div className="panel-heading">Player controller</div>
+                <div className="panel-body">
+                    <AdaptationController />
+                    <MpdDetailsView/>
+                </div>
             </div>
         )
     }
@@ -117,7 +118,7 @@ var AdaptationController = React.createClass({
     },
 
     adaptationChanged: function (event) {
-        var adaptationValue = event.target.value;
+        var adaptationValue = event.target.innerHTML;
         this.setState({value: adaptationValue});
 
         if (adaptationValue === 'Off') {
@@ -131,12 +132,18 @@ var AdaptationController = React.createClass({
         return (
             <div>
                 <span>Adaptation algorithm:</span>
-                <input type="button" value="Off" disabled={this.state.value === "Off"}
-                       onClick={this.adaptationChanged}/>
-                <input type="button" value="PID" disabled={this.state.value === "PID"}
-                       onClick={this.adaptationChanged}/>
-                <input type="button" value="Fuzzy" disabled={this.state.value === "Fuzzy"}
-                       onClick={this.adaptationChanged}/>
+
+                <div className="btn-group" role="group" aria-label="...">
+                    <button className="btn btn-default" type="button" disabled={this.state.value === "Off"}
+                            onClick={this.adaptationChanged}>Off
+                    </button>
+                    <button className="btn btn-default" type="button" disabled={this.state.value === "PID"}
+                            onClick={this.adaptationChanged}>PID
+                    </button>
+                    <button className="btn btn-default" type="button" disabled={this.state.value === "Fuzzy"}
+                            onClick={this.adaptationChanged}>Fuzzy
+                    </button>
+                </div>
             </div>
         );
     }
@@ -215,6 +222,7 @@ var PropertyElement = React.createClass({
 var RepresentationsContainer = React.createClass({
     getInitialState: function () {
         return {
+            initialized: false,
             videoAdaptationSet: null,
             audioAdaptationSet: null,
             textAdaptationSet: null
@@ -224,30 +232,40 @@ var RepresentationsContainer = React.createClass({
     updateAdaptationSetFromEvent: function (event) {
         var adaptationSet = event.value;
         if (adaptationSet.isVideo()) {
-            this.setState({videoAdaptationSet: adaptationSet})
+            this.setState({initialized: true, videoAdaptationSet: adaptationSet})
         } else if (adaptationSet.isAudio()) {
-            this.setState({audioAdaptationSet: adaptationSet})
+            this.setState({initialized: true, audioAdaptationSet: adaptationSet})
         } else if (adaptationSet.isText()) {
-            this.setState({textAdaptationSet: adaptationSet})
+            this.setState({initialized: true, textAdaptationSet: adaptationSet})
         }
     },
 
     render: function () {
         eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, this.updateAdaptationSetFromEvent);
 
-        return (
-            <div>
-                {this.state.videoAdaptationSet ?
-                    <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
-                                              totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
-                {this.state.audioAdaptationSet ?
-                    <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
-                                              totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
-                {this.state.textAdaptationSet ?
-                    <RepresentationController mediaType={Dash.model.MediaType.TEXT}
-                                              totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
-            </div>
-        )
+        if (!this.state.initialized) {
+            return (<div></div>);
+        } else {
+
+            return (
+                <div className="row">
+                    <div className="panel panel-default">
+                        <div className="panel-heading">Representations</div>
+                        <div className="panel-body">
+                            {this.state.videoAdaptationSet ?
+                                <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
+                                                          totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
+                            {this.state.audioAdaptationSet ?
+                                <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
+                                                          totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
+                            {this.state.textAdaptationSet ?
+                                <RepresentationController mediaType={Dash.model.MediaType.TEXT}
+                                                          totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
+                        </div>
+                    </div>
+                </div>
+            )
+        }
     }
 });
 
@@ -299,7 +317,7 @@ var RepresentationController = React.createClass({
                     {this.state.audioSamplingRate ?
                         <PropertyElement name='Audio sampling rate' value={this.state.audioSamplingRate}/> : null}
                 </div>
-            )
+            );
         } else {
             return '';
         }
@@ -344,8 +362,8 @@ var RepresentationController = React.createClass({
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.updateRepresentationFromEvent);
 
         return (
-            <div>
-                <div>
+            <div className="col-md-4 panel panel-info">
+                <div className="panel-heading">
                     <button onClick={this.changeRepresentationToLower}
                             disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
 
@@ -356,8 +374,19 @@ var RepresentationController = React.createClass({
                             disabled={this.shouldButtonBeDisabled(this.buttonType.HIGHER)}>&gt;</button>
                 </div>
                 {this.showAlertAboutChangingRepresentation()}
-                {this.printRepresentationPropertiesIfInitialized()}
+                <div className="panel-body">
+                    {this.printRepresentationPropertiesIfInitialized()}
+                </div>
             </div>
+        );
+    }
+});
+
+
+var LogContainer = React.createClass({
+    render: function () {
+        return (
+            <div></div>
         );
     }
 });
