@@ -1,23 +1,16 @@
-//Callback methods
-var reactUpdateComponentCallbacks = {};
-
 var PlayerView = React.createClass({
     render: function () {
         return (
-            <div>
-                <VideoMainView />
-                <VideoControlContainer />
-                <RepresentationsContainer />
-            </div>
-        )
-    }
-});
+            <div className="container">
+                <SourceLoadView />
 
-var VideoMainView = React.createClass({
-    render: function () {
-        return (
-            <div>
-                <SourceLoadView/>
+                <VideoMainView />
+
+                <div className="row">
+                    <RepresentationsContainer />
+                </div>
+
+
             </div>
         )
     }
@@ -33,8 +26,11 @@ var SourceLoadView = React.createClass({
     corsShouldBeEnabledAlert: function () {
         if (this.state.videoSource === 'youtube') {
             return (
-                <div>
-                    wloncz CORSA
+                <div className="alert alert-warning" role="alert">
+                    <strong>Warning!</strong> You need browser plugin installed which change CORS header in HTTP
+                    responses to allow proper streaming from YouTube. &nbsp;
+                    <a href="https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi"
+                       className="alert-link">Plugin for Chrome</a>
                 </div>
             );
         } else {
@@ -51,9 +47,17 @@ var SourceLoadView = React.createClass({
         dashPlayer.load(sourceURL, this.state.videoSource === 'youtube');
     },
 
+    getSourcePlaceholder: function () {
+        if (this.state.videoSource === "youtube") {
+            return "YouTube movie URL";
+        } else {
+            return "MPD file URL";
+        }
+    },
+
     render: function () {
         return (
-            <div>
+            <div className="row">
                 <label for="sourceType">Source:</label>
 
                 <select value={this.state.videoSource} onChange={this.onVideoSourceChanged}>
@@ -61,21 +65,43 @@ var SourceLoadView = React.createClass({
                     <option value="youtube">YouTube</option>
                 </select>
 
-                <input type="text" ref="sourceURL"/>
-                <input type="button" value="Load" onClick={this.loadVideoSource}/>
+                <input className="" type="text" placeholder={this.getSourcePlaceholder()}
+                       ref="sourceURL"/>
+                <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>Load</button>
+
                 {this.corsShouldBeEnabledAlert()}
-                <div>
-                    <video id="dashVideoElement" width="640" height="360" controls></video>
-                </div>
+
             </div>
         );
+    }
+});
+
+var VideoMainView = React.createClass({
+    render: function () {
+        return (
+            <div className="row">
+                <VideoElement />
+                <VideoControlContainer />
+            </div>
+        )
+    }
+});
+
+
+var VideoElement = React.createClass({
+    render: function () {
+        return (
+            <div className="col-md-8">
+                <video id="dashVideoElement" width="640" height="360" controls></video>
+            </div>
+        )
     }
 });
 
 var VideoControlContainer = React.createClass({
     render: function () {
         return (
-            <div>
+            <div classname="col-md-4">
                 <AdaptationController />
                 <MpdDetailsView/>
             </div>
