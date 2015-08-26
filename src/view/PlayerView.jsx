@@ -55,20 +55,31 @@ var SourceLoadView = React.createClass({
 
     render: function () {
         return (
-            <div className="row">
-                <label for="sourceType">Source:</label>
+            <div>
+                <div className="row sourceLoadView">
+                    <div className="col-md-2 sourceSelect">
+                        <select className="form-control" id="sourceType" value={this.state.videoSource}
+                                onChange={this.onVideoSourceChanged}>
+                            <option value="mpd">MPD file</option>
+                            <option value="youtube">YouTube</option>
+                        </select>
+                    </div>
 
-                <select value={this.state.videoSource} onChange={this.onVideoSourceChanged}>
-                    <option value="mpd">MPD file</option>
-                    <option value="youtube">YouTube</option>
-                </select>
-
-                <input className="" type="text" placeholder={this.getSourcePlaceholder()}
-                       ref="sourceURL"/>
-                <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>Load</button>
-
-                {this.corsShouldBeEnabledAlert()}
-
+                    <div className="col-md-10 sourceInput">
+                        <div className="input-group">
+                            <input type="text" className="form-control" ref="sourceURL"
+                                   placeholder={this.getSourcePlaceholder()}/>
+                                <span className="input-group-btn">
+                                    <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>
+                                        Load
+                                    </button>
+                                </span>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    {this.corsShouldBeEnabledAlert()}
+                </div>
             </div>
         );
     }

@@ -1,31 +1,12 @@
-
-#playerContainer {
-
+.sourceLoadView {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
-input#url {
-    width: 60%
+.sourceSelect {
+    padding-right: 5px;
 }
 
-#videoPane {
-    width: 60%;
-    float: left;
-}
-
-#infoPane {
-    width: 40%;
-    float: left;
-}
-
-video {
-    height: 80%;
-    width: 80%;
-}
-
-#mpdDetails {
-    visibility: hidden;
-}
-
-#currentPlay {
-    visibility: hidden;
+.sourceInput {
+    padding-left: 5px;
 }
