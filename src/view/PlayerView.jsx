@@ -111,12 +111,19 @@ var VideoControlContainer = React.createClass({
     render: function () {
         return (
             <div className="col-md-4">
-                <div className="panel panel-default">
+                <div className="panel panel-primary">
                     <div className="panel-heading">Player controller</div>
                     <div className="panel-body">
-                        <AdaptationController />
                         <MpdDetailsView/>
                     </div>
+
+                    <ul className="list-group">
+                        <li className="list-group-item"><AdaptationController/></li>
+                        <li className="list-group-item"><QualityController
+                            mediaType={Dash.model.MediaType.VIDEO}/></li>
+                        <li className="list-group-item"><QualityController
+                            mediaType={Dash.model.MediaType.AUDIO}/></li>
+                    </ul>
                 </div>
             </div>
         )
@@ -144,9 +151,9 @@ var AdaptationController = React.createClass({
     render: function () {
         return (
             <div>
-                <span>Adaptation algorithm:</span>
+                <span id="adaptationLabel">Adaptation method</span>
 
-                <div className="btn-group" role="group" aria-label="...">
+                <div className="btn-group" role="group" aria-label="adaptationLabel">
                     <button className="btn btn-default" type="button" disabled={this.state.value === "Off"}
                             onClick={this.adaptationChanged}>Off
                     </button>
@@ -156,6 +163,102 @@ var AdaptationController = React.createClass({
                     <button className="btn btn-default" type="button" disabled={this.state.value === "Fuzzy"}
                             onClick={this.adaptationChanged}>Fuzzy
                     </button>
+                </div>
+            </div>
+        );
+    }
+});
+
+
+var QualityController = React.createClass({
+
+    getInitialState: function () {
+        return {
+            representations: [],
+            chosen: null,
+            updating: true
+        };
+    },
+
+    getRepresentationIdByShortName: function (name) {
+        for (var i = 0; i < this.state.representations.length; i += 1) {
+            if (this.state.representations[i].name === name) {
+                return this.state.representations[i].id;
+            }
+        }
+    },
+
+    changeRepresentation: function (event) {
+        var representationName = event.target.innerHTML,
+            representationId = this.getRepresentationIdByShortName(representationName);
+
+        React.findDOMNode(this.refs.dropDownButton).innerHTML = "Changing...";
+        this.setState({updating: true});
+        dashPlayer.changeRepresentation(this.props.mediaType, representationId);
+    },
+
+    onAdaptationSetInitialized: function (event) {
+        var adaptationSet = event.value;
+        if (adaptationSet.getMediaType() === this.props.mediaType) {
+            var representations = adaptationSet.getRepresentations().map(function (element) {
+                return {id: element.getId(), name: element.toShortForm()};
+            });
+            this.setState({representations: representations});
+        }
+    },
+
+    onRepresentationChanged: function (event) {
+        var representation = event.value;
+        if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
+            React.findDOMNode(this.refs.dropDownButton).innerHTML = representation.toShortForm();
+            this.setState({updating: false, chosen: representation.toShortForm()});
+        }
+    },
+
+    getTitle: function () {
+        switch (this.props.mediaType) {
+            case Dash.model.MediaType.VIDEO:
+                return "Video representation";
+            case Dash.model.MediaType.AUDIO:
+                return "Audio representation";
+            case Dash.model.MediaType.TEXT:
+                return "Text representation";
+        }
+    },
+
+    getOptions: function () {
+        if (this.state.representations.length <= 0) {
+            return '';
+        } else {
+            var self = this;
+            return this.state.representations.map(function (representation) {
+                return <li
+                    className={self.state.updating || representation.name === self.state.chosen ? "disabled" : ""}>
+                    <a href="#" onClick={self.changeRepresentation}>{representation.name}</a>
+                </li>
+            });
+        }
+    },
+
+    render: function () {
+        eventBus.addEventListener(Dash.event.Events.REPRESENTATION_INITIALIZED, this.onRepresentationChanged);
+        eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.onRepresentationChanged);
+        eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, this.onAdaptationSetInitialized);
+
+        return (
+            <div>
+                <span>{this.getTitle()}</span>
+
+                <div className="btn-group">
+                    <button type="button" ref="dropDownButton" className="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Change
+                        <span className="caret"></span>
+                    </button>
+                    <ul className="dropdown-menu">
+                        {this.getOptions()}
+                    </ul>
                 </div>
             </div>
         );
@@ -203,8 +306,8 @@ var MpdDetailsView = React.createClass({
         if (this.state) {
             return (
                 <div>
-                    <h1>MPD Info</h1>
-                    <PropertyElement name='MPD type' value={this.state.type}/>
+                    <h4>MPD Details</h4>
+                    <PropertyElement name='Type' value={this.state.type}/>
                     <PropertyElement name='Profiles' value={this.state.profiles}/>
                     <PropertyElement name='Duration' value={this.state.duration}/>
                     <PropertyElement name='Min buffer' value={this.state.minBuffer}/>

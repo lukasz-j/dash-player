@@ -96,7 +96,12 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
                 } else {
                     return String(height);
                 }
+            } else if (audioSamplingRate) {
+                return (audioSamplingRate / 1000).toFixed(1) + 'kHz @ ' + (bandwidth / 1000).toFixed(2) + 'kbps';
+            } else {
+                return bandwidth / 1000 + 'kbps';
             }
+
         },
 
         //Different representations should have different ids
