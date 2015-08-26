@@ -19,8 +19,9 @@ Dash.streaming.DefaultInitRepresentationPicker = function () {
                     chosenRepresentation = clonedRepresentations[i];
                 }
             }
-
+            return chosenRepresentation;
         },
+
         chooseInitRepresentationForAudio = function (representations) {
             //choose mid representation
             var index = Math.floor(representations.length / 2);

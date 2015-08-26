@@ -99,11 +99,13 @@ var VideoElement = React.createClass({
 var VideoControlContainer = React.createClass({
     render: function () {
         return (
-            <div className="col-md-4 panel panel-default">
-                <div className="panel-heading">Player controller</div>
-                <div className="panel-body">
-                    <AdaptationController />
-                    <MpdDetailsView/>
+            <div className="col-md-4">
+                <div className="panel panel-default">
+                    <div className="panel-heading">Player controller</div>
+                    <div className="panel-body">
+                        <AdaptationController />
+                        <MpdDetailsView/>
+                    </div>
                 </div>
             </div>
         )
@@ -362,20 +364,22 @@ var RepresentationController = React.createClass({
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.updateRepresentationFromEvent);
 
         return (
-            <div className="col-md-4 panel panel-info">
-                <div className="panel-heading">
-                    <button onClick={this.changeRepresentationToLower}
-                            disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
+            <div className="col-md-4">
+                <div className=" panel panel-info">
+                    <div className="panel-heading">
+                        <button onClick={this.changeRepresentationToLower}
+                                disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
 
-                    <span>{this.props.mediaType.name}</span>
-                    <span>{this.state.representationNumber} / {this.props.totalRepresentationsNumber} </span>
+                        <span>{this.props.mediaType.name}</span>
+                        <span>{this.state.representationNumber} / {this.props.totalRepresentationsNumber} </span>
 
-                    <button onClick={this.changeRepresentationToHigher}
-                            disabled={this.shouldButtonBeDisabled(this.buttonType.HIGHER)}>&gt;</button>
-                </div>
-                {this.showAlertAboutChangingRepresentation()}
-                <div className="panel-body">
-                    {this.printRepresentationPropertiesIfInitialized()}
+                        <button onClick={this.changeRepresentationToHigher}
+                                disabled={this.shouldButtonBeDisabled(this.buttonType.HIGHER)}>&gt;</button>
+                    </div>
+                    {this.showAlertAboutChangingRepresentation()}
+                    <div className="panel-body">
+                        {this.printRepresentationPropertiesIfInitialized()}
+                    </div>
                 </div>
             </div>
         );
