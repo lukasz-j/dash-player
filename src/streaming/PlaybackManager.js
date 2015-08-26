@@ -186,6 +186,18 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
             }
         },
 
+        changeRepresentation: function (mediaType, representationId) {
+            if (mediaType === Dash.model.MediaType.AUDIO && audioStreamingManager) {
+                audioStreamingManager.changeRepresentation(representationId);
+            } else if (mediaType === Dash.model.MediaType.VIDEO && videoStreamingManager) {
+                videoStreamingManager.changeRepresentation(representationId);
+            } else if (mediaType === Dash.model.MediaType.TEXT && textStreamingManager) {
+                textStreamingManager.changeRepresentation(representationId);
+            } else {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Unsupported media type found while changing representation ' + mediaType);
+            }
+        },
+
         disableAdaptation: function () {
             eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been disabled by user');
             adaptationManager = undefined;

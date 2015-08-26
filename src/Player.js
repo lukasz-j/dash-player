@@ -59,6 +59,11 @@ Dash.Player = function (videoElement, $window, eventBus) {
             playbackManager.changeRepresentationToHigher(mediaType, steps);
         },
 
+        changeRepresentation: function (mediaType, representationId) {
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received changing representation to representation with id ' + representationId + ' for ' + mediaType.name);
+            playbackManager.changeRepresentation(mediaType, representationId);
+        },
+
         disableAdaptation: function () {
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received disabling adaptation request');
             playbackManager.disableAdaptation();

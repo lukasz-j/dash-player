@@ -89,6 +89,16 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
             }
         },
 
+        toShortForm: function () {
+            if (height) {
+                if (frameRate) {
+                    return height + ' @ ' + frameRate;
+                } else {
+                    return String(height);
+                }
+            }
+        },
+
         //Different representations should have different ids
         equals: function (representation) {
             return id === representation.getId();

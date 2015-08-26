@@ -65,7 +65,16 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             segmentDownloadCallback.call(this, request, loaded, options);
         },
 
-        changeRepresentation = function (steps) {
+        findRepresentationByItsId = function (representationId) {
+            for (var i = 0; i < availableRepresentationSortedByBandwidth.length; i += 1) {
+                if (availableRepresentationSortedByBandwidth[i].getId() === representationId) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
+        changeRepresentationBySteps = function (steps) {
             var changedRepresentationIndex = currentRepresentationIndex + steps;
 
             if (changedRepresentationIndex < lowestRepresentationIndex) {
@@ -76,6 +85,16 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
 
             pendingRepresentationChange.available = true;
             pendingRepresentationChange.index = changedRepresentationIndex;
+        },
+
+        changeRepresentationByItsId = function (representationId) {
+            var representationIndex = findRepresentationByItsId(representationId);
+            if (representationIndex === -1) {
+                //log exception
+            } else {
+                pendingRepresentationChange.available = true;
+                pendingRepresentationChange.index = representationIndex;
+            }
         },
 
         downloadAvailableHeaders = function () {
@@ -157,14 +176,18 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             if (!steps || steps < 0) {
                 steps = 1;
             }
-            changeRepresentation(steps);
+            changeRepresentationBySteps(steps);
+        },
+
+        changeRepresentation: function (representationId) {
+            changeRepresentationByItsId(representationId);
         },
 
         changeRepresentationToLower: function (steps) {
             if (!steps || steps < 0) {
                 steps = 1;
             }
-            changeRepresentation(-steps);
+            changeRepresentationBySteps(-steps);
         }
     };
 };

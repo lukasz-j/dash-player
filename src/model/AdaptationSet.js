@@ -69,6 +69,12 @@ Dash.model.AdaptationSet = function (adaptationSetNode, period) {
             }
         },
 
+        getRepresentationShortForms: function () {
+            return representations.map(function (element) {
+                return element.toShortForm();
+            })
+        },
+
         getMimeType: function () {
             return mimeType;
         },
