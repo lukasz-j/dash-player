@@ -10,3 +10,9 @@
 .sourceInput {
     padding-left: 5px;
 }
+
+.logBody {
+    max-height: 300px;
+    overflow-wrap: break-word;
+    overflow-y: scroll;
+}

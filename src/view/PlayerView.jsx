@@ -479,7 +479,7 @@ var RepresentationController = React.createClass({
 
         return (
             <div className="col-md-4">
-                <div className=" panel panel-info">
+                <div className="panel panel-default">
                     <div className="panel-heading">
                         <button onClick={this.changeRepresentationToLower}
                                 disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
@@ -502,10 +502,112 @@ var RepresentationController = React.createClass({
 
 
 var LogContainer = React.createClass({
+
+    logBufferSize: 1000,
+
+    getInitialState: function () {
+        return {logs: []};
+    },
+
+    onLog: function (event) {
+        var logs = this.state.logs;
+        logs.push({level: event.value.level, message: event.value.message});
+
+        if (logs.length > this.logBufferSize) {
+            logs.shift();
+        }
+
+        this.setState({logs: logs});
+    },
+
+    componentDidUpdate: function () {
+        var logBody = React.findDOMNode(this.refs.logs);
+        logBody.scrollTop = logBody.scrollHeight;
+    },
+
     render: function () {
+        eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, this.onLog);
+
+        var logMessages = this.state.logs.map(function (logEntry) {
+            return (
+                <li className="list-group-item"><LogMessage level={logEntry.level} message={logEntry.message}/></li>
+            )
+        });
+
         return (
-            <div></div>
+            <div className="row">
+                <div className="panel panel-default">
+                    <div className="panel-heading">
+                        Logs
+                    </div>
+                    <div ref="logs" className="panel-body logBody">
+                        <ul className="list-group">
+                            {logMessages}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         );
+    }
+});
+
+var LogMessage = React.createClass({
+
+    createLabelElement: function () {
+        switch (this.props.level) {
+            case Dash.log.LogLevel.DEBUG:
+                return (
+                    <div>
+                        <span className="label label-default">Debug</span>
+                        {this.props.message}
+                    </div>
+                );
+            case Dash.log.LogLevel.INFO:
+                return (
+                    <span className="label label-info">Info</span>
+                );
+            case Dash.log.LogLevel.WARN:
+                return (
+                    <span className="label label-warning">Warning</span>
+                );
+            case Dash.log.LogLevel.ERROR:
+                return (
+                    <span className="label label-danger">Danger</span>
+                );
+        }
+    },
+
+    render: function () {
+        switch (this.props.level) {
+            case Dash.log.LogLevel.DEBUG:
+                return (
+                    <div >
+                        <span className="label label-default">Debug</span>
+                        {this.props.message}
+                    </div>
+                );
+            case Dash.log.LogLevel.INFO:
+                return (
+                    <div>
+                        <span className="label label-info">Info</span>
+                        {this.props.message}
+                    </div>
+                );
+            case Dash.log.LogLevel.WARN:
+                return (
+                    <div >
+                        <span className="label label-warning">Warning</span>
+                        {this.props.message}
+                    </div>
+                );
+            case Dash.log.LogLevel.ERROR:
+                return (
+                    <div >
+                        <span className="label label-danger">Danger</span>
+                        {this.props.message}
+                    </div>
+                );
+        }
     }
 });
 
