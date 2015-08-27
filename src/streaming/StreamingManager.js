@@ -46,6 +46,16 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length
                 + ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url;
 
+            eventBus.dispatchEvent(
+                {
+                    type: Dash.event.Events.SEGMENT_DOWNLOADED,
+                    value: {
+                        mediaType: adaptationSet.getMediaType(),
+                        currentSegment: currentSegmentIndex,
+                        maxSegment: availableSegmentURLs.length
+                    }
+                }
+            );
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, logMessage);
         },
 

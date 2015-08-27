@@ -92,7 +92,7 @@ Dash.model.Representation = function (representationNode, adaptationSet) {
         toShortForm: function () {
             if (height) {
                 if (frameRate) {
-                    return height + ' @ ' + frameRate;
+                    return height + ' @ ' + frameRate + 'fps';
                 } else {
                     return String(height);
                 }

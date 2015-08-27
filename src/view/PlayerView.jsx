@@ -453,6 +453,19 @@ var RepresentationController = React.createClass({
         };
     },
 
+    updateSegmentIndexFromEvent: function (event) {
+        if (event.value.mediaType === this.props.mediaType) {
+            this.setState({
+                currentSegment: event.value.currentSegment,
+                maxSegment: event.value.maxSegment
+            });
+        }
+    },
+
+    createSegmentPropertyValue: function () {
+        return this.state.currentSegment + "/" + this.state.maxSegment;
+    },
+
     updateRepresentationFromEvent: function (event) {
         var representation = event.value;
         if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
@@ -462,11 +475,11 @@ var RepresentationController = React.createClass({
                 id: representation.getId(),
                 mimeType: representation.getMimeType(),
                 codecs: representation.getCodecs(),
-                bandwidth: representation.getBandwidth(),
+                bandwidth: representation.getBandwidth() + ' bps',
                 width: representation.getWidth(),
                 height: representation.getHeight(),
-                frameRate: representation.getFrameRate(),
-                audioSamplingRate: representation.getAudioSamplingRate()
+                frameRate: representation.getFrameRate() + ' fps',
+                audioSamplingRate: representation.getAudioSamplingRate() + ' Hz'
             });
         }
     },
@@ -492,6 +505,8 @@ var RepresentationController = React.createClass({
                         <PropertyElement name='Width' value={this.state.width}/> : null}
                     {this.state.audioSamplingRate ?
                         <PropertyElement name='Audio sampling rate' value={this.state.audioSamplingRate}/> : null}
+                    {this.state.currentSegment ?
+                        <PropertyElement name='Segments' value={this.createSegmentPropertyValue()}/> : null}
                 </div>
             );
         } else {
@@ -536,6 +551,7 @@ var RepresentationController = React.createClass({
     render: function () {
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_INITIALIZED, this.updateRepresentationFromEvent);
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.updateRepresentationFromEvent);
+        eventBus.addEventListener(Dash.event.Events.SEGMENT_DOWNLOADED, this.updateSegmentIndexFromEvent);
 
         return (
             <div className="col-md-4">
