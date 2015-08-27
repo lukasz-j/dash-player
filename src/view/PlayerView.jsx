@@ -87,8 +87,15 @@ var VideoMainView = React.createClass({
     render: function () {
         return (
             <div className="row">
-                <VideoElement />
-                <VideoControlContainer />
+                <div className="panel panel-primary">
+                    <div className="panel-heading">
+                        Player controller
+                    </div>
+                    <div className="panel-body">
+                        <VideoElement />
+                        <VideoControlContainer />
+                    </div>
+                </div>
             </div>
         )
     }
@@ -109,19 +116,14 @@ var VideoControlContainer = React.createClass({
     render: function () {
         return (
             <div className="col-md-4">
-                <div className="panel panel-primary">
-                    <div className="panel-heading">Player controller</div>
-
+                <ul className="list-group">
                     <MpdDetailsView/>
-
-                    <ul className="list-group">
-                        <li className="list-group-item"><AdaptationController/></li>
-                        <li className="list-group-item"><QualityController
-                            mediaType={Dash.model.MediaType.VIDEO}/></li>
-                        <li className="list-group-item"><QualityController
-                            mediaType={Dash.model.MediaType.AUDIO}/></li>
-                    </ul>
-                </div>
+                    <li className="list-group-item"><AdaptationController/></li>
+                    <li className="list-group-item"><QualityController
+                        mediaType={Dash.model.MediaType.VIDEO}/></li>
+                    <li className="list-group-item"><QualityController
+                        mediaType={Dash.model.MediaType.AUDIO}/></li>
+                </ul>
             </div>
         )
     }
@@ -282,17 +284,6 @@ var MpdDetailsView = React.createClass({
         return string;
     },
 
-    getClassNameForContainer: function () {
-        var className = "panel-body ";
-        if (this.state) {
-            className += "show";
-        } else {
-            className += "hidden";
-        }
-
-        return className;
-    },
-
     updateMpdModelFromEvent: function (event) {
         var mpdModel = event.value,
             videoAdaptationSets = mpdModel.getPeriod().getVideoAdaptationSets(),
@@ -315,19 +306,21 @@ var MpdDetailsView = React.createClass({
 
         if (this.state) {
             return (
-                <div className={this.getClassNameForContainer()}>
-                    <h4>MPD Details</h4>
-                    <PropertyElement name='Type' value={this.state.type}/>
-                    <PropertyElement name='Profiles' value={this.state.profiles}/>
-                    <PropertyElement name='Duration' value={this.state.duration}/>
-                    <PropertyElement name='Min buffer' value={this.state.minBuffer}/>
-                    { this.state.videoSets ?
-                        <PropertyElement name='Video sets' value={this.state.videoSets}/> : null}
-                    { this.state.audioSets ?
-                        <PropertyElement name='Audio sets' value={this.state.audioSets}/> : null}
-                    { this.state.textSets ?
-                        <PropertyElement name='Text sets' value={this.state.textSets}/> : null}
-                </div>
+                <li className="list-group-item">
+                    <div>
+                        <h4>MPD Details</h4>
+                        <PropertyElement name='Type' value={this.state.type}/>
+                        <PropertyElement name='Profiles' value={this.state.profiles}/>
+                        <PropertyElement name='Duration' value={this.state.duration}/>
+                        <PropertyElement name='Min buffer' value={this.state.minBuffer}/>
+                        { this.state.videoSets ?
+                            <PropertyElement name='Video sets' value={this.state.videoSets}/> : null}
+                        { this.state.audioSets ?
+                            <PropertyElement name='Audio sets' value={this.state.audioSets}/> : null}
+                        { this.state.textSets ?
+                            <PropertyElement name='Text sets' value={this.state.textSets}/> : null}
+                    </div>
+                </li>
             )
         } else {
             return (
@@ -367,7 +360,7 @@ var DebugInfoContainer = React.createClass({
     render: function () {
         return (
             <div className="row">
-                <div className="panel panel-default">
+                <div className="panel panel-info">
                     <div className="panel-heading">
                         Media debug info
                     </div>
