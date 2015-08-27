@@ -6,9 +6,7 @@ var PlayerView = React.createClass({
 
                 <VideoMainView />
 
-                <RepresentationsContainer />
-
-                <LogContainer />
+                <DebugInfoContainer />
             </div>
         );
     }
@@ -113,9 +111,8 @@ var VideoControlContainer = React.createClass({
             <div className="col-md-4">
                 <div className="panel panel-primary">
                     <div className="panel-heading">Player controller</div>
-                    <div className="panel-body">
-                        <MpdDetailsView/>
-                    </div>
+
+                    <MpdDetailsView/>
 
                     <ul className="list-group">
                         <li className="list-group-item"><AdaptationController/></li>
@@ -189,6 +186,8 @@ var QualityController = React.createClass({
     },
 
     changeRepresentation: function (event) {
+        event.preventDefault();
+
         var representationName = event.target.innerHTML,
             representationId = this.getRepresentationIdByShortName(representationName);
 
@@ -283,6 +282,17 @@ var MpdDetailsView = React.createClass({
         return string;
     },
 
+    getClassNameForContainer: function () {
+        var className = "panel-body ";
+        if (this.state) {
+            className += "show";
+        } else {
+            className += "hidden";
+        }
+
+        return className;
+    },
+
     updateMpdModelFromEvent: function (event) {
         var mpdModel = event.value,
             videoAdaptationSets = mpdModel.getPeriod().getVideoAdaptationSets(),
@@ -305,7 +315,7 @@ var MpdDetailsView = React.createClass({
 
         if (this.state) {
             return (
-                <div>
+                <div className={this.getClassNameForContainer()}>
                     <h4>MPD Details</h4>
                     <PropertyElement name='Type' value={this.state.type}/>
                     <PropertyElement name='Profiles' value={this.state.profiles}/>
@@ -335,6 +345,51 @@ var PropertyElement = React.createClass({
     }
 });
 
+var DebugInfoContainer = React.createClass({
+
+    getInitialState: function () {
+        return {activeTab: "Representations"}
+    },
+
+    onTabChanged: function (event) {
+        event.preventDefault();
+        this.setState({activeTab: event.target.innerHTML});
+    },
+
+    getClassForTab: function (tabName) {
+        if (tabName === this.state.activeTab) {
+            return "active";
+        } else {
+            return "";
+        }
+    },
+
+    render: function () {
+        return (
+            <div className="row">
+                <div className="panel panel-default">
+                    <div className="panel-heading">
+                        Media debug info
+                    </div>
+                    <div className="panel-body">
+                        <ul className="nav nav-tabs">
+                            <li role="presentation" className={this.getClassForTab("Representations")}
+                                onClick={this.onTabChanged}><a href="#">Representations</a>
+                            </li>
+                            <li role="presentation" className={this.getClassForTab("Logs")}
+                                onClick={this.onTabChanged}><a href="#">Logs</a>
+                            </li>
+                        </ul>
+                        <RepresentationsContainer isActive={this.state.activeTab === "Representations"}/>
+                        <LogContainer isActive={this.state.activeTab === "Logs"}/>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
+
 var RepresentationsContainer = React.createClass({
     getInitialState: function () {
         return {
@@ -343,6 +398,16 @@ var RepresentationsContainer = React.createClass({
             audioAdaptationSet: null,
             textAdaptationSet: null
         }
+    },
+
+    getClassForContainer: function () {
+        var className = '';
+        if (this.props.isActive) {
+            className += "show";
+        } else {
+            className += "hidden";
+        }
+        return className;
     },
 
     updateAdaptationSetFromEvent: function (event) {
@@ -362,23 +427,18 @@ var RepresentationsContainer = React.createClass({
         if (!this.state.initialized) {
             return (<div></div>);
         } else {
-
             return (
-                <div className="row">
-                    <div className="panel panel-default">
-                        <div className="panel-heading">Representations</div>
-                        <div className="panel-body">
-                            {this.state.videoAdaptationSet ?
-                                <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
-                                                          totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
-                            {this.state.audioAdaptationSet ?
-                                <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
-                                                          totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
-                            {this.state.textAdaptationSet ?
-                                <RepresentationController mediaType={Dash.model.MediaType.TEXT}
-                                                          totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
-                        </div>
-                    </div>
+                <div className={this.getClassForContainer()}>
+                    {this.state.videoAdaptationSet ?
+                        <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
+                                                  totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
+                    {this.state.audioAdaptationSet ?
+                        <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
+                                                  totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
+                    {this.state.textAdaptationSet ?
+                        <RepresentationController mediaType={Dash.model.MediaType.TEXT}
+                                                  totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
+
                 </div>
             )
         }
@@ -520,6 +580,17 @@ var LogContainer = React.createClass({
         this.setState({logs: logs});
     },
 
+    getClassForContainer: function () {
+        var className = "logBody ";
+
+        if (this.props.isActive) {
+            className += "show";
+        } else {
+            className += "hidden";
+        }
+        return className;
+    },
+
     componentDidUpdate: function () {
         var logBody = React.findDOMNode(this.refs.logs);
         logBody.scrollTop = logBody.scrollHeight;
@@ -535,18 +606,14 @@ var LogContainer = React.createClass({
         });
 
         return (
-            <div className="row">
-                <div className="panel panel-default">
-                    <div className="panel-heading">
-                        Logs
-                    </div>
-                    <div ref="logs" className="panel-body logBody">
-                        <ul className="list-group">
-                            {logMessages}
-                        </ul>
-                    </div>
-                </div>
+
+
+            <div ref="logs" className={this.getClassForContainer()}>
+                <ul className="list-group">
+                    {logMessages}
+                </ul>
             </div>
+
         );
     }
 });
@@ -610,6 +677,7 @@ var LogMessage = React.createClass({
         }
     }
 });
+
 
 
 
