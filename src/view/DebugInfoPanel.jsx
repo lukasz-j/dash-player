@@ -1,4 +1,24 @@
 var DebugInfoPanel = React.createClass({
+
+    getInitialState: function () {
+        return {
+            isLogTabActive: false,
+            waitingLogs: 0
+        };
+    },
+
+    onLogMessageAppended: function () {
+        this.setState({waitingLogs: this.state.waitingLogs + 1});
+    },
+
+    onChangedTabToLogs: function () {
+        this.setState({isLogTabActive: true, waitingLogs: 0});
+    },
+
+    onChangedTabToRepresentation: function () {
+        this.setState({isLogTabActive: false});
+    },
+
     render: function () {
         return (
             <div className="row">
@@ -8,15 +28,21 @@ var DebugInfoPanel = React.createClass({
                     </div>
                     <div className="panel-body">
                         <ul className="nav nav-pills">
-                            <li className="active"><a data-toggle="pill" href="#representations">Representations</a>
+                            <li className="active">
+                                <a data-toggle="pill" href="#representations"
+                                   onClick={this.onChangedTabToRepresentation}>Representations</a>
                             </li>
-                            <li><a data-toggle="pill" href="#logs">Logs</a>
+                            <li>
+                                <a data-toggle="pill" href="#logs" onClick={this.onChangedTabToLogs}>Logs
+                                    {!this.state.isLogTabActive && this.state.waitingLogs > 0 ?
+                                        <span ref="log-span"
+                                              className="badge">{this.state.waitingLogs}</span> : null}</a>
                             </li>
                         </ul>
 
                         <div className="tab-content">
                             <RepresentationsContainer/>
-                            <LogContainer/>
+                            <LogContainer logMessageAddedCallback={this.onLogMessageAppended}/>
                         </div>
                     </div>
                 </div>
@@ -191,6 +217,7 @@ var LogContainer = React.createClass({
         }
 
         this.setState({logs: logs});
+        this.props.logMessageAddedCallback();
     },
 
     componentDidUpdate: function () {
@@ -252,7 +279,7 @@ var LogMessage = React.createClass({
             case Dash.log.LogLevel.ERROR:
                 return (
                     <div >
-                        <span className="label label-danger">Danger</span> &nbsp;
+                        <span className="label label-danger">Error</span> &nbsp;
                         {this.props.message}
                     </div>
                 );

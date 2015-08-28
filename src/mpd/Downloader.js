@@ -20,7 +20,8 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
                     return mpdUrl;
                 }
             }
-            throw new Error('Dash file is not available for this video');
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.ERROR, 'Cannot find mpd file localization for ' + mpdFileUrl +
+                '. Server respond with: ' + decodeURIComponent(movieDetails));
         },
 
         downloadYouTubeMpdFile = function () {
@@ -31,10 +32,13 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
 
         downloadYouTubeVideoDetailsOnSuccess = function (request) {
             var mpdUrl = getMpdUrlFromResponse(request.responseText);
-            asyncDownloader.download(mpdUrl, function (request, loadedBytes, options) {
-                options.isYouTube = true;
-                downloadMpdFileOnSuccess(request, loadedBytes, options);
-            });
+
+            if (mpdUrl) {
+                asyncDownloader.download(mpdUrl, function (request, loadedBytes, options) {
+                    options.isYouTube = true;
+                    downloadMpdFileOnSuccess(request, loadedBytes, options);
+                });
+            }
         },
 
         getYouTubeVideoId = function (videoUrl) {

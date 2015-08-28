@@ -86,7 +86,7 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
                     segmentURLsWithRanges.push(Dash.utils.ParserModelUtils.createURLWithRange(baseURL, segmentRangeList[index].begin, segmentRangeList[index].end));
                 }
             } else {
-                for (index = 0; index < segmentsRange.length; index += 1) {
+                for (index = 0; index < segmentRangeList.length; index += 1) {
                     segmentURLsWithRanges.push({url: baseURL, range: toRangeString(segmentRangeList[index])});
                 }
             }
