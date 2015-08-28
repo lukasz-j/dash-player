@@ -468,11 +468,11 @@ var RepresentationController = React.createClass({
                 id: representation.getId(),
                 mimeType: representation.getMimeType(),
                 codecs: representation.getCodecs(),
-                bandwidth: representation.getBandwidth() + ' bps',
+                bandwidth: representation.getBandwidth(),
                 width: representation.getWidth(),
                 height: representation.getHeight(),
-                frameRate: representation.getFrameRate() + ' fps',
-                audioSamplingRate: representation.getAudioSamplingRate() + ' Hz'
+                frameRate: representation.getFrameRate(),
+                audioSamplingRate: representation.getAudioSamplingRate()
             });
         }
     },
@@ -488,16 +488,16 @@ var RepresentationController = React.createClass({
                 <div>
                     <PropertyElement name="Id" value={this.state.id}/>
                     <PropertyElement name="Mime" value={this.state.mimeType}/>
-                    <PropertyElement name="Codecs" value={this.state.codecs}/>
-                    <PropertyElement name="Bandwidth" value={this.state.bandwidth}/>
+                    <PropertyElement name="Bandwidth" value={this.state.bandwidth + 'bps'}/>
                     {this.state.frameRate ?
-                        <PropertyElement name='Frame rate' value={this.state.frameRate}/> : null}
+                        <PropertyElement name='Frame rate' value={this.state.frameRate + 'fps'}/> : null}
                     {this.state.height ?
                         <PropertyElement name='Height' value={this.state.height}/> : null}
                     {this.state.width ?
                         <PropertyElement name='Width' value={this.state.width}/> : null}
                     {this.state.audioSamplingRate ?
-                        <PropertyElement name='Audio sampling rate' value={this.state.audioSamplingRate}/> : null}
+                        <PropertyElement name='Audio sampling rate'
+                                         value={this.state.audioSamplingRate + 'Hz'}/> : null}
                     {this.state.currentSegment ?
                         <PropertyElement name='Segments' value={this.createSegmentPropertyValue()}/> : null}
                 </div>
@@ -517,28 +517,8 @@ var RepresentationController = React.createClass({
         dashPlayer.changeRepresentationToHigher(this.props.mediaType, 1);
     },
 
-    showAlertAboutChangingRepresentation: function () {
-        if (this.state.representationChanging) {
-            return (
-                <div>
-                    Representation is being changed
-                </div>
-            )
-        } else {
-            return '';
-        }
-    },
-
-    shouldButtonBeDisabled: function (buttonType) {
-        if (this.state.representationChanging || this.state.representationNumber === 0) {
-            return true;
-        }
-
-        if (buttonType === this.buttonType.LOWER) {
-            return this.state.representationNumber === 1;
-        } else if (buttonType === this.buttonType.HIGHER) {
-            return this.state.representationNumber === this.props.totalRepresentationsNumber;
-        }
+    capitalizeFirstLetterOfMediaType: function (mediaTypeName) {
+        return mediaTypeName.charAt(0).toUpperCase() + mediaTypeName.slice(1);
     },
 
     render: function () {
@@ -548,22 +528,12 @@ var RepresentationController = React.createClass({
 
         return (
             <div className="col-md-4">
-                <div className="panel panel-default">
-                    <div className="panel-heading">
-                        <button onClick={this.changeRepresentationToLower}
-                                disabled={this.shouldButtonBeDisabled(this.buttonType.LOWER)}>&lt;</button>
-
-                        <span>{this.props.mediaType.name}</span>
-                        <span>{this.state.representationNumber} / {this.props.totalRepresentationsNumber} </span>
-
-                        <button onClick={this.changeRepresentationToHigher}
-                                disabled={this.shouldButtonBeDisabled(this.buttonType.HIGHER)}>&gt;</button>
-                    </div>
-                    {this.showAlertAboutChangingRepresentation()}
-                    <div className="panel-body">
+                <ul className="list-group">
+                    <li className="list-group-item">{this.capitalizeFirstLetterOfMediaType(this.props.mediaType.name)}</li>
+                    <li className="list-group-item">
                         {this.printRepresentationPropertiesIfInitialized()}
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
         );
     }
@@ -615,8 +585,6 @@ var LogContainer = React.createClass({
         });
 
         return (
-
-
             <div ref="logs" className={this.getClassForContainer()}>
                 <ul className="list-group">
                     {logMessages}
@@ -658,28 +626,28 @@ var LogMessage = React.createClass({
             case Dash.log.LogLevel.DEBUG:
                 return (
                     <div >
-                        <span className="label label-default">Debug</span>
+                        <span className="label label-default">Debug</span> &nbsp;
                         {this.props.message}
                     </div>
                 );
             case Dash.log.LogLevel.INFO:
                 return (
                     <div>
-                        <span className="label label-info">Info</span>
+                        <span className="label label-info">Info</span> &nbsp;
                         {this.props.message}
                     </div>
                 );
             case Dash.log.LogLevel.WARN:
                 return (
                     <div >
-                        <span className="label label-warning">Warning</span>
+                        <span className="label label-warning">Warning</span> &nbsp;
                         {this.props.message}
                     </div>
                 );
             case Dash.log.LogLevel.ERROR:
                 return (
                     <div >
-                        <span className="label label-danger">Danger</span>
+                        <span className="label label-danger">Danger</span> &nbsp;
                         {this.props.message}
                     </div>
                 );
