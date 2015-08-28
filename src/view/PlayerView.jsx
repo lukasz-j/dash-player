@@ -365,16 +365,17 @@ var DebugInfoContainer = React.createClass({
                         Media debug info
                     </div>
                     <div className="panel-body">
-                        <ul className="nav nav-tabs">
-                            <li role="presentation" className={this.getClassForTab("Representations")}
-                                onClick={this.onTabChanged}><a href="#">Representations</a>
+                        <ul className="nav nav-pills">
+                            <li className="active"><a data-toggle="pill" href="#representations">Representations</a>
                             </li>
-                            <li role="presentation" className={this.getClassForTab("Logs")}
-                                onClick={this.onTabChanged}><a href="#">Logs</a>
+                            <li><a data-toggle="pill" href="#logs">Logs</a>
                             </li>
                         </ul>
-                        <RepresentationsContainer isActive={this.state.activeTab === "Representations"}/>
-                        <LogContainer isActive={this.state.activeTab === "Logs"}/>
+
+                        <div className="tab-content">
+                            <RepresentationsContainer/>
+                            <LogContainer/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -386,55 +387,53 @@ var DebugInfoContainer = React.createClass({
 var RepresentationsContainer = React.createClass({
     getInitialState: function () {
         return {
-            initialized: false,
+            initializedSets: 0,
             videoAdaptationSet: null,
             audioAdaptationSet: null,
             textAdaptationSet: null
         }
     },
 
-    getClassForContainer: function () {
-        var className = '';
-        if (this.props.isActive) {
-            className += "show";
-        } else {
-            className += "hidden";
-        }
-        return className;
-    },
-
     updateAdaptationSetFromEvent: function (event) {
         var adaptationSet = event.value;
         if (adaptationSet.isVideo()) {
-            this.setState({initialized: true, videoAdaptationSet: adaptationSet})
+            this.setState({videoAdaptationSet: adaptationSet, initializedSets: this.state.initializedSets + 1})
         } else if (adaptationSet.isAudio()) {
-            this.setState({initialized: true, audioAdaptationSet: adaptationSet})
+            this.setState({audioAdaptationSet: adaptationSet, initializedSets: this.state.initializedSets + 1})
         } else if (adaptationSet.isText()) {
-            this.setState({initialized: true, textAdaptationSet: adaptationSet})
+            this.setState({textAdaptationSet: adaptationSet, initializedSets: this.state.initializedSets + 1})
         }
     },
 
     render: function () {
         eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, this.updateAdaptationSetFromEvent);
 
-        if (!this.state.initialized) {
-            return (<div></div>);
-        } else {
-            return (
-                <div className={this.getClassForContainer()}>
-                    {this.state.videoAdaptationSet ?
-                        <RepresentationController mediaType={Dash.model.MediaType.VIDEO}
-                                                  totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
-                    {this.state.audioAdaptationSet ?
-                        <RepresentationController mediaType={Dash.model.MediaType.AUDIO}
-                                                  totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
-                    {this.state.textAdaptationSet ?
-                        <RepresentationController mediaType={Dash.model.MediaType.TEXT}
-                                                  totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
+        var classNameForChildren = "col-md-" + 12 / this.state.initializedSets;
 
+        return (
+            <div id="representations" className="tab-pane fade in active">
+                <div className="panel panel-default">
+                    <div className="panel-body">
+                        <h4>Available adaptation sets and representations for this media</h4>
+
+                        <div>
+                            {this.state.videoAdaptationSet ?
+                                <RepresentationController classNameRow={classNameForChildren}
+                                                          mediaType={Dash.model.MediaType.VIDEO}
+                                                          totalRepresentationsNumber={this.state.videoAdaptationSet.getRepresentations().length}/> : null }
+                            {this.state.audioAdaptationSet ?
+                                <RepresentationController classNameRow={classNameForChildren}
+                                                          mediaType={Dash.model.MediaType.AUDIO}
+                                                          totalRepresentationsNumber={this.state.audioAdaptationSet.getRepresentations().length}/> : null }
+                            {this.state.textAdaptationSet ?
+                                <RepresentationController classNameRow={classNameForChildren}
+                                                          mediaType={Dash.model.MediaType.TEXT}
+                                                          totalRepresentationsNumber={this.state.textAdaptationSet.getRepresentations().length}/> : null }
+                        </div>
+                    </div>
                 </div>
-            )
-        }
+            </div>
+        )
     }
 });
 
@@ -486,6 +485,8 @@ var RepresentationController = React.createClass({
         if (this.state.id) {
             return (
                 <div>
+                    <PropertyElement name="Representation"
+                                     value={this.state.representationNumber + '/' + this.props.totalRepresentationsNumber}/>
                     <PropertyElement name="Id" value={this.state.id}/>
                     <PropertyElement name="Mime" value={this.state.mimeType}/>
                     <PropertyElement name="Bandwidth" value={this.state.bandwidth + 'bps'}/>
@@ -507,16 +508,6 @@ var RepresentationController = React.createClass({
         }
     },
 
-    changeRepresentationToLower: function () {
-        this.setState({representationChanging: true});
-        dashPlayer.changeRepresentationToLower(this.props.mediaType, 1);
-    },
-
-    changeRepresentationToHigher: function () {
-        this.setState({representationChanging: true});
-        dashPlayer.changeRepresentationToHigher(this.props.mediaType, 1);
-    },
-
     capitalizeFirstLetterOfMediaType: function (mediaTypeName) {
         return mediaTypeName.charAt(0).toUpperCase() + mediaTypeName.slice(1);
     },
@@ -527,13 +518,16 @@ var RepresentationController = React.createClass({
         eventBus.addEventListener(Dash.event.Events.SEGMENT_DOWNLOADED, this.updateSegmentIndexFromEvent);
 
         return (
-            <div className="col-md-4">
-                <ul className="list-group">
-                    <li className="list-group-item">{this.capitalizeFirstLetterOfMediaType(this.props.mediaType.name)}</li>
-                    <li className="list-group-item">
-                        {this.printRepresentationPropertiesIfInitialized()}
-                    </li>
-                </ul>
+            <div id="videoRepr" className={this.props.classNameRow}>
+                <div className="panel panel-default">
+                    <div className="panel-body">
+                        <h4>{this.capitalizeFirstLetterOfMediaType(this.props.mediaType.name)}</h4>
+
+                        <div>
+                            {this.printRepresentationPropertiesIfInitialized()}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -559,17 +553,6 @@ var LogContainer = React.createClass({
         this.setState({logs: logs});
     },
 
-    getClassForContainer: function () {
-        var className = "logBody ";
-
-        if (this.props.isActive) {
-            className += "show";
-        } else {
-            className += "hidden";
-        }
-        return className;
-    },
-
     componentDidUpdate: function () {
         var logBody = React.findDOMNode(this.refs.logs);
         logBody.scrollTop = logBody.scrollHeight;
@@ -585,41 +568,24 @@ var LogContainer = React.createClass({
         });
 
         return (
-            <div ref="logs" className={this.getClassForContainer()}>
-                <ul className="list-group">
-                    {logMessages}
-                </ul>
-            </div>
+            <div id="logs" className="tab-pane fade">
+                <div className="panel panel-default">
+                    <div className="panel-body">
+                        <h4>Player logs</h4>
 
+                        <div ref="logs" className="logBody">
+                            <ul className="list-group">
+                                {logMessages}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 });
 
 var LogMessage = React.createClass({
-
-    createLabelElement: function () {
-        switch (this.props.level) {
-            case Dash.log.LogLevel.DEBUG:
-                return (
-                    <div>
-                        <span className="label label-default">Debug</span>
-                        {this.props.message}
-                    </div>
-                );
-            case Dash.log.LogLevel.INFO:
-                return (
-                    <span className="label label-info">Info</span>
-                );
-            case Dash.log.LogLevel.WARN:
-                return (
-                    <span className="label label-warning">Warning</span>
-                );
-            case Dash.log.LogLevel.ERROR:
-                return (
-                    <span className="label label-danger">Danger</span>
-                );
-        }
-    },
 
     render: function () {
         switch (this.props.level) {
