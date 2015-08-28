@@ -3,6 +3,19 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        jshint: {
+            src: [
+                'src/Dash.js',
+                'src/Player.js',
+                'src/utils/*.js',
+                'src/model/**/*.js',
+                'src/log/*.js',
+                'src/events/*.js',
+                'src/mpd/*.js',
+                'src/streaming/*.js'
+            ]
+        },
+
         uglify: {
             minify: {
                 files: {
@@ -41,7 +54,8 @@ module.exports = function (grunt) {
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'concat']);
+    grunt.registerTask('default', ['uglify', 'concat', 'jshint']);
 };

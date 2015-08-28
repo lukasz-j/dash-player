@@ -9,16 +9,16 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         alreadyFinishedManagers = 0,
 
         onAdaptationSetChosen = function (chosenAdaptationSet) {
-            var logMessage = 'Adaptation set has been chosen for ' + chosenAdaptationSet.getMediaType().name
-                + ', mime type: ' + chosenAdaptationSet.getMimeType() + ' representations count: ' + chosenAdaptationSet.getRepresentations().length;
+            var logMessage = 'Adaptation set has been chosen for ' + chosenAdaptationSet.getMediaType().name +
+                ', mime type: ' + chosenAdaptationSet.getMimeType() + ' representations count: ' + chosenAdaptationSet.getRepresentations().length;
 
             eventBus.dispatchEvent({type: Dash.event.Events.ADAPTATION_SET_INITIALIZED, value: chosenAdaptationSet});
             eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
         },
 
         onInitRepresentationChosen = function (chosenRepresentation) {
-            var logMessage = 'Init representation has been chosen for ' + chosenRepresentation.getAdaptationSet().getMediaType().name
-                + ', number: ' + chosenRepresentation.orderNumber + ', id: ' + chosenRepresentation.getId() + ', bandwidth: ' + chosenRepresentation.getBandwidth();
+            var logMessage = 'Init representation has been chosen for ' + chosenRepresentation.getAdaptationSet().getMediaType().name +
+                ', number: ' + chosenRepresentation.orderNumber + ', id: ' + chosenRepresentation.getId() + ', bandwidth: ' + chosenRepresentation.getBandwidth();
 
             eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_INITIALIZED, value: chosenRepresentation});
             eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);

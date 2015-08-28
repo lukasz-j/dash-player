@@ -62,20 +62,25 @@ Dash.model.TemplateSegment = function (segmentTemplateNode, representation) {
         initializationURLAttribute = segmentTemplateNode.getAttribute('initialization'),
         initializationURL = Dash.utils.ParserModelUtils.resolveAttributeURL(baseURL, initializationURLAttribute),
         duration = findDurationForRepresentation(representation),
-        segmentURLs = [];
+        segmentURLs = [],
+
+        segmentDuration,
+        numberOfSegments;
 
 
     if (templateURL.indexOf(identifiers.time) > -1) {
-        var sNode = segmentTemplateNode.getElementsByTagName('S')[0],
-            segmentDuration = parseInt(sNode.getAttribute('d'), 10),
-            numberOfSegments = computeSegmentCount(duration, segmentDuration, timescale);
+        var sNode = segmentTemplateNode.getElementsByTagName('S')[0];
+
+        segmentDuration = parseInt(sNode.getAttribute('d'), 10);
+        numberOfSegments = computeSegmentCount(duration, segmentDuration, timescale);
 
         segmentURLs = computeTimeBasedSegmentURLs(templateURL, baseURL, segmentDuration, numberOfSegments);
     } else if (templateURL.indexOf(identifiers.number) > -1) {
         //fixme implement support for number based templates
-        var startNumber = parseInt(segmentTemplateNode.getElementsByTagName('startNumber')[0], 10) || 1,
-            segmentDuration = parseInt(segmentTemplateNode.getAttribute('duration'), 10),
-            numberOfSegments = computeSegmentCount(duration, segmentDuration, timescale);
+        var startNumber = parseInt(segmentTemplateNode.getElementsByTagName('startNumber')[0], 10) || 1;
+
+        segmentDuration = parseInt(segmentTemplateNode.getAttribute('duration'), 10);
+        numberOfSegments = computeSegmentCount(duration, segmentDuration, timescale);
 
         segmentURLs = computeNumberBasedSegmentURLs(templateURL, baseURL, startNumber, numberOfSegments);
     } else {

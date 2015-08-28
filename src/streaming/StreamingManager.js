@@ -25,8 +25,9 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         notifyRepresentationChange = function (changedRepresentation) {
-            var logMessage = 'Representation changed for ' + adaptationSet.getMediaType().name
-                + ', number: ' + changedRepresentation.orderNumber + ', id: ' + changedRepresentation.getId() + ', bandwidth: ' + changedRepresentation.getBandwidth();
+            var logMessage = 'Representation changed for ' + adaptationSet.getMediaType().name +
+                ', number: ' + changedRepresentation.orderNumber + ', id: ' + changedRepresentation.getId() +
+                ', bandwidth: ' + changedRepresentation.getBandwidth();
 
             eventBus.dispatchEvent({type: Dash.event.Events.REPRESENTATION_CHANGED, value: currentRepresentation});
             eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
@@ -43,8 +44,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         notifySuccessfulSegmentDownload = function (requestOptions) {
-            var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length
-                + ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url;
+            var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length +
+                ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url;
 
             eventBus.dispatchEvent(
                 {
@@ -125,9 +126,9 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 },
 
                 onDownloadSuccess = function (request, loaded, options) {
-                    var logMessage = 'Initialization header successfully downloaded for ' + adaptationSet.getMediaType().name
-                        + ' representation, number: ' + representation.orderNumber + ', id: ' + representation.getId()
-                        + ', bandwidth: ' + representation.getBandwidth() + ', url: ' + options.url;
+                    var logMessage = 'Initialization header successfully downloaded for ' + adaptationSet.getMediaType().name +
+                        ' representation, number: ' + representation.orderNumber + ', id: ' + representation.getId() +
+                        ', bandwidth: ' + representation.getBandwidth() + ', url: ' + options.url;
 
                     eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
 

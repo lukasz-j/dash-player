@@ -3,8 +3,8 @@ Dash.mpd.Parser = function (eventBus) {
 
     var createMPDElement = function (mpdNode, mpdFileURL) {
             var mpd = Dash.model.MPD(mpdNode, mpdFileURL),
-                logMessage = 'Mpd element created from xml node, type: ' + mpd.getType().name
-                    + ', profiles: ' + mpd.getProfilesAsString() + ', duration: ' + mpd.getMediaPresentationDurationFormatted();
+                logMessage = 'Mpd element created from xml node, type: ' + mpd.getType().name +
+                    ', profiles: ' + mpd.getProfilesAsString() + ', duration: ' + mpd.getMediaPresentationDurationFormatted();
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, logMessage);
             return mpd;
         },

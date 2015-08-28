@@ -45,7 +45,7 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
             var urlParameters = videoUrl.split('?');
             for (var i = 0; i < urlParameters.length; i += 1) {
                 if (urlParameters[i].indexOf(videoIdPrefix) === 0) {
-                    return urlParameters[i].substring(videoIdPrefix.length)
+                    return urlParameters[i].substring(videoIdPrefix.length);
                 }
             }
         };

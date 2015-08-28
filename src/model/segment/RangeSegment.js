@@ -34,8 +34,8 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
                 i;
 
             for (i = 32; i < segmentBase.length; i += 12) {
-                sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1]
-                    * 65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3] - 1);
+                sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1] *
+                    65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3] - 1);
             }
 
             for (i = 0; i < sampleLengths.length; i += 1) {
