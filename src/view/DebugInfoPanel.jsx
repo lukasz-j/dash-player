@@ -83,7 +83,7 @@ var RepresentationElement = React.createClass({
     getInitialState: function () {
         return {
             representationNumber: 0,
-            representationChanging: false
+            currentSegment: 0
         };
     },
 
@@ -104,7 +104,6 @@ var RepresentationElement = React.createClass({
         var representation = event.value;
         if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
             this.setState({
-                representationChanging: false,
                 representationNumber: representation.orderNumber,
                 id: representation.getId(),
                 mimeType: representation.getMimeType(),
@@ -113,7 +112,8 @@ var RepresentationElement = React.createClass({
                 width: representation.getWidth(),
                 height: representation.getHeight(),
                 frameRate: representation.getFrameRate(),
-                audioSamplingRate: representation.getAudioSamplingRate()
+                audioSamplingRate: representation.getAudioSamplingRate(),
+                maxSegment: representation.getSegment().getSegmentURLs().length
             });
         }
     },
@@ -141,8 +141,7 @@ var RepresentationElement = React.createClass({
                     {this.state.audioSamplingRate ?
                         <PropertyElement name='Audio sampling rate'
                                          value={this.state.audioSamplingRate + 'Hz'}/> : null}
-                    {this.state.currentSegment ?
-                        <PropertyElement name='Segments' value={this.createSegmentPropertyValue()}/> : null}
+                    <PropertyElement name='Segments' value={this.createSegmentPropertyValue()}/>
                 </div>
             );
         } else {

@@ -36,7 +36,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             currentRepresentationIndex = changedRepresentationIndex;
             currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
             currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-            availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
+            availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs();
 
             notifyRepresentationChange(currentRepresentation);
             bufferManager.appendBuffer(currentInitializationHeader);
@@ -134,6 +134,11 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     var header = new Uint8Array(request.response);
                     representationRepository.addRepresentation(representation, header, options.url);
 
+                    var segment = representation.getSegment();
+                    if (segment.name === 'RangeSegment') {
+                        segment.computeSegmentRanges(header);
+                    }
+
                     if (moveToNextRepresentation()) {
                         downloadBinaryFile(initializationURL, onDownloadSuccess);
                     } else {
@@ -162,7 +167,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             } else {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Appending initialization header to source buffer for ' + adaptationSet.getMediaType().name);
                 currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-                availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs(currentInitializationHeader);
+                availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs();
                 bufferManager.appendBuffer(currentInitializationHeader);
                 initializationCallback.call(this);
             }

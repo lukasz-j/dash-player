@@ -13,7 +13,9 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
         initializationEndIndex = parseInt(splitInitializationIndexRange[1], 10),
 
         segmentBaseStartIndex = parseInt(splitSegmentBaseIndexRange[0], 10),
-        segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1], 10);
+        segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1], 10),
+
+        segmentRangeList;
 
     var toRangeString = function (rangeObject) {
             return rangeObject.begin + '-' + rangeObject.end;
@@ -57,6 +59,10 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
             return representation;
         },
 
+        computeSegmentRanges: function (initializationHeader) {
+            segmentRangeList = getSegmentsRange(initializationHeader);
+        },
+
         getInitializationURL: function () {
             var initializationRange = getInitializationSegmentRange();
 
@@ -67,18 +73,21 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
             }
         },
 
-        getSegmentURLs: function (initialization) {
-            var segmentsRange = getSegmentsRange(initialization),
-                segmentURLsWithRanges = [],
+        getSegmentURLs: function () {
+            var segmentURLsWithRanges = [],
                 index;
 
+            if (!segmentRangeList) {
+                return [];
+            }
+
             if (useBytesRangeInURL) {
-                for (index = 0; index < segmentsRange.length; index += 1) {
-                    segmentURLsWithRanges.push(Dash.utils.ParserModelUtils.createURLWithRange(baseURL, segmentsRange[index].begin, segmentsRange[index].end));
+                for (index = 0; index < segmentRangeList.length; index += 1) {
+                    segmentURLsWithRanges.push(Dash.utils.ParserModelUtils.createURLWithRange(baseURL, segmentRangeList[index].begin, segmentRangeList[index].end));
                 }
             } else {
                 for (index = 0; index < segmentsRange.length; index += 1) {
-                    segmentURLsWithRanges.push({url: baseURL, range: toRangeString(segmentsRange[index])});
+                    segmentURLsWithRanges.push({url: baseURL, range: toRangeString(segmentRangeList[index])});
                 }
             }
 
