@@ -37,12 +37,25 @@ module.exports = function (grunt) {
                 ],
                 dest: 'build/dash-player.debug.js'
             }
+        },
+
+        react: {
+            all: {
+                files: {
+                    'app/src/js/PlayerViewAll.js': [
+                        'app/src/jsx/PlayerView.jsx',
+                        'app/src/jsx/DebugInfoPanel.jsx',
+                        'app/src/jsx/PlayerControllerPanel.jsx'
+                    ]
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-react');
 
-    grunt.registerTask('default', ['concat', 'uglify', 'jshint']);
+    grunt.registerTask('default', ['concat', 'uglify', 'jshint', 'react']);
 };

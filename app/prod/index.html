@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>DASH Player</title>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- React.js -->
+    <script src="https://fb.me/react-0.13.3.min.js"></script>
+
+    <!-- Additional styles -->
+    <link rel="stylesheet" href="../src/css/player.css">
+
+    <!-- Dash player scripts -->
+    <script src="../../build/dash-player.min.js"></script>
+
+    <!-- React.js view -->
+    <script src="../src/js/PlayerViewAll.js"></script>
+</head>
+
+<body>
+<div id="content">
+
+</div>
+<script>
+    var eventBus = Dash.event.EventBus();
+    var consoleLogger = Dash.log.ConsoleLogger(console);
+
+    eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, consoleLogger.onMessageReceived);
+
+    React.render(
+            React.createElement(PlayerView, null),
+            document.getElementById("content")
+    );
+
+    var videoElement = document.getElementById('dashVideoElement');
+    var dashPlayer = Dash.Player(videoElement, window, eventBus);
+</script>
+</body>
+</html>
