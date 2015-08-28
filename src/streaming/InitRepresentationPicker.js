@@ -3,8 +3,7 @@ Dash.streaming.DefaultInitRepresentationPicker = function () {
 
     var chooseInitRepresentationForVideo = function (representations) {
             //try to choose representation with 480p quality at most
-            var index = 0,
-                clonedRepresentations = representations.slice(0),
+            var clonedRepresentations = representations.slice(0),
                 chosenRepresentation;
 
             clonedRepresentations.sort(function (a, b) {

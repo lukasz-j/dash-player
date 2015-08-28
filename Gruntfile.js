@@ -4,30 +4,27 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         jshint: {
-            src: [
-                'src/Dash.js',
-                'src/Player.js',
-                'src/utils/*.js',
-                'src/model/**/*.js',
-                'src/log/*.js',
-                'src/events/*.js',
-                'src/mpd/*.js',
-                'src/streaming/*.js'
-            ]
+            all: {
+                src: [
+                    'src/Player.js',
+                    'src/utils/*.js',
+                    'src/model/**/*.js',
+                    'src/log/*.js',
+                    'src/events/*.js',
+                    'src/mpd/*.js',
+                    'src/streaming/*.js'
+                ]
+            },
+            options: {
+                jshintrc: ".jshintrc"
+            }
         },
 
         uglify: {
             minify: {
                 files: {
                     'build/dash-player.min.js': [
-                        'src/Dash.js',
-                        'src/Player.js',
-                        'src/utils/*.js',
-                        'src/model/**/*.js',
-                        'src/log/*.js',
-                        'src/events/*.js',
-                        'src/mpd/*.js',
-                        'src/streaming/*.js'
+                        'src/**/*.js'
                     ]
                 }
             }
@@ -36,26 +33,16 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
-                    'src/Dash.js',
-                    'src/Player.js',
-                    'src/utils/*.js',
-                    'src/model/**/*.js',
-                    'src/log/*.js',
-                    'src/events/*.js',
-                    'src/mpd/*.js',
-                    'src/streaming/*.js'
+                    'src/**/*.js'
                 ],
-
                 dest: 'build/dash-player.debug.js'
             }
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
-    // Default task(s).
-    grunt.registerTask('default', ['uglify', 'concat', 'jshint']);
+    grunt.registerTask('default', ['concat', 'uglify', 'jshint']);
 };

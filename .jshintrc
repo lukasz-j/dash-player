@@ -1,0 +1,14 @@
+{
+  "curly": true,
+  "eqnull": true,
+  "eqeqeq": true,
+  "browser": true,
+  "noarg": true,
+  "noempty": true,
+  "latedef": true,
+  "undef": true,
+  "unused": true,
+  "predef": [
+    "Dash"
+  ]
+}

@@ -101,7 +101,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         changeRepresentationByItsId = function (representationId) {
             var representationIndex = findRepresentationByItsId(representationId);
             if (representationIndex === -1) {
-                //log exception
+                eventBus.logMessage(Dash.log.LogLevel.ERROR,
+                    'Cannot changed representation. Representations with index ' + representationId + ' not found');
             } else {
                 pendingRepresentationChange.available = true;
                 pendingRepresentationChange.index = representationIndex;
@@ -180,7 +181,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 downloadBinaryFile(segmentURL, onSegmentDownload);
                 currentSegmentIndex += 1;
             } else {
-                //TODO exception or log, stream is already full
+                eventBus.logMessage(Dash.log.LogLevel.ERROR,
+                    'Cannot append next segment to buffer because its already finished for ' + adaptationSet.getMediaType());
             }
         },
 
