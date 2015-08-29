@@ -1412,57 +1412,6 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         }
     };
 };
-Dash.streaming.RepresentationManager = function (adaptationSet, playbackStatusManager, chooseStartRepresentation) {
-    'use strict';
-
-    var availableRepresentations = adaptationSet.getRepresentations(),
-        currentRepresentationIndex = chooseStartRepresentation(availableRepresentations);
-
-    playbackStatusManager.fireRepresentationChangedEvent(availableRepresentations[currentRepresentationIndex]);
-
-    return {
-        getCurrentRepresentation: function () {
-            return availableRepresentations[currentRepresentationIndex];
-        },
-
-        isPresentRepresentationHighest: function () {
-            return currentRepresentationIndex === availableRepresentations.length - 1;
-        },
-
-        switchRepresentationToHigher: function (hopNumber) {
-            hopNumber = hopNumber || 1;
-
-            if (currentRepresentationIndex + hopNumber >= availableRepresentations.length) {
-                currentRepresentationIndex = availableRepresentations.length - 1;
-            } else {
-                currentRepresentationIndex = currentRepresentationIndex + hopNumber;
-            }
-
-            var currentRepresentation = availableRepresentations[currentRepresentationIndex];
-            playbackStatusManager.fireRepresentationChangedEvent(currentRepresentation);
-            return currentRepresentation;
-        },
-
-        isPresentRepresentationLowest: function () {
-            return currentRepresentationIndex === 0;
-        },
-
-        switchRepresentationToLower: function (hopNumber) {
-            hopNumber = hopNumber || 1;
-
-            if (currentRepresentationIndex - hopNumber < 0) {
-                currentRepresentationIndex = 0;
-            } else {
-                currentRepresentationIndex = currentRepresentationIndex - hopNumber;
-            }
-
-            var currentRepresentation = availableRepresentations[currentRepresentationIndex];
-            playbackStatusManager.fireRepresentationChangedEvent(currentRepresentation);
-            return currentRepresentation;
-        }
-    };
-};
-
 Dash.streaming.RepresentationRepository = function () {
     'use strict';
 
@@ -1817,7 +1766,7 @@ Dash.utils.CommonUtils = {
     convertDurationInSecondsToPrettyString: function (durationInSeconds) {
         'use strict';
         var hours = Math.floor(durationInSeconds / 3600),
-            minutes = Math.floor(durationInSeconds / 60),
+            minutes = Math.floor(durationInSeconds / 60) % 60,
             seconds = Math.floor(durationInSeconds % 60),
             milliSeconds = Math.floor((durationInSeconds % 1) * 100),
             outputString = '',
@@ -1833,7 +1782,7 @@ Dash.utils.CommonUtils = {
         if (hours !== 0) {
             outputString += fillNumberWithZeros(hours, true) + ':';
         }
-        if (minutes !== 0) {
+        if (minutes !== 0 || outputString.length > 0) {
             outputString += fillNumberWithZeros(minutes, outputString.length === 0) + ':';
         }
         outputString += fillNumberWithZeros(seconds, outputString.length === 0);
