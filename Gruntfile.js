@@ -51,41 +51,18 @@ module.exports = function (grunt) {
             }
         },
 
-        connect: {
-            server: {
-                options: {
-                    port: 9001,
-                    base: '.'
-                }
-            }
-        },
-
-        jasmine: {
-            test: {
-                src: 'src/**/*.js',
-                options: {
-                    specs: 'test/spec/**/*Spec.js',
-                    helpers: 'test/helper/*Helper.js',
-                    template: require('grunt-template-jasmine-istanbul'),
-                    host: 'http://localhost:9001/',
-                    templateOptions: {
-                        coverage: 'test/coverage/coverage.json',
-                        report: 'test/coverage'
-                    },
-                    vendor: [
-                        "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"
-                    ]
-                }
+        karma: {
+            unit: {
+                configFile: 'karma.conf.js'
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-react');
+    grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['concat', /*'jshint',*/ 'uglify', 'react', 'connect', 'jasmine']);
+    grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'react', 'karma']);
 };
