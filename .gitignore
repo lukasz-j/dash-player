@@ -5,4 +5,8 @@
 #node js
 /node_modules
 
+#grunt generated files
+/build
 
+#transformed jsx
+/app/src/jsx_transformed

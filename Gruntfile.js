@@ -42,7 +42,7 @@ module.exports = function (grunt) {
         react: {
             all: {
                 files: {
-                    'app/src/js/PlayerViewAll.js': [
+                    'app/src/jsx_transformed/PlayerViewAll.js': [
                         'app/src/jsx/PlayerView.jsx',
                         'app/src/jsx/DebugInfoPanel.jsx',
                         'app/src/jsx/PlayerControllerPanel.jsx'
