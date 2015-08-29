@@ -49,13 +49,24 @@ module.exports = function (grunt) {
                     ]
                 }
             }
+        },
+
+        jasmine: {
+            test: {
+                src: 'src/**/*.js',
+                options: {
+                    specs: 'test/spec/*Spec.js',
+                    helpers: 'test/spec/*Helper.js'
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-react');
 
-    grunt.registerTask('default', ['concat', 'uglify', 'jshint', 'react']);
+    grunt.registerTask('default', ['concat', 'jshint', 'uglify', 'react', 'jasmine']);
 };
