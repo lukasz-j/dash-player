@@ -29,7 +29,7 @@ Dash.utils.CommonUtils = {
     convertDurationInSecondsToPrettyString: function (durationInSeconds) {
         'use strict';
         var hours = Math.floor(durationInSeconds / 3600),
-            minutes = Math.floor(durationInSeconds / 60),
+            minutes = Math.floor(durationInSeconds / 60) % 60,
             seconds = Math.floor(durationInSeconds % 60),
             milliSeconds = Math.floor((durationInSeconds % 1) * 100),
             outputString = '',
@@ -45,7 +45,7 @@ Dash.utils.CommonUtils = {
         if (hours !== 0) {
             outputString += fillNumberWithZeros(hours, true) + ':';
         }
-        if (minutes !== 0) {
+        if (minutes !== 0 || outputString.length > 0) {
             outputString += fillNumberWithZeros(minutes, outputString.length === 0) + ':';
         }
         outputString += fillNumberWithZeros(seconds, outputString.length === 0);
