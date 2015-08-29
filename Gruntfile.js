@@ -56,7 +56,12 @@ module.exports = function (grunt) {
                 src: 'src/**/*.js',
                 options: {
                     specs: 'test/spec/**/*Spec.js',
-                    helpers: 'test/helper/*Helper.js'
+                    helpers: 'test/helper/*Helper.js',
+                    template: require('grunt-template-jasmine-istanbul'),
+                    templateOptions: {
+                        coverage: 'test/coverage/coverage.json',
+                        report: 'test/coverage'
+                    }
                 }
             }
         }

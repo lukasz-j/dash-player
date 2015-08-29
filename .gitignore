@@ -6,7 +6,10 @@
 /node_modules
 
 #grunt generated files
-/build
+/build/
+
+#cobertura files
+/test/coverage
 
 #transformed jsx
 /app/src/jsx_transformed
