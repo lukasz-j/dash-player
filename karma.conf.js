@@ -18,8 +18,15 @@ module.exports = function (config) {
             'test/spec/mpd/*.js',
             'test/spec/log/*.js',
 
+            //test resources
             {pattern: 'test/resources/mpd/*.mpd', watched: true, included: false, served: true},
-            {pattern: 'test/resources/binary-files/*.mp4', watched: true, included: false, served: true}
+            {pattern: 'test/resources/binary-files/*.mp4', watched: true, included: false, served: true},
+
+            //prod application
+            {pattern: 'app/prod/index.html', watched: false, included: false, served: true},
+            {pattern: 'app/src/css/*.css', watched: false, included: false, served: true},
+            {pattern: 'app/src/jsx_transformed/*.js', watched: false, included: false, served: true},
+            {pattern: 'build/dash-player.min.js', watched: false, included: false, served: true}
         ],
 
         // list of files to exclude
