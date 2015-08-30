@@ -38,9 +38,8 @@ describe('CommonUtils', function () {
 
             values.forEach(function (element) {
                 expect(commonUtils.convertDurationInSecondsToPrettyString(element.input)).toBe(element.expected);
-
-            })
-        })
+            });
+        });
     });
 
 });
