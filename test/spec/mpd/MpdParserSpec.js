@@ -22,8 +22,8 @@ describe("Parser", function () {
             });
         });
 
-        it('should return valid model', function (done) {
-            var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, false);
+        it('should return valid model for youtube mpd', function (done) {
+            var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, true);
             expect(mpdModel).toBeDefined();
 
             var period = mpdModel.getPeriod();
@@ -45,9 +45,9 @@ describe("Parser", function () {
         });
     });
 
-    describe('parsing youtube youtube_audio_trim.mpd file', function () {
+    describe('parsing youtube youtube_trim.mpd file', function () {
         var mpdFileContent,
-            mpdFileURL = resourcesLocation + 'youtube_audio_trim.mpd';
+            mpdFileURL = resourcesLocation + 'youtube_trim.mpd';
 
         beforeEach(function (done) {
             $.ajax({
@@ -59,7 +59,7 @@ describe("Parser", function () {
             });
         });
 
-        it('should return valid model', function (done) {
+        it('should create proper range segment for audio', function (done) {
             var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, true);
             var audioAdaptationSet = mpdModel.getPeriod().getAudioAdaptationSets()[0];
 
@@ -70,15 +70,31 @@ describe("Parser", function () {
             expect(audioRepresentation.getCodecs()).toBe('mp4a.40.2');
             expect(audioRepresentation.getAudioSamplingRate()).toBe(44100);
             expect(audioRepresentation.getBandwidth()).toBe(129549);
-            //expect(audioRepresentation.getSegment().getInitializationURL()).toBe('http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&range=0-1043');
+            expect(audioRepresentation.getSegment().getInitializationURL()).toBe('http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&itag=140&source=youtube&range=0-1043');
+
+            done();
+        });
+
+        it('should create proper range segment for video', function (done) {
+            var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, true);
+            var videoAdaptationSet = mpdModel.getPeriod().getVideoAdaptationSets()[0];
+
+            expect(videoAdaptationSet.getMimeType()).toBe('video/mp4');
+
+            var videoRepresentation = videoAdaptationSet.getRepresentations()[0];
+            expect(videoRepresentation.getId()).toBe('137');
+            expect(videoRepresentation.getHeight()).toBe(1080);
+            expect(videoRepresentation.getBandwidth()).toBe(4235268);
+            expect(videoRepresentation.getFrameRate()).toBe(25);
+            expect(videoRepresentation.getSegment().getInitializationURL()).toBe('http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&range=0-1512');
 
             done();
         });
     });
 
-    describe('parsing youtube youtube_video_trim.mpd file', function () {
+    describe('parsing counter_video_list.mpd file', function () {
         var mpdFileContent,
-            mpdFileURL = resourcesLocation + 'youtube_video_trim.mpd';
+            mpdFileURL = resourcesLocation + 'counter_video_list.mpd';
 
         beforeEach(function (done) {
             $.ajax({
@@ -90,18 +106,22 @@ describe("Parser", function () {
             });
         });
 
-        it('should return valid model', function (done) {
+        it('should create proper list segment for video', function (done) {
             var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, true);
+            expect(mpdModel.getMediaPresentationDuration()).toBe(600);
             var videoAdaptationSet = mpdModel.getPeriod().getVideoAdaptationSets()[0];
 
             expect(videoAdaptationSet.getMimeType()).toBe('video/mp4');
 
             var videoRepresentation = videoAdaptationSet.getRepresentations()[0];
-            expect(videoRepresentation.getId()).toBe('137');
-            expect(videoRepresentation.getHeight()).toBe(1080);
-            expect(videoRepresentation.getBandwidth()).toBe(4235268);
+            expect(videoRepresentation.getId()).toBe('h264bl_hd');
+            expect(videoRepresentation.getHeight()).toBe(720);
+            expect(videoRepresentation.getBandwidth()).toBe(514828);
             expect(videoRepresentation.getFrameRate()).toBe(25);
-            // expect(videoRepresentation.getSegment().getInitializationURL()).toBe('http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&range=0-1043');
+
+            var listSegment = videoRepresentation.getSegment();
+            expect(listSegment.getSegmentURLs().length).toBe(60);
+            expect(listSegment.getInitializationURL()).toBe('http://localhost:9876/base/test/resources/mpd/mp4-main-multi-h264bl_hd-.mp4');
 
             done();
         });

@@ -48,7 +48,7 @@ Dash.utils.ParserModelUtils = {
 
         var baseURLNode = this.findDirectChildByTagName(node, 'BaseURL');
         if (typeof baseURLNode !== 'undefined') {
-            return this.replaceAmpersandsInURL(baseURLNode.innerHTML);
+            return this.replaceAmpersandsInURL(baseURLNode.innerHTML).trim();
         }
     },
 

@@ -10,10 +10,22 @@
                 <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011"
                                            value="2"/>
                 <BaseURL yt:contentLength="5506886">
-                    http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&amp;itag=140&amp;source=youtube&amp;
+                    http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7&amp;itag=140&amp;source=youtube
                 </BaseURL>
                 <SegmentBase indexRange="592-1043" indexRangeExact="true">
                     <Initialization range="0-591"/>
+                </SegmentBase>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="video/mp4" subsegmentAlignment="true">
+            <Role schemeIdUri="urn:mpeg:DASH:role:2011" value="main"/>
+            <Representation id="137" codecs="avc1.640028" width="1920" height="1080" startWithSAP="1"
+                            bandwidth="4235268" frameRate="25">
+                <BaseURL yt:contentLength="114305844">
+                    http://r6---sn-4g57kney.googlevideo.com/videoplayback?id=fc9d66de83aab6a7
+                </BaseURL>
+                <SegmentBase indexRange="713-1512" indexRangeExact="true">
+                    <Initialization range="0-712"/>
                 </SegmentBase>
             </Representation>
         </AdaptationSet>
