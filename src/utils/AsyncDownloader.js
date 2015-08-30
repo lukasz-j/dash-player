@@ -21,7 +21,9 @@ Dash.utils.AsyncDownloader = function () {
                 requestDuration = new Date() - startTime;
                 requestOnSuccess(request, event.loaded, {url: url, duration: requestDuration});
             } else {
-                requestOnFailure(request);
+                if (requestOnFailure) {
+                    requestOnFailure(request);
+                }
             }
         };
 

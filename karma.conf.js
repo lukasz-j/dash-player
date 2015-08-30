@@ -17,7 +17,8 @@ module.exports = function (config) {
             'test/spec/utils/*.js',
             'test/spec/mpd/*.js',
 
-            {pattern: 'test/resources/mpd/*.mpd', watched: true, included: false, served: true}
+            {pattern: 'test/resources/mpd/*.mpd', watched: true, included: false, served: true},
+            {pattern: 'test/resources/binary-files/*.mp4', watched: true, included: false, served: true}
         ],
 
         // list of files to exclude
