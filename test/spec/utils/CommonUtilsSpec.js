@@ -42,4 +42,33 @@ describe('CommonUtils', function () {
         });
     });
 
+    describe('pretty print files size', function () {
+        it('should create proper strings', function () {
+            var values = [
+                {input: 1023, expected: '1023 B'},
+                {input: 1024, expected: '1.00 KB'},
+                {input: 2500, expected: '2.44 KB'},
+                {input: 1235324, expected: '1.18 MB'}
+            ];
+
+            values.forEach(function (element) {
+                expect(commonUtils.prettyPrintFileSize(element.input)).toBe(element.expected);
+            });
+        });
+    });
+
+    describe('pretty print download duration', function () {
+        it('should create proper strings', function () {
+            var values = [
+                {input: 752, expected: '752 ms'},
+                {input: 1000, expected: '1.000 s'},
+                {input: 1562, expected: '1.562 s'}
+            ];
+
+            values.forEach(function (element) {
+                expect(commonUtils.prettyPrintDownloadDuration(element.input)).toBe(element.expected);
+            });
+        });
+    });
+
 });

@@ -64,22 +64,25 @@ Dash.utils.CommonUtils = {
             output = sizeInBytes,
             index = 0;
 
-        while (index < units.length && output > 1024) {
+        while (index < units.length && output >= 1024) {
             output /= 1024;
             index += 1;
         }
 
-        return output.toFixed(2) + ' ' + units[index];
+        if (index > 0) {
+            return output.toFixed(2) + ' ' + units[index];
+        } else {
+            return Math.ceil(output) + ' ' + units[index];
+        }
     },
 
     prettyPrintDownloadDuration: function (durationInMs) {
         'use strict';
 
-        if (durationInMs > 1000) {
+        if (durationInMs >= 1000) {
             return (durationInMs / 1000).toFixed(3) + ' s';
         } else {
             return durationInMs + ' ms';
         }
     }
-
 };
