@@ -34,9 +34,9 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
             var mpdUrl = getMpdUrlFromResponse(request.responseText);
 
             if (mpdUrl) {
-                asyncDownloader.download(mpdUrl, function (request, loadedBytes, options) {
+                asyncDownloader.download(mpdUrl, function (request, options) {
                     options.isYouTube = true;
-                    downloadMpdFileOnSuccess(request, loadedBytes, options);
+                    downloadMpdFileOnSuccess(request, options);
                 });
             }
         },

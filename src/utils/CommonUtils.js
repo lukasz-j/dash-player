@@ -1,7 +1,7 @@
 Dash.utils.CommonUtils = {
-    computeDownloadSpeed: function (bytes, miliseconds) {
+    computeBandwidth: function (requestOptions) {
         'use strict';
-        return (bytes * 8) / (miliseconds / 1000); // bits per second
+        return Math.ceil((requestOptions.size * 8) / (requestOptions.duration / 1000));
     },
 
     createSourceBufferInitString: function (adaptationSet, representation) {

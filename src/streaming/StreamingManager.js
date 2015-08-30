@@ -43,11 +43,12 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             bufferManager.appendBuffer(currentInitializationHeader);
         },
 
-        notifySuccessfulSegmentDownload = function (loaded, requestOptions) {
+        notifySuccessfulSegmentDownload = function (requestOptions) {
             var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length +
                 ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url +
-                ' size: ' + Dash.utils.CommonUtils.prettyPrintFileSize(loaded) +
-                ' time: ' + Dash.utils.CommonUtils.prettyPrintDownloadDuration(requestOptions.duration);
+                ' size: ' + Dash.utils.CommonUtils.prettyPrintFileSize(requestOptions.size) +
+                ' time: ' + Dash.utils.CommonUtils.prettyPrintDownloadDuration(requestOptions.duration) +
+                ' bandwidth: ' + Dash.utils.CommonUtils.computeBandwidth(requestOptions) + ' bps';
 
             eventBus.dispatchEvent(
                 {
@@ -62,8 +63,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, logMessage);
         },
 
-        onSegmentDownload = function (request, loaded, options) {
-            notifySuccessfulSegmentDownload(loaded, options);
+        onSegmentDownload = function (request, options) {
+            notifySuccessfulSegmentDownload(options);
 
             var arrayBuffer = new Uint8Array(request.response);
 
@@ -75,7 +76,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 pendingRepresentationChange.available = false;
             }
 
-            segmentDownloadCallback.call(this, request, loaded, options);
+            segmentDownloadCallback.call(this, request, options);
         },
 
         findRepresentationByItsId = function (representationId) {
@@ -128,7 +129,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     }
                 },
 
-                onDownloadSuccess = function (request, loaded, options) {
+                onDownloadSuccess = function (request, options) {
                     var logMessage = 'Initialization header successfully downloaded for ' + adaptationSet.getMediaType().name +
                         ' representation, number: ' + representation.orderNumber + ', id: ' + representation.getId() +
                         ', bandwidth: ' + representation.getBandwidth() + ', url: ' + options.url;

@@ -31,7 +31,7 @@ Dash.Player = function (videoElement, $window, eventBus) {
             }, false);
         },
 
-        onSuccessMpdDownloadCallback = function (request, loadedBytes, options) {
+        onSuccessMpdDownloadCallback = function (request, options) {
             var mpdModel = Dash.mpd.Parser(eventBus).generateModel(request.responseText, options.url, options.isYouTube);
 
             if (typeof mpdModel === 'undefined') {
