@@ -127,4 +127,44 @@ describe("Parser", function () {
         });
     });
 
+    describe('parsing elephant_template.mpd file', function () {
+        var mpdFileContent,
+            mpdFileURL = resourcesLocation + 'elephant_template.mpd';
+
+        beforeEach(function (done) {
+            $.ajax({
+                url: mpdFileURL,
+                contentType: 'text/xml'
+            }).done(function (data) {
+                mpdFileContent = data;
+                done();
+            });
+        });
+
+        it('should create proper template segment for audio', function (done) {
+            var mpdModel = parser.generateModel(mpdFileContent, mpdFileURL, true);
+            expect(mpdModel.getMinBufferTime()).toBe(1.50);
+
+            var audioAdaptationSet = mpdModel.getPeriod().getAdaptationSet(Dash.model.MediaType.AUDIO, Dash.model.MediaFormat.MP4);
+            var videoAdaptationSet = mpdModel.getPeriod().getAdaptationSet(Dash.model.MediaType.VIDEO, Dash.model.MediaFormat.MP4);
+
+            expect(audioAdaptationSet).toBeDefined();
+            expect(videoAdaptationSet).not.toBeDefined();
+
+            expect(audioAdaptationSet.getMimeType()).toBe('audio/mp4');
+
+            var audioRepresentation = audioAdaptationSet.getRepresentations()[0];
+            expect(audioRepresentation.getId()).toBe('4');
+            expect(audioRepresentation.getCodecs()).toBe('mp4a.40.29');
+            expect(audioRepresentation.getAudioSamplingRate()).toBe(48000);
+            expect(audioRepresentation.getBandwidth()).toBe(33432);
+
+            var templateSegment = audioRepresentation.getSegment();
+            expect(templateSegment.getTemplateURL()).toBe('ED_MPEG2_32k_$Time$.mp4');
+            expect(templateSegment.getSegmentURLs().length).toBe(334);
+            expect(templateSegment.getInitializationURL()).toBe('http://localhost:9876/base/test/resources/mpd/ED_MPEG2_32k_init.mp4');
+            done();
+        });
+    });
+
 });

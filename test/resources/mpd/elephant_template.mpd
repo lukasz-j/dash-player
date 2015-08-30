@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" minBufferTime="PT1.500000S" type="static"
+     mediaPresentationDuration="PT0H10M54.00S" profiles="urn:mpeg:dash:profile:isoff-live:2011">
+    <Period id="" duration="PT0H10M54.00S">
+        <AdaptationSet segmentAlignment="true">
+            <Representation id="4" mimeType="audio/mp4" codecs="mp4a.40.29" audioSamplingRate="48000" startWithSAP="1"
+                            bandwidth="33432">
+                <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011"
+                                           value="2"/>
+                <SegmentTemplate timescale="48000" media="ED_MPEG2_32k_$Time$.mp4"
+                                 initialization="ED_MPEG2_32k_init.mp4">
+                    <SegmentTimeline>
+                        <S d="94208" r="-1"/>
+                    </SegmentTimeline>
+                </SegmentTemplate>
+            </Representation>
+        </AdaptationSet>
+    </Period>
+</MPD>
