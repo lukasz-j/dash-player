@@ -55,5 +55,31 @@ Dash.utils.CommonUtils = {
         }
 
         return outputString;
+    },
+
+    prettyPrintFileSize: function (sizeInBytes) {
+        'use strict';
+
+        var units = ['B', 'KB', 'MB'],
+            output = sizeInBytes,
+            index = 0;
+
+        while (index < units.length && output > 1024) {
+            output /= 1024;
+            index += 1;
+        }
+
+        return output.toFixed(2) + ' ' + units[index];
+    },
+
+    prettyPrintDownloadDuration: function (durationInMs) {
+        'use strict';
+
+        if (durationInMs > 1000) {
+            return (durationInMs / 1000).toFixed(3) + ' s';
+        } else {
+            return durationInMs + ' ms';
+        }
     }
+
 };

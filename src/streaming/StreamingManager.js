@@ -43,9 +43,11 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             bufferManager.appendBuffer(currentInitializationHeader);
         },
 
-        notifySuccessfulSegmentDownload = function (requestOptions) {
+        notifySuccessfulSegmentDownload = function (loaded, requestOptions) {
             var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length +
-                ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url;
+                ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url +
+                ' size: ' + Dash.utils.CommonUtils.prettyPrintFileSize(loaded) +
+                ' time: ' + Dash.utils.CommonUtils.prettyPrintDownloadDuration(requestOptions.duration);
 
             eventBus.dispatchEvent(
                 {
@@ -61,7 +63,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         onSegmentDownload = function (request, loaded, options) {
-            notifySuccessfulSegmentDownload(options);
+            notifySuccessfulSegmentDownload(loaded, options);
 
             var arrayBuffer = new Uint8Array(request.response);
 
