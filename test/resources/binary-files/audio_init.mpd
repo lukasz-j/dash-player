@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:DASH:schema:MPD:2011"
+     xmlns:yt="http://youtube.com/yt/2012/10/10" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd"
+     minBufferTime="PT1.500S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" type="static"
+     mediaPresentationDuration="PT76.509S">
+    <Period>
+        <AdaptationSet mimeType="audio/mp4" subsegmentAlignment="true">
+            <Role schemeIdUri="urn:mpeg:DASH:role:2011" value="main"/>
+            <Representation id="140" codecs="mp4a.40.2" audioSamplingRate="44100" startWithSAP="1" bandwidth="128995">
+                <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011"
+                                           value="2"/>
+                <BaseURL yt:contentLength="1228939">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=140&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=audio/mp4&amp;gir=yes&amp;clen=1228939&amp;lmt=1420445441353780&amp;dur=76.509&amp;key=dg_yt0&amp;signature=2623CB7D929EF2F0789B0D7D15E72A3B700C1A34.458ECD5F4CC331D6E2B55460892820E0BEF94D0A&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="592-719" indexRangeExact="true">
+                    <Initialization range="0-591"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="141" codecs="mp4a.40.2" audioSamplingRate="44100" startWithSAP="1" bandwidth="255616">
+                <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011"
+                                           value="2"/>
+                <BaseURL yt:contentLength="2439947">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=141&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=audio/mp4&amp;gir=yes&amp;clen=2439947&amp;lmt=1420445441345040&amp;dur=76.509&amp;key=dg_yt0&amp;signature=56E6FB773546BBEE1AC443E410105EF95707043A.549F306A96FFE3EABA509ED06149576D89D67898&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="592-719" indexRangeExact="true">
+                    <Initialization range="0-591"/>
+                </SegmentBase>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="audio/webm" subsegmentAlignment="true">
+            <Role schemeIdUri="urn:mpeg:DASH:role:2011" value="main"/>
+            <Representation id="171" codecs="vorbis" audioSamplingRate="44100" startWithSAP="1" bandwidth="101169">
+                <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011"
+                                           value="2"/>
+                <BaseURL yt:contentLength="933984">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=171&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=audio/webm&amp;gir=yes&amp;clen=933984&amp;lmt=1411192899663075&amp;dur=76.442&amp;key=dg_yt0&amp;signature=22005C93F32DA005A182E94F0BA14B77F67AF8F7.48ECBEB1AE15E7323E47B935C87E0AA88F5302F5&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="4452-4584" indexRangeExact="true">
+                    <Initialization range="0-4451"/>
+                </SegmentBase>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="video/mp4" subsegmentAlignment="true">
+            <Role schemeIdUri="urn:mpeg:DASH:role:2011" value="main"/>
+            <Representation id="133" codecs="avc1.4d4015" width="426" height="240" startWithSAP="1" bandwidth="245917"
+                            frameRate="30">
+                <BaseURL yt:contentLength="2340070">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=133&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/mp4&amp;gir=yes&amp;clen=2340070&amp;lmt=1420445445118070&amp;dur=76.409&amp;key=dg_yt0&amp;signature=5C3B6CF64589EF83D98FB3EC2F09DE4D157FA8E6.7DECAC22AEE96481F8B2EED345825460C5A926BF&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="673-896" indexRangeExact="true">
+                    <Initialization range="0-672"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="134" codecs="avc1.4d401e" width="640" height="360" startWithSAP="1" bandwidth="607047"
+                            frameRate="30">
+                <BaseURL yt:contentLength="5333570">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=134&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/mp4&amp;gir=yes&amp;clen=5333570&amp;lmt=1420445462946085&amp;dur=76.409&amp;key=dg_yt0&amp;signature=356E1FC7133862A61BE2EB03B20F7F16DC512D6D.659DA651A8F2B7689A3ABA531D74060290A0CB67&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="709-932" indexRangeExact="true">
+                    <Initialization range="0-708"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="135" codecs="avc1.4d401f" width="854" height="480" startWithSAP="1" bandwidth="1120236"
+                            frameRate="30">
+                <BaseURL yt:contentLength="10323302">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=135&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/mp4&amp;gir=yes&amp;clen=10323302&amp;lmt=1420445482411649&amp;dur=76.409&amp;key=dg_yt0&amp;signature=343E981B63B2DEBB5E3814D4F10DBFFB3DDB460D.26DE09386FD0245BF56CB6F0DC33CD65BAC235AE&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="709-932" indexRangeExact="true">
+                    <Initialization range="0-708"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="160" codecs="avc1.4d400c" width="256" height="144" startWithSAP="1" bandwidth="110507"
+                            frameRate="15">
+                <BaseURL yt:contentLength="1042486">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=160&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/mp4&amp;gir=yes&amp;clen=1042486&amp;lmt=1420445444930935&amp;dur=76.409&amp;key=dg_yt0&amp;signature=324757EA05658E3B1FEDC7D87026F131B14ED4E2.8E0A8E39302B94081B23403F9803DD683F07648C&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="671-894" indexRangeExact="true">
+                    <Initialization range="0-670"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="136" codecs="avc1.4d401f" width="1280" height="720" startWithSAP="1" bandwidth="2233868"
+                            frameRate="30">
+                <BaseURL yt:contentLength="20918859">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=136&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/mp4&amp;gir=yes&amp;clen=20918859&amp;lmt=1420445517261791&amp;dur=76.409&amp;key=dg_yt0&amp;signature=9104E1C3E9D7ADF745EE1E9D7DAE9B1308D4EF9A.512BC7C1559FCBAA30D1E9E86D048EF8AA5AAE47&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="709-932" indexRangeExact="true">
+                    <Initialization range="0-708"/>
+                </SegmentBase>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="video/webm" subsegmentAlignment="true">
+            <Role schemeIdUri="urn:mpeg:DASH:role:2011" value="main"/>
+            <Representation id="242" codecs="vp9" width="426" height="240" startWithSAP="1" bandwidth="237685"
+                            frameRate="1">
+                <BaseURL yt:contentLength="2044043">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=242&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/webm&amp;gir=yes&amp;clen=2044043&amp;lmt=1411192952968078&amp;dur=76.410&amp;key=dg_yt0&amp;signature=5E1826D04599176E1BAC73B5C66CBC45898FA362.8A64E41F1B8692C2AB42B346D32A73673A5E915C&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="234-495" indexRangeExact="true">
+                    <Initialization range="0-233"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="243" codecs="vp9" width="640" height="360" startWithSAP="1" bandwidth="405746"
+                            frameRate="1">
+                <BaseURL yt:contentLength="3553679">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=243&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/webm&amp;gir=yes&amp;clen=3553679&amp;lmt=1411192957963959&amp;dur=76.410&amp;key=dg_yt0&amp;signature=402CB149EA61A687BD7A313A60B453250C04EC5D.24307874B210A1320FB776DA84E35AEC96FD6992&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="235-496" indexRangeExact="true">
+                    <Initialization range="0-234"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="244" codecs="vp9" width="854" height="480" startWithSAP="1" bandwidth="949527"
+                            frameRate="1">
+                <BaseURL yt:contentLength="7604793">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=244&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/webm&amp;gir=yes&amp;clen=7604793&amp;lmt=1411193001571709&amp;dur=76.410&amp;key=dg_yt0&amp;signature=46AE8E2B3836D6F959E0916F30BEBF732BCF52B0.1FEAE2280F363CF75E5E8D160D5A43E781929429&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="235-496" indexRangeExact="true">
+                    <Initialization range="0-234"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="278" codecs="vp9" width="256" height="144" startWithSAP="1" bandwidth="134711"
+                            frameRate="1">
+                <BaseURL yt:contentLength="1056865">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=278&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/webm&amp;gir=yes&amp;clen=1056865&amp;lmt=1411192970847562&amp;dur=76.410&amp;key=dg_yt0&amp;signature=02F67BB3602F93ACAE6202115DB3F6469F3EAA7D.0119E3C97B0B648F01EC5E205A54A209D8864920&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="234-494" indexRangeExact="true">
+                    <Initialization range="0-233"/>
+                </SegmentBase>
+            </Representation>
+            <Representation id="247" codecs="vp9" width="1280" height="720" startWithSAP="1" bandwidth="1933597"
+                            frameRate="1">
+                <BaseURL yt:contentLength="14681484">
+                    http://r7---sn-2apm-f5fe7.googlevideo.com/videoplayback?id=decc6420904c1411&amp;itag=247&amp;source=youtube&amp;pl=15&amp;mm=31&amp;mn=sn-2apm-f5fe7&amp;mv=m&amp;ms=au&amp;ratebypass=yes&amp;mime=video/webm&amp;gir=yes&amp;clen=14681484&amp;lmt=1411193000394113&amp;dur=76.410&amp;key=dg_yt0&amp;signature=0AEFDCC459A377A12C03A7A6F464ABB24CE96F0F.4C89396AA689403948B9E7C361A9FB67BDF9E429&amp;upn=XqGyGurfCzs&amp;mt=1440924427&amp;fexp=3300018,3300119,3300134,3300137,3300161,3310750,3311904,3312177,3312381,9406994,9407746,9408710,9409069,9413318,9415365,9415485,9416023,9416126,9416681,9416729,9417703,9417707,9418153,9418393,9418448,9418707,9419742,9419767,9420021&amp;sver=3&amp;ip=78.11.199.46&amp;ipbits=0&amp;expire=1440946147&amp;sparams=ip,ipbits,expire,id,itag,source,pl,mm,mn,mv,ms,ratebypass,mime,gir,clen,lmt,dur
+                </BaseURL>
+                <SegmentBase indexRange="235-496" indexRangeExact="true">
+                    <Initialization range="0-234"/>
+                </SegmentBase>
+            </Representation>
+        </AdaptationSet>
+    </Period>
+</MPD>

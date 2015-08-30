@@ -38,4 +38,32 @@ describe('ParserModelUtils', function () {
 
         expect(parserModelUtils.replaceAmpersandsInURL(url)).toBe(expectedUrl);
     });
+
+    describe('processing segment base', function () {
+        var binaryFileURL = 'http://localhost:9876/base/test/resources/binary-files/audio_init.mp4',
+            segmentBaseStart = 592,
+            segmentBaseEnd = 719,
+            initializationHeader;
+
+        beforeEach(function (done) {
+            //fixme replace AsyncDownloader with plain ajax
+            Dash.utils.AsyncDownloader().downloadBinaryFile(binaryFileURL, function (request) {
+                initializationHeader = new Uint8Array(request.response);
+                done();
+            });
+        });
+
+        it('should find segment ranges', function (done) {
+            var segmentRanges = parserModelUtils.findSegmentRangedInBaseSegment(initializationHeader, segmentBaseStart, segmentBaseEnd);
+
+            expect(segmentRanges.length).toBe(8);
+
+            expect(segmentRanges[0].begin).toBe(720);
+            expect(segmentRanges[0].end).toBe(319775);
+
+            expect(segmentRanges[7].begin).toBe(2232636);
+            expect(segmentRanges[7].end).toBe(2439946);
+            done();
+        });
+    });
 });

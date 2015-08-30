@@ -115,5 +115,26 @@ Dash.utils.ParserModelUtils = {
     createURLWithRange: function (baseURL, startIndex, endIndex) {
         'use strict';
         return baseURL + '&range=' + startIndex + '-' + endIndex;
+    },
+
+    findSegmentRangedInBaseSegment: function (initializationHeader, segmentBaseStartIndex, segmentBaseEndIndex) {
+        var sampleLengths = [],
+            segmentBase = initializationHeader.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
+
+            segmentRanges = [],
+            startIndex = segmentBaseEndIndex + 1,
+            i;
+
+        for (i = 32; i < segmentBase.length; i += 12) {
+            sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1] *
+                65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3] - 1);
+        }
+
+        for (i = 0; i < sampleLengths.length; i += 1) {
+            segmentRanges.push({begin: startIndex, end: startIndex + sampleLengths[i]});
+            startIndex += sampleLengths[i] + 1;
+        }
+
+        return segmentRanges;
     }
 };

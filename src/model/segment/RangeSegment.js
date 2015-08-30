@@ -15,35 +15,14 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
         segmentBaseStartIndex = parseInt(splitSegmentBaseIndexRange[0], 10),
         segmentBaseEndIndex = parseInt(splitSegmentBaseIndexRange[1], 10),
 
-        segmentRangeList;
+        segmentRangeList,
 
-    var toRangeString = function (rangeObject) {
+        toRangeString = function (rangeObject) {
             return rangeObject.begin + '-' + rangeObject.end;
         },
 
         getInitializationSegmentRange = function () {
             return {begin: initializationStartIndex, end: segmentBaseEndIndex};
-        },
-
-        getSegmentsRange = function (initialization) {
-            var sampleLengths = [],
-                segmentBase = initialization.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
-
-                segmentRanges = [],
-                startIndex = segmentBaseEndIndex + 1,
-                i;
-
-            for (i = 32; i < segmentBase.length; i += 12) {
-                sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1] *
-                    65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3] - 1);
-            }
-
-            for (i = 0; i < sampleLengths.length; i += 1) {
-                segmentRanges.push({begin: startIndex, end: startIndex + sampleLengths[i]});
-                startIndex += sampleLengths[i] + 1;
-            }
-
-            return segmentRanges;
         };
 
 
@@ -60,7 +39,7 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
         },
 
         computeSegmentRanges: function (initializationHeader) {
-            segmentRangeList = getSegmentsRange(initializationHeader);
+            segmentRangeList = Dash.utils.ParserModelUtils.findSegmentRangedInBaseSegment(initializationHeader, segmentBaseStartIndex, segmentBaseEndIndex);
         },
 
         getInitializationURL: function () {
