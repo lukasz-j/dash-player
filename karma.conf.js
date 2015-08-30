@@ -16,6 +16,7 @@ module.exports = function (config) {
             'test/spec/events/*.js',
             'test/spec/utils/*.js',
             'test/spec/mpd/*.js',
+            'test/spec/log/*.js',
 
             {pattern: 'test/resources/mpd/*.mpd', watched: true, included: false, served: true},
             {pattern: 'test/resources/binary-files/*.mp4', watched: true, included: false, served: true}
