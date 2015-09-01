@@ -13,6 +13,9 @@ var PlayerView = React.createClass({
 });
 
 var SourceLoadView = React.createClass({
+
+    youTubeURLRegex: '^((http|https):\/\/)?(www\.)?youtube\.com',
+
     getInitialState: function () {
         return {
             videoSource: 'mpd'
@@ -34,13 +37,20 @@ var SourceLoadView = React.createClass({
         }
     },
 
-    onVideoSourceChanged: function (event) {
-        this.setState({videoSource: event.target.value});
-    },
-
     loadVideoSource: function (event) {
         var sourceURL = React.findDOMNode(this.refs.sourceURL).value;
         dashPlayer.load(sourceURL, this.state.videoSource === 'youtube');
+    },
+
+    handleURLChange: function (event) {
+        var url = event.target.value.trim(),
+            youTubeRegex = new RegExp(this.youTubeURLRegex, 'i');
+
+        if (youTubeRegex.test(url)) {
+            this.setState({videoSource: 'youtube'});
+        } else {
+            this.setState({videoSource: 'mpd'});
+        }
     },
 
     getSourcePlaceholder: function () {
@@ -55,24 +65,14 @@ var SourceLoadView = React.createClass({
         return (
             <div>
                 <div className="row sourceLoadView">
-                    <div className="col-md-2 sourceSelect">
-                        <select className="form-control" id="sourceType" value={this.state.videoSource}
-                                onChange={this.onVideoSourceChanged}>
-                            <option value="mpd">MPD file</option>
-                            <option value="youtube">YouTube</option>
-                        </select>
-                    </div>
-
-                    <div className="col-md-10 sourceInput">
-                        <div className="input-group">
-                            <input type="text" className="form-control" ref="sourceURL"
-                                   placeholder={this.getSourcePlaceholder()}/>
-                                <span className="input-group-btn">
-                                    <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>
-                                        Load
-                                    </button>
-                                </span>
-                        </div>
+                    <div className="input-group">
+                        <input type="text" className="form-control" ref="sourceURL" onChange={this.handleURLChange}
+                               placeholder="YouTube movie or MPD file URL"/>
+                        <span className="input-group-btn">
+                            <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>
+                                Load
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <div className="row">
