@@ -19,5 +19,6 @@
     "karma-jasmine": "^0.3.6"
   },
   "author": "Mateusz Sekara",
+  "repository": "https://github.com/skwarq/dash-player",
   "license": "BSD"
 }
