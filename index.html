@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>DASH Player</title>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- react.js -->
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+
+    <!-- additional styles -->
+    <link rel="stylesheet" href="app/src/css/player.css">
+
+    <!-- Dash player scripts -->
+    <script src="src/Dash.js"></script>
+    <script src="src/Player.js"></script>
+
+    <!-- Model -->
+    <script src="src/model/segment/ListSegment.js"></script>
+    <script src="src/model/segment/RangeSegment.js"></script>
+    <script src="src/model/segment/TemplateSegment.js"></script>
+
+    <script src="src/model/AdaptationSet.js"></script>
+    <script src="src/model/MPD.js"></script>
+    <script src="src/model/Period.js"></script>
+    <script src="src/model/Representation.js"></script>
+
+    <script src="src/model/other/MediaFormat.js"></script>
+    <script src="src/model/other/MediaType.js"></script>
+    <script src="src/model/other/MPDType.js"></script>
+    <script src="src/model/other/MPDProfile.js"></script>
+
+    <!-- MPD maintenance -->
+    <script src="src/mpd/Downloader.js"></script>
+    <script src="src/mpd/Parser.js"></script>
+
+    <!-- Streaming -->
+    <script src="src/streaming/RepresentationRepository.js"></script>
+    <script src="src/streaming/StreamingManager.js"></script>
+    <script src="src/streaming/BufferManager.js"></script>
+    <script src="src/streaming/PlaybackManager.js"></script>
+    <script src="src/streaming/InitRepresentationPicker.js"></script>
+
+    <!-- Utils -->
+    <script src="src/utils/AsyncDownloader.js"></script>
+    <script src="src/utils/CommonUtils.js"></script>
+    <script src="src/utils/ParserModelUtils.js"></script>
+
+    <!-- Events -->
+    <script src="src/events/EventBus.js"></script>
+    <script src="src/events/Events.js"></script>
+
+    <!-- Logging -->
+    <script src="src/log/ConsoleLogger.js"></script>
+    <script src="src/log/LogLevel.js"></script>
+
+    <!-- View -->
+    <script src="app/src/jsx/PlayerView.jsx" type="text/jsx"></script>
+    <script src="app/src/jsx/DebugInfoPanel.jsx" type="text/jsx"></script>
+    <script src="app/src/jsx/PlayerControllerPanel.jsx" type="text/jsx"></script>
+</head>
+
+<body>
+<div id="content">
+
+</div>
+<script type="text/jsx">
+    var eventBus = Dash.event.EventBus();
+    var consoleLogger = Dash.log.ConsoleLogger(console);
+
+    eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, consoleLogger.onMessageReceived);
+
+    React.render(
+            <PlayerView />,
+            document.getElementById("content")
+    );
+
+    var videoElement = document.getElementById('dashVideoElement');
+    var dashPlayer = Dash.Player(videoElement, window, eventBus);
+</script>
+</body>
+</html>
