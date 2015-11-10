@@ -221,8 +221,8 @@ var LogContainer = React.createClass({
     },
 
     componentDidUpdate: function () {
-        var logBody = React.findDOMNode(this.refs.logs);
-        logBody.scrollTop = logBody.scrollHeight;
+/*        var logBody = React.findDOMNode(this.refs.logs);
+        logBody.scrollTop = logBody.scrollHeight;*/
     },
 
     render: function () {
