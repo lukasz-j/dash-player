@@ -16,7 +16,21 @@ module.exports = function (grunt) {
                 ]
             },
             options: {
-                jshintrc: ".jshintrc"
+                jshintrc: ".jshintrc",
+                reporterOutput: ""
+            }
+        },
+
+        react: {
+            all: {
+                files: {
+                    'app/src/jsx_transformed/PlayerViewAll.js': [
+                        'app/src/jsx/PlayerView.jsx',
+                        'app/src/jsx/DebugInfoPanel.jsx',
+                        'app/src/jsx/PlayerControllerPanel.jsx',
+                        'app/src/jsx/PolicyConfigurationView.jsx'
+                    ]
+                }
             }
         },
 
@@ -25,6 +39,9 @@ module.exports = function (grunt) {
                 files: {
                     'build/dash-player.min.js': [
                         'src/**/*.js'
+                    ],
+                    'app/src/jsx_transformed/PlayerViewAll.min.js': [
+                        'app/src/jsx_transformed/PlayerViewAll.js'
                     ]
                 }
             }
@@ -36,18 +53,6 @@ module.exports = function (grunt) {
                     'src/**/*.js'
                 ],
                 dest: 'build/dash-player.debug.js'
-            }
-        },
-
-        react: {
-            all: {
-                files: {
-                    'app/src/jsx_transformed/PlayerViewAll.js': [
-                        'app/src/jsx/PlayerView.jsx',
-                        'app/src/jsx/DebugInfoPanel.jsx',
-                        'app/src/jsx/PlayerControllerPanel.jsx'
-                    ]
-                }
             }
         },
 
@@ -64,5 +69,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-react');
     grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'react', 'karma']);
+    grunt.registerTask('default', ['jshint', 'react', 'concat', 'uglify', 'karma']);
 };

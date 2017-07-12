@@ -65,17 +65,14 @@ var AdaptationControlView = React.createClass({
     render: function () {
         return (
             <div>
-                <span id="adaptationLabel">Adaptation method</span> &nbsp;
+                <span id="adaptationLabel">Adaptation active</span> &nbsp;
 
                 <div className="btn-group" role="group" aria-label="adaptationLabel">
                     <button className="btn btn-default" type="button" disabled={this.state.value === "Off"}
                             onClick={this.adaptationChanged}>Off
                     </button>
                     <button className="btn btn-default" type="button" disabled={this.state.value === "PID"}
-                            onClick={this.adaptationChanged}>PID
-                    </button>
-                    <button className="btn btn-default" type="button" disabled={this.state.value === "Fuzzy"}
-                            onClick={this.adaptationChanged}>Fuzzy
+                            onClick={this.adaptationChanged}>On
                     </button>
                 </div>
             </div>

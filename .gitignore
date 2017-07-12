@@ -2,6 +2,9 @@
 .idea/
 *.iml
 
+# Netbeans files
+nbproject/
+
 #node js
 /node_modules
 
@@ -13,3 +16,4 @@
 
 #transformed jsx
 /app/src/jsx_transformed
+/nbproject/private/

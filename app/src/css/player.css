@@ -16,3 +16,16 @@
     overflow-wrap: break-word;
     overflow-y: scroll;
 }
+
+.adaptation-profile-list select {
+    width: 100%;
+    height: 200px;
+}
+
+.adaptation-profile-list button {
+    width: 100%;
+}
+
+.adaptation-profile-settings button {
+    width: 100%;
+}

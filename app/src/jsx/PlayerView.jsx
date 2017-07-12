@@ -1,14 +1,29 @@
 var PlayerView = React.createClass({
+    getInitialState: function() {
+        return {step: "adaptation_profile"};
+    },
     render: function () {
         return (
             <div className="container">
-                <SourceLoadView />
+                {this.state.step === "adaptation_profile" ? <div className="adaptPolicyConfiguration">
+                    <PolicyConfigurationView wrapper={this} />
+                </div> : ''}
 
-                <PlayerControllerPanel />
+                {this.state.step === "player" ? <div className="player">
+                    <SourceLoadView wrapper={this} />
 
-                <DebugInfoPanel />
+                    <PlayerControllerPanel />
+
+                    <DebugInfoPanel />
+                </div> : '' }
             </div>
         );
+    },
+    goToPlayer: function() {
+        this.setState({step: 'player'});
+    },
+    backToAdaptationProfile: function() {
+        this.setState({step: 'adaptation_profile'});
     }
 });
 
@@ -71,6 +86,11 @@ var SourceLoadView = React.createClass({
                         <span className="input-group-btn">
                             <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>
                                 Load
+                            </button>
+                        </span>
+                        <span className="input-group-btn">
+                            <button className="btn" type="button" onClick={this.props.wrapper.backToAdaptationProfile}>
+                                Back to profile
                             </button>
                         </span>
                     </div>

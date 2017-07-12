@@ -5,6 +5,7 @@ var Dash = {
     streaming: {},
     log: {},
     utils: {},
-    event: {}
+    event: {},
+    sync: {}
 };
 

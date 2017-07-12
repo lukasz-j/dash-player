@@ -56,6 +56,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
 
         onSegmentAppendedCompleted = function () {
             alreadyFinishedManagers = 0;
+//                setTimeout(appendNextSegmentForStreamingManagers, 20000);
             appendNextSegmentForStreamingManagers();
         },
 
