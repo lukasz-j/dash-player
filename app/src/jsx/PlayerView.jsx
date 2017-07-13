@@ -16,6 +16,8 @@ var PlayerView = React.createClass({
 
                     <DebugInfoPanel />
                 </div> : '' }
+
+                <ExternalConditionsEmulator />
             </div>
         );
     },
@@ -87,9 +89,7 @@ var SourceLoadView = React.createClass({
                             <button className="btn btn-primary" type="button" onClick={this.loadVideoSource}>
                                 Load
                             </button>
-                        </span>
-                        <span className="input-group-btn">
-                            <button className="btn" type="button" onClick={this.props.wrapper.backToAdaptationProfile}>
+                            <button className="btn btn-default" type="button" onClick={this.props.wrapper.backToAdaptationProfile}>
                                 Back to profile
                             </button>
                         </span>

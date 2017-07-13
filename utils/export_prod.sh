@@ -9,8 +9,8 @@ if [ -z $dest ]; then
     exit 1
 fi
 
-neededdirs="app/src/jsx_transformed app/src/css app/prod build"
-tocopy="app/src/jsx_transformed/PlayerViewAll.min.js app/src/css/player.css app/prod/index.html build/dash-player.min.js"
+neededdirs="app/src/jsx_transformed app/prod build"
+tocopy="app/src/jsx_transformed/PlayerViewAll.min.js build/player.min.css app/prod/index.html build/dash-player.min.js index.html"
 
 rm -rf ${dest}/*
 

@@ -4,5 +4,6 @@ Dash.event.Events = {
     REPRESENTATION_INITIALIZED: 'representationInitialized',
     REPRESENTATION_CHANGED: 'representationChanged',
     LOG_MESSAGE: 'logMessage',
-    SEGMENT_DOWNLOADED: 'segmentDownloaded'
+    SEGMENT_DOWNLOADED: 'segmentDownloaded',
+    BATTERY_OUTAGE_PREDICTION: 'batteryOutagePrediction'
 };

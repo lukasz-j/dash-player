@@ -29,3 +29,57 @@
 .adaptation-profile-settings button {
     width: 100%;
 }
+
+.external-conditions-overlay {
+    height: 100%;
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    right: -100%;
+    width: 100%;
+    top: 0;
+    background-color: rgba(255,255,255, 0.8); /* Black w/opacity */
+    overflow-x: visible; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+
+.external-conditions-overlay .visibility-toggle {
+    position: absolute;
+    left: -25px;
+    width: 25px;
+    font-size: 20px;
+    border: #555 1px solid;
+    background-color: #e8e8e8;
+    text-align: center;
+    top: 10px;
+    cursor: pointer;
+}
+
+.external-conditions-overlay .visibility-close {
+    float: right;
+    cursor: pointer;
+}
+
+.external-conditions-overlay .panel {
+    overflow-y: scroll;
+    height: 100%;
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .external-conditions-overlay {
+        width: 400px;
+        right: -400px;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .external-conditions-overlay {
+        width: 300px;
+        right: -300px;
+    }
+}
+
+.external-conditions-overlay.visible {
+    right: 0;
+}

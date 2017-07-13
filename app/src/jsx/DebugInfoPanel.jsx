@@ -15,7 +15,7 @@ var DebugInfoPanel = React.createClass({
         this.setState({isLogTabActive: true, waitingLogs: 0});
     },
 
-    onChangedTabToRepresentation: function () {
+    onChangedTabToOther: function () {
         this.setState({isLogTabActive: false});
     },
 
@@ -30,7 +30,7 @@ var DebugInfoPanel = React.createClass({
                         <ul className="nav nav-pills">
                             <li className="active">
                                 <a data-toggle="pill" href="#representations"
-                                   onClick={this.onChangedTabToRepresentation}>Representations</a>
+                                   onClick={this.onChangedTabToOther}>Representations</a>
                             </li>
                             <li>
                                 <a data-toggle="pill" href="#logs" onClick={this.onChangedTabToLogs}>Logs
@@ -38,11 +38,16 @@ var DebugInfoPanel = React.createClass({
                                         <span ref="log-span"
                                               className="badge">{this.state.waitingLogs}</span> : null}</a>
                             </li>
+                            <li>
+                                <a data-toggle="pill" href="#adaptationDetails"
+                                   onClick={this.onChangedTabToOther}>Adaptation</a>
+                            </li>
                         </ul>
 
                         <div className="tab-content">
                             <RepresentationsContainer/>
                             <LogContainer logMessageAddedCallback={this.onLogMessageAppended}/>
+                            <AdaptationDetailsContainer/>
                         </div>
                     </div>
                 </div>
@@ -284,5 +289,19 @@ var LogMessage = React.createClass({
                     </div>
                 );
         }
+    }
+});
+
+var AdaptationDetailsContainer = React.createClass({
+    render: function() {
+        return (
+            <div id="adaptationDetails" className="tab-pane fade">
+                <div className="panel panel-default">
+                    <div className="panel-body">
+                        <h4>Adaptation details</h4>
+                    </div>
+                </div>
+            </div>
+        );
     }
 });

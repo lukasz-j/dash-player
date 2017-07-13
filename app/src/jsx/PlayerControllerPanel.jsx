@@ -38,6 +38,7 @@ var VideoControlContainer = React.createClass({
                         mediaType={Dash.model.MediaType.VIDEO}/></li>
                     <li className="list-group-item"><QualityControlView
                         mediaType={Dash.model.MediaType.AUDIO}/></li>
+                    <li className="list-group-item"><BatterySavingControlView/></li>
                 </ul>
             </div>
         )
@@ -239,5 +240,71 @@ var MpdDetailsView = React.createClass({
                 <div></div>
             );
         }
+    }
+});
+
+var BatterySavingControlView = React.createClass({
+    getInitialState: function() {
+        return {batteryOptimizationAvailable: false};
+    },
+    render: function() {
+        eventBus.addEventListener(Dash.event.Events.BATTERY_OUTAGE_PREDICTION, this.onBatteryOutagePrediction);
+        return (
+                <div>
+        <div className="btn-group">
+        <button className="btn btn-default" onClick={this.testOnEmulateLowBattery}
+        data-toggle="tooltip" data-placement="top" title="This two buttons are currently just for demonstration. In final version, this will be invoked on right moment by itself"
+        >Enable low battery emulation</button>
+        <button className="btn btn-default" onClick={this.testOnDisableEmulateLowBattery}>Disable low battery emulation</button>
+        </div>
+                {this.state.batteryOptimizationAvailable ? this.getBatteryOptimizationWidget() : ''}
+                <div className="modal fade" id="batteryOptimizationWarning" tabindex="-1" role="dialog">
+                <div className="modal-dialog" role="document">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h4 className="modal-title">Battery optimization</h4>
+                    </div>
+                    <div className="modal-body">
+                      You have only 10% battery left. Probably you won't be able to
+                      finish playback. You can turn on battery optimization so battery
+                      will last longer.
+                    </div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-default" data-dismiss="modal">I'm ok, don't want it</button>
+                      <button type="button" className="btn btn-primary">Enable battery optimization</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+             </div>
+        );
+    },
+    componentDidMount: function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    },
+    getBatteryOptimizationWidget: function() {
+        return (
+            <div className="battery-optimization-settings">
+                <input type="checkbox" id="enable-battery-optimization"/>
+                <label htmlFor="enable-battery-optimization">Enable battery usage optimization</label>
+            </div>
+        );
+    },
+    onBatteryOutagePrediction: function(event) {
+        if (event.available) {
+            if (!this.state.batteryOptimizationAvailable) {
+                $('#batteryOptimizationWarning').modal();
+                this.setState({batteryOptimizationAvailable: true});
+            }
+        }
+        else {
+            this.setState({batteryOptimizationAvailable: false});
+        }
+    },
+    testOnEmulateLowBattery: function() {
+        eventBus.dispatchEvent({type: Dash.event.Events.BATTERY_OUTAGE_PREDICTION, available: true});
+    },
+    testOnDisableEmulateLowBattery: function() {
+        eventBus.dispatchEvent({type: Dash.event.Events.BATTERY_OUTAGE_PREDICTION, available: false});
     }
 });

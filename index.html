@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dash Player redirection</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>Redirecting to production version</div>
+        <script type="text/javascript">
+            var loc = window.location.href;
+            loc = loc.replace('index.html', '');
+            if (!loc.endsWith('/')) loc = loc.concat('/');
+            loc = loc.concat('app/prod/index.html');
+            window.location = loc;
+        </script>
+    </body>
+</html>

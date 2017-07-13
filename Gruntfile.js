@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                         'app/src/jsx/PlayerView.jsx',
                         'app/src/jsx/DebugInfoPanel.jsx',
                         'app/src/jsx/PlayerControllerPanel.jsx',
-                        'app/src/jsx/PolicyConfigurationView.jsx'
+                        'app/src/jsx/AdaptationViews.jsx'
                     ]
                 }
             }
@@ -46,7 +46,17 @@ module.exports = function (grunt) {
                 }
             }
         },
-
+        cssmin: {
+            target: {
+                files: [{
+                expand: true,
+                cwd: 'app/src/css',
+                src: ['*.css', '!*.min.css'],
+                dest: 'build',
+                ext: '.min.css'
+            }]
+          }
+        },
         concat: {
             dist: {
                 src: [
@@ -66,8 +76,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-react');
     grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['jshint', 'react', 'concat', 'uglify', 'karma']);
+    grunt.registerTask('no-test', ['jshint', 'react', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('default', ['no-test', 'karma']);
 };
