@@ -6,6 +6,6 @@ var Dash = {
     log: {},
     utils: {},
     event: {},
-    sync: {}
+    adaptation: {}
 };
 

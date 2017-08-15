@@ -2,7 +2,6 @@ Dash.Player = function (videoElement, $window, eventBus) {
     'use strict';
 
     var playbackManager,
-        adaptationManager,
         adaptationSetPicker,
         initRepresentationPicker,
 
@@ -40,9 +39,11 @@ Dash.Player = function (videoElement, $window, eventBus) {
                 eventBus.dispatchEvent({type: Dash.event.Events.MPD_LOADED, value: mpdModel});
                 initializeStreaming(mpdModel);
             }
-        };
+        },
+        adaptationManager = Dash.adaptation.AdaptationManager();
 
     return {
+        adaptationManager: adaptationManager,
         load: function (url, isYouTube) {
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
                 'Trying to load MPD file from ' + url + '. URL will be considered as ' + (isYouTube ? 'YouTube movie' : 'mpd file'));

@@ -5,5 +5,6 @@ Dash.event.Events = {
     REPRESENTATION_CHANGED: 'representationChanged',
     LOG_MESSAGE: 'logMessage',
     SEGMENT_DOWNLOADED: 'segmentDownloaded',
-    BATTERY_OUTAGE_PREDICTION: 'batteryOutagePrediction'
+    BATTERY_OUTAGE_PREDICTION: 'batteryOutagePrediction',
+    ADAPTATION_PROFILES_UPDATE: 'adaptationProfilesUpdate'
 };
