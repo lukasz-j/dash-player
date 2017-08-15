@@ -30,6 +30,10 @@
     width: 100%;
 }
 
+.adaptation-profile-settings input[type="text"] {
+    width: 100%;
+}
+
 .external-conditions-overlay {
     height: 100%;
     position: fixed; /* Stay in place */

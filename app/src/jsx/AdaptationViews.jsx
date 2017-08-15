@@ -5,7 +5,7 @@ var PolicyConfigurationView = React.createClass({
                 <div className="row">
                     <div className="col-md-4 col-sm-6 adaptation-profile-list">
                         <h3>Stored profiles</h3>
-                        <select multiple={true}>
+                        <select size="2">
                             <option value="0">Marek</option>
                             <option value="0">Staszek</option>
                         </select>
@@ -26,6 +26,10 @@ var PolicyConfigurationView = React.createClass({
                     </div>
                     <div className="col-md-8 col-sm-6 adaptation-profile-settings">
                         <h3>Profile settings</h3>
+                        <div className="row">
+                        <div className="col-md-4 col-sm-6"><label htmlFor="adaptation-profile-name">Profile name</label></div>
+                        <div className="col-md-8 col-sm-6"><input id="adaptation-profile-name" type="text"/></div>
+                        </div>
                         <div className="row">
                         <div className="col-md-4 col-sm-6"><label htmlFor="adaptation-tolerate-pauses">How can you tolerate pauses in playback?</label></div>
                         <div className="col-md-8 col-sm-6"><input id="adaptation-tolerate-pauses" type="range" min="0" max="10"/></div>

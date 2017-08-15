@@ -17,3 +17,6 @@ nbproject/
 #transformed jsx
 /app/src/jsx_transformed
 /nbproject/private/
+
+#HTML index with replaced timestamp tags
+/app/prod/index.html

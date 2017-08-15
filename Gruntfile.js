@@ -70,6 +70,20 @@ module.exports = function (grunt) {
             unit: {
                 configFile: 'karma.conf.js'
             }
+        },
+        replace: {
+            index: {
+              // replace timestamp placeholders with current timestamp to
+              // override expiration-cache on production servers
+              src: 'app/prod/index.base.html',
+              dest: 'app/prod/index.html',
+              replacements: [{
+                from: '{currentts}',
+                to: function (matchedWord) {   // callback replacement
+                  return Math.floor(Date.now() / 1000);
+                }
+              }]
+            }
         }
     });
 
@@ -77,9 +91,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-text-replace');
     grunt.loadNpmTasks('grunt-react');
     grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('no-test', ['jshint', 'react', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('no-jshint', ['react', 'concat', 'uglify', 'cssmin', 'replace']);
+    grunt.registerTask('no-test', ['jshint', 'no-jshint']);
     grunt.registerTask('default', ['no-test', 'karma']);
 };
