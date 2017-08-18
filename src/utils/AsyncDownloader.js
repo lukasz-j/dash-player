@@ -1,3 +1,9 @@
+Dash.utils.AsyncDownloaderProxy = null;
+
+Dash.utils.setAsyncDownloaderProxy = function(callback) {
+    Dash.utils.AsyncDownloaderProxy = callback;
+};
+
 Dash.utils.AsyncDownloader = function () {
     'use strict';
 
@@ -28,6 +34,11 @@ Dash.utils.AsyncDownloader = function () {
         };
 
         startTime = new Date();
+
+        if (Dash.utils.AsyncDownloaderProxy) {
+            url = Dash.utils.AsyncDownloaderProxy(url);
+        }
+
         request.open('GET', url, true);
         if (range) {
             request.setRequestHeader('Range', 'bytes=' + range);

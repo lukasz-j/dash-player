@@ -58,6 +58,16 @@ Dash.adaptation.AdaptationManager = function (playbackManager) {
             catch (err) {
                 return false;
             }
+        },
+        getActiveProfile: function() {
+            return profiles[activeProfile];
+        },
+        setActiveProfile: function(index) {
+            if (!profiles[index]) {
+                return false;
+            }
+            activeProfile = index;
+            return true;
         }
     };
 };

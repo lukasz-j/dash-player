@@ -20,3 +20,6 @@ nbproject/
 
 #HTML index with replaced timestamp tags
 /app/prod/index.html
+
+#CORS proxy config
+/utils/cors_proxy_config.php

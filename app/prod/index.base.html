@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="../../build/player.min.css?ts={currentts}">
 
     <!-- Dash player scripts -->
-    <script src="../../build/dash-player.min.js?ts={currentts}"></script>
+    <script src="../../build/dash-player.{jsvariant}.js?ts={currentts}"></script>
 
     <!-- React.js view -->
     <script src="../src/jsx_transformed/PlayerViewAll.min.js?ts={currentts}"></script>
@@ -42,8 +42,8 @@
             document.getElementById("content")
     );
 
-    var videoElement = document.getElementById('dashVideoElement');
-    var dashPlayer = Dash.Player(videoElement, window, eventBus);
+    var dashPlayer = Dash.Player(window, eventBus);
+    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
 </script>
 </body>
 </html>

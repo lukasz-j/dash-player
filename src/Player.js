@@ -1,9 +1,10 @@
-Dash.Player = function (videoElement, $window, eventBus) {
+Dash.Player = function ($window, eventBus) {
     'use strict';
 
     var playbackManager,
         adaptationSetPicker,
         initRepresentationPicker,
+        videoElement,
 
         initializeStreaming = function (mpdModel) {
             var mediaSource,
@@ -26,7 +27,7 @@ Dash.Player = function (videoElement, $window, eventBus) {
             mediaSource.addEventListener('sourceopen', function () {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'MediaSource successfully open');
                 playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, eventBus, adaptationManager,
-                    adaptationSetPicker, initRepresentationPicker);
+                    initRepresentationPicker);
             }, false);
         },
 
@@ -44,6 +45,12 @@ Dash.Player = function (videoElement, $window, eventBus) {
 
     return {
         adaptationManager: adaptationManager,
+
+        setVideoElement: function(element) {
+            // dynamically set <video> element to render in after rendering it
+            videoElement = element;
+        },
+
         load: function (url, isYouTube) {
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
                 'Trying to load MPD file from ' + url + '. URL will be considered as ' + (isYouTube ? 'YouTube movie' : 'mpd file'));

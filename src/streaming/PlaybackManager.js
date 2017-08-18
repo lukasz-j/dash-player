@@ -1,4 +1,4 @@
-Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adaptationManager, adaptationSetPicker, initRepresentationPicker) {
+Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adaptationManager, initRepresentationPicker) {
     'use strict';
 
     var videoStreamingManager,
@@ -71,18 +71,14 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         getAdaptationSetForMedia = function (period, mediaType) {
             var adaptationSet = null;
 
-            if (adaptationSetPicker) {
-                adaptationSet = adaptationSetPicker.chooseAdaptationSet(period.getAdaptationSets(), Dash.model.MediaType.VIDEO);
+            if (mediaType === Dash.model.MediaType.VIDEO) {
+                adaptationSet = period.getVideoAdaptationSet(Dash.model.MediaFormat.MP4);
+            } else if (mediaType === Dash.model.MediaType.AUDIO) {
+                adaptationSet = period.getAudioAdaptationSet(Dash.model.MediaFormat.MP4);
+            } else if (mediaType === Dash.model.MediaType.TEXT) {
+                return;
             } else {
-                if (mediaType === Dash.model.MediaType.VIDEO) {
-                    adaptationSet = period.getVideoAdaptationSet(Dash.model.MediaFormat.MP4);
-                } else if (mediaType === Dash.model.MediaType.AUDIO) {
-                    adaptationSet = period.getAudioAdaptationSet(Dash.model.MediaFormat.MP4);
-                } else if (mediaType === Dash.model.MediaType.TEXT) {
-                    return;
-                } else {
-                    throw new Error('Not supported media type');
-                }
+                throw new Error('Not supported media type');
             }
 
             onAdaptationSetChosen(adaptationSet);

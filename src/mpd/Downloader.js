@@ -1,8 +1,8 @@
 Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuccess, eventBus) {
     'use strict';
 
-    var youTubeDomain = 'http://www.youtube.com',
-        getInfoMapping = '/get_video_info?html5=1&video_id=',
+    var youTubeDomain = 'https://www.youtube.com',
+        getInfoMapping = '/get_video_info?el=info&video_id=',
         videoIdPrefix = 'v=',
         mpdEntryPrefix = 'dashmpd=',
         asyncDownloader = Dash.utils.AsyncDownloader(),
@@ -42,11 +42,17 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
         },
 
         getYouTubeVideoId = function (videoUrl) {
-            var urlParameters = videoUrl.split('?');
-            for (var i = 0; i < urlParameters.length; i += 1) {
-                if (urlParameters[i].indexOf(videoIdPrefix) === 0) {
-                    return urlParameters[i].substring(videoIdPrefix.length);
+            // distinguish shortened YT links
+            if (videoUrl.indexOf('youtu.be') == -1) {
+                var urlParameters = videoUrl.split('?');
+                for (var i = 0; i < urlParameters.length; i += 1) {
+                    if (urlParameters[i].indexOf(videoIdPrefix) === 0) {
+                        return urlParameters[i].substring(videoIdPrefix.length);
+                    }
                 }
+            }
+            else {
+                return videoUrl.substr(videoUrl.lastIndexOf('/') + 1);
             }
         };
 

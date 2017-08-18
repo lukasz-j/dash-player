@@ -10,7 +10,7 @@ if [ -z $dest ]; then
 fi
 
 neededdirs="app/src/jsx_transformed app/prod build"
-tocopy="app/src/jsx_transformed/PlayerViewAll.min.js build/player.min.css app/prod/index.html build/dash-player.min.js index.html"
+tocopy="app/src/jsx_transformed/PlayerViewAll.min.js build/player.min.css app/prod/index.html build/dash-player.min.js build/dash-player.debug.js index.html"
 
 rm -rf ${dest}/*
 

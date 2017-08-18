@@ -71,6 +71,9 @@
     <script src="../../src/log/ConsoleLogger.js"></script>
     <script src="../../src/log/LogLevel.js"></script>
 
+    <!-- Environment Communication Adapter -->
+    <script src="../../src/sync/EnvironmentCommunicationAdapter.js"></script>
+
     <!-- View -->
     <script src="../src/jsx/PlayerView.jsx" type="text/jsx"></script>
     <script src="../src/jsx/DebugInfoPanel.jsx" type="text/jsx"></script>
@@ -93,8 +96,10 @@
             document.getElementById("content")
     );
 
-    var videoElement = document.getElementById('dashVideoElement');
-    var dashPlayer = Dash.Player(videoElement, window, eventBus);
+    var dashPlayer = Dash.Player(window, eventBus);
+</script>
+<script>
+    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
 </script>
 </body>
 </html>

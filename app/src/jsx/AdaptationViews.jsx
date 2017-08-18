@@ -97,6 +97,19 @@ var PolicyConfigurationView = React.createClass({
         });
         phantomFile.click();
     },
+    goToPlayer: function() {
+        if (this.state.activeProfileIndex) {
+            if (dashPlayer.adaptationManager.setActiveProfile(this.state.activeProfileIndex)) {
+                this.props.wrapper.goToPlayer();
+            }
+            else {
+                alert("Unable to set profile");
+            }
+        }
+        else {
+            alert("No profile selected");
+        }
+    },
     render: function () {
         eventBus.addEventListener(Dash.event.Events.ADAPTATION_PROFILES_UPDATE, this.onAdaptationProfilesUpdate);
         var controlsDisabled = this.state.activeProfile ? false : true;
@@ -146,7 +159,7 @@ var PolicyConfigurationView = React.createClass({
                         <div className="row">
                             <div className="col-md-10 col-sm-8"></div>
                             <div className="col-md-2 col-sm-4">
-                                <button className="btn btn-primary" onClick={this.props.wrapper.goToPlayer} disabled={controlsDisabled} >Done</button>
+                                <button className="btn btn-primary" onClick={this.goToPlayer} disabled={controlsDisabled} >Done</button>
                             </div>
                         </div>
                     </div>
@@ -184,14 +197,14 @@ var ExternalConditionsEmulator = React.createClass({
               for testing purposes.
               </p>
               <div className="form-group">
-                <label for="ece-network">Current network type</label>
+                <label htmlFor="ece-network">Current network type</label>
                 <select id="ece-network" className="form-control">
                 <option>Wi-Fi/Cable</option>
                 <option>Mobile</option>
                 </select>
               </div>
               <div className="form-group">
-                <label for="ece-ambient-light">Ambient light intensity</label>
+                <label htmlFor="ece-ambient-light">Ambient light intensity</label>
                 <select id="ece-ambient-light" className="form-control">
                     {intensityOptions}
                 </select>

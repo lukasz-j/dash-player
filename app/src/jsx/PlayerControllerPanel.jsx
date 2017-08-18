@@ -21,10 +21,15 @@ var VideoMainView = React.createClass({
     render: function () {
         return (
             <div className="col-md-8">
-                <video id="dashVideoElement" width="100%" height="100%" controls></video>
+                <video id="dashVideoElement" width="100%" height="100%" ref="video" controls></video>
             </div>
         )
-    }
+    },
+    componentDidMount: function() {
+        // after rendering, attach to player object
+        dashPlayer.setVideoElement(this.refs.video.getDOMNode());
+        $('[data-toggle="tooltip"]').tooltip();
+    },
 });
 
 var VideoControlContainer = React.createClass({

@@ -22,6 +22,8 @@ var PlayerView = React.createClass({
         );
     },
     goToPlayer: function() {
+        // go to top before switching view, for smaller devices
+        window.scrollTo(0, 0);
         this.setState({step: 'player'});
     },
     backToAdaptationProfile: function() {
@@ -31,7 +33,7 @@ var PlayerView = React.createClass({
 
 var SourceLoadView = React.createClass({
 
-    youTubeURLRegex: '^((http|https):\/\/)?(www\.)?youtube\.com',
+    youTubeURLRegex: '^((http|https):\/\/)?((www|m)\.)?youtu(be\.com|\.be)',
 
     getInitialState: function () {
         return {

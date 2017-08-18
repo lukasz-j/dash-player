@@ -12,7 +12,9 @@ module.exports = function (grunt) {
                     'src/log/*.js',
                     'src/events/*.js',
                     'src/mpd/*.js',
-                    'src/streaming/*.js'
+                    'src/streaming/*.js',
+                    'src/adaptation/*.js',
+                    'src/sync/*.js'
                 ]
             },
             options: {
@@ -79,8 +81,13 @@ module.exports = function (grunt) {
               dest: 'app/prod/index.html',
               replacements: [{
                 from: '{currentts}',
-                to: function (matchedWord) {   // callback replacement
+                to: function (matchedWord) {
                   return Math.floor(Date.now() / 1000);
+                }
+              },{
+                from: '{jsvariant}',
+                to: function (matchedWord) {
+                  return grunt.option('jsdebug') ? 'debug' : 'min';
                 }
               }]
             }
