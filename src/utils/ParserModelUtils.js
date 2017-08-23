@@ -85,7 +85,7 @@ Dash.utils.ParserModelUtils = {
     findDirectChildrenByTagName: function (node, tagName) {
         'use strict';
 
-        var children = node.children,
+        var children = node.childNodes,
             matchingNodes = [];
         for (var i = 0; i < children.length; i += 1) {
             if (children[i].tagName === tagName) {

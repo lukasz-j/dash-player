@@ -2,7 +2,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                                             initializationCallback, segmentDownloadCallback, eventBus) {
     'use strict';
 
-    var bufferManager = Dash.streaming.BufferManager(sourceBuffer),
+    var bufferManager = Dash.streaming.BufferManager(sourceBuffer, adaptationSet.getMediaType()),
         representationRepository = Dash.streaming.RepresentationRepository(),
         asyncDownloader = Dash.utils.AsyncDownloader(),
         currentRepresentation = initRepresentation,
@@ -14,6 +14,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         availableSegmentURLs,
         currentSegmentIndex = 0,
         isInitialized = false,
+        isFrozen = false,
         pendingRepresentationChange = {available: false, index: 0},
 
         downloadBinaryFile = function (url, onSuccess, onFailure, onProgress) {
@@ -56,7 +57,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     value: {
                         mediaType: adaptationSet.getMediaType(),
                         currentSegment: currentSegmentIndex,
-                        maxSegment: availableSegmentURLs.length
+                        maxSegment: availableSegmentURLs.length,
+                        requestDetails: requestOptions
                     }
                 }
             );
@@ -68,8 +70,15 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
 
             var arrayBuffer = new Uint8Array(request.response);
 
-            bufferManager.appendBuffer(arrayBuffer);
-            representationRepository.appendBuffer(currentRepresentation, currentSegmentIndex, arrayBuffer);
+            // when unable to append data due to full buffer, re-schedule it
+            if (bufferManager.appendBuffer(arrayBuffer) == Dash.streaming.BufferManagerState.FULL) {
+                setTimeout(function() {
+                    onSegmentDownload(request, options);
+                }, 3000);
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, adaptationSet.getMediaType().name + ' buffer full, delaying appending');
+                return;
+            }
+//            representationRepository.appendBuffer(currentRepresentation, currentSegmentIndex, arrayBuffer);
 
             if (pendingRepresentationChange.available && pendingRepresentationChange.index !== currentRepresentationIndex) {
                 updateValuesAfterChangingRepresentation(pendingRepresentationChange.index);
@@ -209,6 +218,23 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 steps = 1;
             }
             changeRepresentationBySteps(-steps);
+        },
+
+        isFrozen: function() {
+            return isFrozen;
+        },
+
+        setFrozen: function(frozen) {
+            isFrozen = frozen;
+        },
+
+        getBufferedPlaybackLength: function(videoElement) {
+            // simple model, assume we're at last existing buffered segment
+            // this can result in deadlocks when seeking randomly through video
+            var lastPlayed = videoElement.played.length - 1;
+            var lastBuffer = sourceBuffer.buffered.length - 1;
+            return (lastBuffer >= 0 ? sourceBuffer.buffered.end(lastBuffer) : 0) -
+                    (lastPlayed >= 0 ? videoElement.played.end(lastPlayed) : 0);
         }
     };
 };

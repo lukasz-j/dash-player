@@ -68,6 +68,10 @@ Dash.adaptation.AdaptationManager = function (playbackManager) {
             }
             activeProfile = index;
             return true;
+        },
+        conditionsHolder: Dash.adaptation.PlaybackConditionsHolder(),
+        initConditonsHolder: function() {
+            this.conditionsHolder.configureThroughputHolders([3, 10, 100]);
         }
     };
 };

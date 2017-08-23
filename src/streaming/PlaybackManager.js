@@ -1,4 +1,4 @@
-Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adaptationManager, initRepresentationPicker) {
+Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, eventBus, adaptationManager, initRepresentationPicker) {
     'use strict';
 
     var videoStreamingManager,
@@ -7,6 +7,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
         streamingManagers = [],
 
         alreadyFinishedManagers = 0,
+        bufferingThreshold = 0,
 
         onAdaptationSetChosen = function (chosenAdaptationSet) {
             var logMessage = 'Adaptation set has been chosen for ' + chosenAdaptationSet.getMediaType().name +
@@ -24,17 +25,45 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
             eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, logMessage);
         },
 
+        controlFreezing = function(streamingManager) {
+            if (bufferingThreshold > 0 && streamingManager.getBufferedPlaybackLength(videoElement) > bufferingThreshold) {
+                streamingManager.setFrozen(true);
+            }
+            else if (streamingManager.isFrozen() && (bufferingThreshold <= 0 || streamingManager.getBufferedPlaybackLength(videoElement) < bufferingThreshold)) {
+                streamingManager.setFrozen(false);
+            }
+            return streamingManager.isFrozen();
+        },
+
         appendNextSegmentForStreamingManagers = function () {
+            alreadyFinishedManagers = 0;
             if (streamingManagers.length > 0) {
+                var anyoneFrozen = false;
+                var running = false;
                 var index = streamingManagers.length - 1;
                 while (index >= 0) {
+                    var frozen = controlFreezing(streamingManagers[index]);
                     if (streamingManagers[index].isStreamingFinished()) {
                         eventBus.dispatchLogEvent(Dash.log.LogLevel.INFO, 'Streaming for ' + streamingManagers[index].getMediaType().name + ' has finished');
-                        streamingManagers = streamingManagers.slice(0, index);
+                        streamingManagers = streamingManagers.splice(index, 1);
                     } else {
-                        streamingManagers[index].appendNextSegment();
+                        if (!frozen) {
+                            streamingManagers[index].appendNextSegment();
+                            running = true;
+                        }
+                        else {
+                            anyoneFrozen = true;
+                            alreadyFinishedManagers++; // for this run, frozen manager is like finished
+                        }
                     }
                     index -= 1;
+                }
+                // when not waiting for any streaming manager, schedule re-check
+                if (anyoneFrozen && !running) {
+                    eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
+                        'All streaming managers are frozen right now. Waiting.');
+
+                    setTimeout(appendNextSegmentForStreamingManagers, 1000);
                 }
             }
         },
@@ -205,6 +234,21 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, eventBus, adap
             eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been enabled using algorithm ' + adaptationAlgorithmName);
             eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Dynamic adaptation is not supported for now');
             adaptationManager = null;
-        }
+        },
+
+        setBufferingThreshold: function(seconds) {
+            bufferingThreshold = seconds;
+        },
+
+
+        getBufferedPlaybackTime: function (mediaType) {
+            if (mediaType === Dash.model.MediaType.AUDIO && audioStreamingManager) {
+                return audioStreamingManager.getBufferedPlaybackLength(videoElement);
+            } else if (mediaType === Dash.model.MediaType.VIDEO && videoStreamingManager) {
+                return videoStreamingManager.getBufferedPlaybackLength(videoElement);
+            }
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Unsupported media type found while changing representation to lower ' + mediaType);
+            return 0;
+        },
     };
 };

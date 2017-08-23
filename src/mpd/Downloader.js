@@ -2,7 +2,7 @@ Dash.mpd.Downloader = function (mpdFileUrl, isYouTubeVideo, downloadMpdFileOnSuc
     'use strict';
 
     var youTubeDomain = 'https://www.youtube.com',
-        getInfoMapping = '/get_video_info?el=info&video_id=',
+        getInfoMapping = '/get_video_info?el=info&ps=default&video_id=',
         videoIdPrefix = 'v=',
         mpdEntryPrefix = 'dashmpd=',
         asyncDownloader = Dash.utils.AsyncDownloader(),

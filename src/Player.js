@@ -26,9 +26,14 @@ Dash.Player = function ($window, eventBus) {
 
             mediaSource.addEventListener('sourceopen', function () {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'MediaSource successfully open');
-                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, eventBus, adaptationManager,
+                playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, videoElement, eventBus, adaptationManager,
                     initRepresentationPicker);
+//                playbackManager.setBufferingThreshold(10); // debug
             }, false);
+            mediaSource.addEventListener('error', function(error) {
+                alert('a');
+            });
+            adaptationManager.initConditonsHolder();
         },
 
         onSuccessMpdDownloadCallback = function (request, options) {
@@ -80,6 +85,16 @@ Dash.Player = function ($window, eventBus) {
         enableAdaptation: function (adaptationAlgorithmName) {
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received enabling adaptation request, using ' + adaptationAlgorithmName + ' method');
             playbackManager.enableAdaptation(adaptationAlgorithmName);
+        },
+
+        setBufferingThreshold: function(seconds) {
+            if (seconds >= 0) {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Buffering threshold set to ' + seconds + ' seconds');
+            }
+            else {
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Buffering threshold disabled');
+            }
+            playbackManager.setBufferingThreshold(seconds);
         }
     };
 };
