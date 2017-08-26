@@ -113,30 +113,38 @@ var PolicyConfigurationView = React.createClass({
     render: function () {
         eventBus.addEventListener(Dash.event.Events.ADAPTATION_PROFILES_UPDATE, this.onAdaptationProfilesUpdate);
         var controlsDisabled = this.state.activeProfile ? false : true;
+        // when enclosed in app, render single-line, small select
+        // as mobile browsers use native dropdown control anyway.
+        var enclosed = envAdapter.isEnclosedInApplication();
+        var selectSize = enclosed ? 1 : 2;
+        var selectClasses = enclosed ? "" : "expanded-profile-list";
+        var profileButtonClasses = enclosed ? "col-sm-6" : "col-md-3 col-sm-6";
 
         return (
             <div className="policy-configuration">
                 <div className="row">
                     <div className="col-md-4 col-sm-6 adaptation-profile-list">
                         <h3>Stored profiles</h3>
-                        <select size="2" onChange={this.selectProfile} value={this.state.activeProfileIndex}>
+                        <select size={selectSize} className={selectClasses} onChange={this.selectProfile} value={this.state.activeProfileIndex}>
                             {this.state.profiles.map(function(profile, index) {
                                 return (<option value={index}>{profile}</option>);
                             })}
                         </select>
                         <div className="row">
-                        <div className="col-md-3 col-sm-6">
+                        <div className={profileButtonClasses}>
                         <button className="btn btn-primary profile-list-button" type="button" onClick={this.addProfile}>New</button>
                 </div>
-                        <div className="col-md-3 col-sm-6">
+                        <div className={profileButtonClasses}>
                         <button className="btn btn-danger" type="button" onClick={this.deleteProfile}>Delete</button>
                 </div>
-                        <div className="col-md-3 col-sm-6">
+                {!enclosed &&
+                        <div className={profileButtonClasses}>
                         <button className="btn" type="button" onClick={this.importProfilesFromFile}>Import</button>
-                </div>
-                        <div className="col-md-3 col-sm-6">
+                </div>}
+                {!enclosed &&
+                        <div className={profileButtonClasses}>
                         <button className="btn" type="button" onClick={this.exportProfilesToFile}>Export</button>
-                </div>
+                </div>}
                         </div>
                     </div>
                     <div className="col-md-8 col-sm-6 adaptation-profile-settings">
@@ -173,11 +181,54 @@ var ExternalConditionsEmulator = React.createClass({
     getInitialState: function() {
         return {visible: false};
     },
+    changeCallback: function(condition) {
+        return function(event) {
+            var value = event.target.value;
+            if (value === '') {
+                value = null;
+            }
+            dashPlayer.adaptationManager.conditionsHolder.setExternalCondition(condition, value);
+        };
+    },
+    batteryChangeCallback: function(interval, drop) {
+        var select = this.refs.batteryLevel;
+        var emulator = this;
+        return function(event) {
+            var initial = select.getDOMNode().value;
+            dashPlayer.adaptationManager.conditionsHolder.setExternalCondition('batteryLevel', initial);
+            if (interval === 0) {
+                dashPlayer.adaptationManager.conditionsHolder.setExternalCondition('batteryDischarging', false);
+            }
+            else {
+                // interval = -1 for discharging with fixed value
+                dashPlayer.adaptationManager.conditionsHolder.setExternalCondition('batteryDischarging', true);
+                if (interval > 0) {
+                    emulator.stopBatterySimulator();
+                    window.batterySimulator = Dash.adaptation.BatteryDischargingSimulator(interval, drop);
+                }
+            }
+        };
+    },
+    stopBatterySimulator: function() {
+        if (window.batterySimulator) {
+            window.batterySimulator.stop();
+            delete window.batterySimulator;
+        }
+    },
+    cancelBatterySetting: function(event) {
+        this.stopBatterySimulator();
+        dashPlayer.adaptationManager.conditionsHolder.setExternalCondition('batteryLevel', null);
+        dashPlayer.adaptationManager.conditionsHolder.setExternalCondition('batteryDischarging', null);
+    },
     render: function() {
         var classes = 'external-conditions-overlay '+(this.state.visible ? 'visible' : '');
-        var intensityOptions = [];
+        var percentIntensityOptions = [<option></option>];
         for (i=0; i<=10; i++) {
-            intensityOptions.push(<option value={i*10}>{i*10}%</option>);
+            percentIntensityOptions.push(<option value={i*10}>{i*10}%</option>);
+        }
+        var soundIntensityOptions = [<option></option>];
+        for (i=20; i<=90; i+=10) {
+            soundIntensityOptions.push(<option value={i}>{i} dB</option>);
         }
         return (
             <div className={classes}>
@@ -198,18 +249,46 @@ var ExternalConditionsEmulator = React.createClass({
               </p>
               <div className="form-group">
                 <label htmlFor="ece-network">Current network type</label>
-                <select id="ece-network" className="form-control">
-                <option>Wi-Fi/Cable</option>
-                <option>Mobile</option>
+                <select id="ece-network" className="form-control" onChange={this.changeCallback('networkType')}>
+                <option></option>
+                <option value="wifi">Wi-Fi/Cable</option>
+                <option value="mobile">Mobile</option>
                 </select>
               </div>
               <div className="form-group">
                 <label htmlFor="ece-ambient-light">Ambient light intensity</label>
-                <select id="ece-ambient-light" className="form-control">
-                    {intensityOptions}
+                <select id="ece-ambient-light" className="form-control" onChange={this.changeCallback('ambientLight')}>
+                    {percentIntensityOptions}
                 </select>
               </div>
-              <p>&hellip; and others if applicable</p>
+              <div className="form-group">
+                <label htmlFor="ece-ambient-sound">Ambient sound intensity</label>
+                <select id="ece-ambient-sound" className="form-control" onChange={this.changeCallback('ambientSound')}>
+                    {soundIntensityOptions}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="ece-battery-level">Battery level</label>
+                <div className="input-group">
+                <select id="ece-battery-level" className="form-control" ref="batteryLevel">
+                    {percentIntensityOptions}
+                </select>
+                <div className="input-group-btn">
+                <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action&hellip;</button>
+                    <ul className="dropdown-menu dropdown-menu-right">
+                        <li><a onClick={this.batteryChangeCallback(0, 0)}>Fixed value, "charging" status</a></li>
+                        <li><a onClick={this.batteryChangeCallback(-1, 0)}>Fixed value, "not charging" status</a></li>
+                        <li role="separator" className="divider"></li>
+                        <li><a onClick={this.batteryChangeCallback(60, 1)}>Discharge at 1% per minute</a></li>
+                        <li><a onClick={this.batteryChangeCallback(20, 1)}>Discharge at 3% per minute</a></li>
+                        <li><a onClick={this.batteryChangeCallback(180, 1)}>Discharge at 1% per 3 minutes</a></li>
+                        <li><a onClick={this.batteryChangeCallback(600, 1)}>Discharge at 1% per 10 minutes</a></li>
+                        <li role="separator" className="divider"></li>
+                        <li><a onClick={this.cancelBatterySetting}>Cancel</a></li>
+                    </ul>
+                </div>
+                </div>
+            </div>
             </div>
             </div>
             </div>

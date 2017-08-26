@@ -6,8 +6,8 @@ Dash.adaptation.Distractor = {
 Dash.adaptation.AdaptationManager = function (playbackManager) {
     'use strict';
 
-    var profiles = [];
-    var activeProfile = -1;
+    var profiles = [],
+        activeProfile = -1;
 
     var initEmptyProfile = function(name) {
         return {

@@ -293,14 +293,52 @@ var LogMessage = React.createClass({
 });
 
 var AdaptationDetailsContainer = React.createClass({
+    conditionToLabel: {
+        'networkType': 'NetworkType',
+        'ambientLight': 'Ambient light level',
+        'ambientSound': 'Ambient sound level',
+        'batteryLevel': 'Current battery level',
+        'batteryDischarging': 'Is battery discharging'
+    },
+    conditionUnits: {
+        'ambientLight': '%',
+        'ambientSound': ' dB',
+        'batteryLevel': '%'
+    },
+    onExternalConditionChange: function(event) {
+        this.setState({}); // re-render
+    },
     render: function() {
+        eventBus.addEventListener(Dash.event.Events.EXTERNAL_CONDITION_CHANGE, this.onExternalConditionChange);
+
+        var environment = [];
+        var conds = dashPlayer.adaptationManager.conditionsHolder.getProvidedExternalConditions();
+        for (var cond in conds) {
+            cond = conds[cond];
+            var label = this.conditionToLabel[cond] ? this.conditionToLabel[cond] : cond;
+            var value = dashPlayer.adaptationManager.conditionsHolder.getExternalCondition(cond);
+            if (this.conditionUnits[cond]) {
+                value += this.conditionUnits[cond];
+            }
+            environment.push(<PropertyElement name={label} value={value}/>);
+        }
+
         return (
             <div id="adaptationDetails" className="tab-pane fade">
                 <div className="panel panel-default">
                     <div className="panel-body">
                         <h4>Adaptation details</h4>
-                    </div>
+                <div className="row">
+                <div className="col-md-6">
+                <h5>Environment</h5>
+                        {environment}
                 </div>
+                <div className="col-md-6">
+                <h5>Other</h5>
+                </div>
+                </div>
+                </div>
+            </div>
             </div>
         );
     }

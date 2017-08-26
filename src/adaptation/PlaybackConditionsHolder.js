@@ -1,10 +1,16 @@
+Dash.adaptation.NetworkType = {
+    CELLULAR: 1,
+    WI_FI: 2
+}
+
 Dash.adaptation.PlaybackConditionsHolder = function() {
     var averageThroughputs = [],
     recordNewThroughput = function(thp) {
         averageThroughputs.forEach(function(avg) {
             avg.push(thp);
         });
-    };
+    },
+    externalConditions = {};
     return {
         configureThroughputHolders: function(throughputHolders) {
             averageThroughputs = [];
@@ -26,6 +32,28 @@ Dash.adaptation.PlaybackConditionsHolder = function() {
         getAverageThroughput: function(id) {
             return averageThroughputs[id] ? averageThroughputs[id].get() : NaN();
         },
-
+        getProvidedExternalConditions: function() {
+            var list = [];
+            for (var key in externalConditions) {
+                list.push(key);
+            }
+            return list;
+        },
+        getExternalCondition: function(condition) {
+            return externalConditions[condition];
+        },
+        setExternalCondition: function(condition, value) {
+            if (null === value) {
+                delete externalConditions[condition];
+            }
+            else {
+                externalConditions[condition] = value;
+            }
+            eventBus.dispatchEvent({
+                type: Dash.event.Events.EXTERNAL_CONDITION_CHANGE,
+                name: condition,
+                value: value
+            });
+        }
     };
 };

@@ -3,6 +3,10 @@ var PlayerView = React.createClass({
         return {step: "adaptation_profile"};
     },
     render: function () {
+        eventBus.addEventListener(Dash.event.Events.ENCLOSED_IN_APP_UPDATE, this.onEnclosedInAppUpdate);
+
+        var enclosed = envAdapter.isEnclosedInApplication();
+
         return (
             <div className="container">
                 {this.state.step === "adaptation_profile" ? <div className="adaptPolicyConfiguration">
@@ -17,7 +21,7 @@ var PlayerView = React.createClass({
                     <DebugInfoPanel />
                 </div> : '' }
 
-                <ExternalConditionsEmulator />
+                {!enclosed && <ExternalConditionsEmulator />}
             </div>
         );
     },
@@ -28,6 +32,9 @@ var PlayerView = React.createClass({
     },
     backToAdaptationProfile: function() {
         this.setState({step: 'adaptation_profile'});
+    },
+    onEnclosedInAppUpdate: function() {
+        this.setState({}); // force re-render
     }
 });
 
@@ -108,7 +115,7 @@ var SourceLoadView = React.createClass({
 var PropertyElement = React.createClass({
     render: function () {
         return (
-            <div>{this.props.name} : {this.props.value} </div>
+            <div>{this.props.name} : {this.props.value.toString()} </div>
         )
     }
 });

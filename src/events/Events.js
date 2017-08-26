@@ -6,5 +6,7 @@ Dash.event.Events = {
     LOG_MESSAGE: 'logMessage',
     SEGMENT_DOWNLOADED: 'segmentDownloaded',
     BATTERY_OUTAGE_PREDICTION: 'batteryOutagePrediction',
-    ADAPTATION_PROFILES_UPDATE: 'adaptationProfilesUpdate'
+    ADAPTATION_PROFILES_UPDATE: 'adaptationProfilesUpdate',
+    EXTERNAL_CONDITION_CHANGE: 'externalConditionChange',
+    ENCLOSED_IN_APP_UPDATE: 'enclosedInApplicationUpdate'
 };

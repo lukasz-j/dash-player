@@ -19,6 +19,9 @@
 
 .adaptation-profile-list select {
     width: 100%;
+}
+
+.adaptation-profile-list select.expanded-profile-list {
     height: 200px;
 }
 

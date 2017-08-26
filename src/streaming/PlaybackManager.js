@@ -8,6 +8,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
 
         alreadyFinishedManagers = 0,
         bufferingThreshold = 0,
+        freezeAnnounced = false,
 
         onAdaptationSetChosen = function (chosenAdaptationSet) {
             var logMessage = 'Adaptation set has been chosen for ' + chosenAdaptationSet.getMediaType().name +
@@ -60,10 +61,15 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
                 }
                 // when not waiting for any streaming manager, schedule re-check
                 if (anyoneFrozen && !running) {
-                    eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
-                        'All streaming managers are frozen right now. Waiting.');
-
+                    if (!freezeAnnounced) {
+                        eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG,
+                            'All streaming managers are frozen right now (buffer threshold achieved). Waiting.');
+                        freezeAnnounced = true;
+                    }
                     setTimeout(appendNextSegmentForStreamingManagers, 1000);
+                }
+                else {
+                    freezeAnnounced = false;
                 }
             }
         },
