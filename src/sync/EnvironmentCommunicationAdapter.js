@@ -10,7 +10,7 @@ Dash.sync.EnvironmentCommunicationAdapter = function() {
             dashPlayer.adaptationManager.importProfiles(data);
         },
         provideAdaptationProfilesForPersistence: function() {
-            return dashPlayer.adaptationManager.exportProfiles();
+            return dashPlayer.adaptationManager.exportProfiles(false);
         },
         setExternalCondition: function(condition, value) {
             dashPlayer.adaptationManager.conditionsHolder.setExternalCondition(condition, value);

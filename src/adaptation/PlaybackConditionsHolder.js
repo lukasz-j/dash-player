@@ -1,8 +1,3 @@
-Dash.adaptation.NetworkType = {
-    CELLULAR: 1,
-    WI_FI: 2
-}
-
 Dash.adaptation.PlaybackConditionsHolder = function() {
     var averageThroughputs = [],
     recordNewThroughput = function(thp) {

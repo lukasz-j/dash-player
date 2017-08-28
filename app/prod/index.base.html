@@ -37,13 +37,13 @@
 
     eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, consoleLogger.onMessageReceived);
 
+    var dashPlayer = Dash.Player(window, eventBus);
+    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
+    
     React.render(
             React.createElement(PlayerView, null),
             document.getElementById("content")
     );
-
-    var dashPlayer = Dash.Player(window, eventBus);
-    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
 </script>
 </body>
 </html>

@@ -84,5 +84,16 @@ Dash.utils.CommonUtils = {
         } else {
             return durationInMs + ' ms';
         }
+    },
+
+    downloadAsFile: function(name, content) {
+        var phantomLink = document.createElement('a');
+        if (typeof(content) !== 'string') {
+            content = JSON.stringify(content);
+        }
+        phantomLink.setAttribute('href', 'data:application/json,'+encodeURIComponent(content));
+        phantomLink.setAttribute('download', name);
+
+        phantomLink.click();
     }
 };

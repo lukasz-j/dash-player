@@ -45,11 +45,13 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         notifySuccessfulSegmentDownload = function (requestOptions) {
+            var throughput = Dash.utils.CommonUtils.computeBandwidth(requestOptions);
+
             var logMessage = 'Segment ' + currentSegmentIndex + '/' + availableSegmentURLs.length +
                 ' downloaded for ' + adaptationSet.getMediaType().name + ' url: ' + requestOptions.url +
                 ' size: ' + Dash.utils.CommonUtils.prettyPrintFileSize(requestOptions.size) +
                 ' time: ' + Dash.utils.CommonUtils.prettyPrintDownloadDuration(requestOptions.duration) +
-                ' bandwidth: ' + Dash.utils.CommonUtils.computeBandwidth(requestOptions) + ' bps';
+                ' bandwidth: ' + throughput + ' bps';
 
             eventBus.dispatchEvent(
                 {
@@ -57,8 +59,10 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                     value: {
                         mediaType: adaptationSet.getMediaType(),
                         currentSegment: currentSegmentIndex,
+                        currentRepresentation: currentRepresentationIndex,
                         maxSegment: availableSegmentURLs.length,
-                        requestDetails: requestOptions
+                        requestDetails: requestOptions,
+                        throughput: throughput
                     }
                 }
             );

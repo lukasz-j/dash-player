@@ -3,11 +3,13 @@ Dash.adaptation.Distractor = {
     REPRESENTATION_CHANGES: 2
 };
 
-Dash.adaptation.AdaptationManager = function (playbackManager) {
+Dash.adaptation.AdaptationManager = function () {
     'use strict';
 
     var profiles = [],
-        activeProfile = -1;
+        activeProfile = -1,
+        statsCollector,
+        playbackManager;
 
     var initEmptyProfile = function(name) {
         return {
@@ -26,6 +28,9 @@ Dash.adaptation.AdaptationManager = function (playbackManager) {
     };
 
     return {
+        setPlaybackManager: function(manager) {
+            playbackManager = manager;
+        },
         newProfile: function(name) {
             profiles.push(initEmptyProfile(name));
             dispatchUpdateEvent();
@@ -44,8 +49,11 @@ Dash.adaptation.AdaptationManager = function (playbackManager) {
         getProfile: function(index) {
             return profiles[index];
         },
-        exportProfiles: function() {
-            return JSON.stringify(profiles);
+        exportProfiles: function(stringify) {
+            if (stringify || typeof(stringify) === 'undefined')
+                return JSON.stringify(profiles);
+            else
+                return profiles;
         },
         importProfiles: function(data) {
             try {
@@ -72,6 +80,12 @@ Dash.adaptation.AdaptationManager = function (playbackManager) {
         conditionsHolder: Dash.adaptation.PlaybackConditionsHolder(),
         initConditonsHolder: function() {
             this.conditionsHolder.configureThroughputHolders([3, 10, 100]);
+        },
+        initStatsCollector: function(videoElement, mediaSource) {
+            statsCollector = Dash.adaptation.StatsCollector(playbackManager, this, videoElement, mediaSource);
+        },
+        getStatsCollector: function() {
+            return statsCollector;
         }
     };
 };

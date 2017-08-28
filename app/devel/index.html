@@ -60,6 +60,7 @@
     <script src="../../src/adaptation/MovingAverage.js"></script>
     <script src="../../src/adaptation/PlaybackConditionsHolder.js"></script>
     <script src="../../src/adaptation/BatteryDischargingSimulator.js"></script>
+    <script src="../../src/adaptation/StatsCollector.js"></script>
 
     <!-- Utils -->
     <script src="../../src/utils/AsyncDownloader.js"></script>
@@ -94,15 +95,14 @@
 
     eventBus.addEventListener(Dash.event.Events.LOG_MESSAGE, consoleLogger.onMessageReceived);
 
+    var dashPlayer = Dash.Player(window, eventBus);
+    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
+
     React.render(
             <PlayerView />,
             document.getElementById("content")
     );
 
-    var dashPlayer = Dash.Player(window, eventBus);
-</script>
-<script>
-    var envAdapter = Dash.sync.EnvironmentCommunicationAdapter();
 </script>
 </body>
 </html>

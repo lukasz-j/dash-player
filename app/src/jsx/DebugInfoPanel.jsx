@@ -293,6 +293,31 @@ var LogMessage = React.createClass({
 });
 
 var AdaptationDetailsContainer = React.createClass({
+    render: function() {
+
+        return (
+            <div id="adaptationDetails" className="tab-pane fade">
+                <div className="panel panel-default">
+                    <div className="panel-body">
+                        <h4>Adaptation details</h4>
+                <div className="row">
+                <div className="col-md-6">
+                <h5>Environment</h5>
+                    <AdaptationDetailsEnvironmentContainer/>
+                </div>
+                <div className="col-md-6">
+                <h5>Statistics</h5>
+                    <AdaptationDetailsStatsContainer/>
+                </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        );
+    }
+});
+
+var AdaptationDetailsEnvironmentContainer = React.createClass({
     conditionToLabel: {
         'networkType': 'NetworkType',
         'ambientLight': 'Ambient light level',
@@ -324,21 +349,35 @@ var AdaptationDetailsContainer = React.createClass({
         }
 
         return (
-            <div id="adaptationDetails" className="tab-pane fade">
-                <div className="panel panel-default">
-                    <div className="panel-body">
-                        <h4>Adaptation details</h4>
-                <div className="row">
-                <div className="col-md-6">
-                <h5>Environment</h5>
-                        {environment}
-                </div>
-                <div className="col-md-6">
-                <h5>Other</h5>
-                </div>
-                </div>
-                </div>
+            <div>
+                {environment}
             </div>
+        );
+    }
+});
+
+var AdaptationDetailsStatsContainer = React.createClass({
+    onStatsUpdate: function(event) {
+        this.setState({}); // re-render
+    },
+    exportTimeline: function() {
+        if (dashPlayer.adaptationManager.getStatsCollector()) {
+            Dash.utils.CommonUtils.downloadAsFile('dash-player-adaptation-stats.json',
+                dashPlayer.adaptationManager.getStatsCollector().getTimeline());
+        }
+        else {
+            alert('Start playback first to get timeline');
+        }
+    },
+    render: function() {
+        eventBus.addEventListener(Dash.event.Events.ADAPTATION_STATS_UPDATE, this.onStatsUpdate);
+
+        var stats = dashPlayer.adaptationManager.getStatsCollector();
+
+        return (
+            <div>
+                {stats && <PropertyElement name="Playback stalls count" value={stats.getStallsCount()}/>}
+                <button className="btn" onClick={this.exportTimeline}>Export playback timeline</button>
             </div>
         );
     }

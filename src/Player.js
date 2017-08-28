@@ -28,11 +28,10 @@ Dash.Player = function ($window, eventBus) {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'MediaSource successfully open');
                 playbackManager = Dash.streaming.PlaybackManager(mpdModel, mediaSource, videoElement, eventBus, adaptationManager,
                     initRepresentationPicker);
-//                playbackManager.setBufferingThreshold(10); // debug
+                adaptationManager.setPlaybackManager(playbackManager);
+            adaptationManager.initStatsCollector(videoElement, mediaSource);
+                playbackManager.setBufferingThreshold(10); // debug
             }, false);
-            mediaSource.addEventListener('error', function(error) {
-                alert('a');
-            });
             adaptationManager.initConditonsHolder();
         },
 

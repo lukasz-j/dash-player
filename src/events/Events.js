@@ -8,5 +8,6 @@ Dash.event.Events = {
     BATTERY_OUTAGE_PREDICTION: 'batteryOutagePrediction',
     ADAPTATION_PROFILES_UPDATE: 'adaptationProfilesUpdate',
     EXTERNAL_CONDITION_CHANGE: 'externalConditionChange',
-    ENCLOSED_IN_APP_UPDATE: 'enclosedInApplicationUpdate'
+    ENCLOSED_IN_APP_UPDATE: 'enclosedInApplicationUpdate',
+    ADAPTATION_STATS_UPDATE: 'adaptationStatsUpdate'
 };

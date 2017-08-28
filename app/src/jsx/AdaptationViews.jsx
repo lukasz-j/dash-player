@@ -75,11 +75,7 @@ var PolicyConfigurationView = React.createClass({
     },
     exportProfilesToFile: function() {
         var data = dashPlayer.adaptationManager.exportProfiles();
-        var phantomLink = document.createElement('a');
-        phantomLink.setAttribute('href', 'data:application/json,'+encodeURIComponent(data));
-        phantomLink.setAttribute('download', 'dash-player-profiles.dat');
-
-        phantomLink.click();
+        Dash.utils.CommonUtils.downloadAsFile('dash-player-profiles.dat', data);
     },
     importProfilesFromFile: function() {
         // @TODO add checks for FileReader and block imports if not
@@ -116,7 +112,6 @@ var PolicyConfigurationView = React.createClass({
         // when enclosed in app, render single-line, small select
         // as mobile browsers use native dropdown control anyway.
         var enclosed = envAdapter.isEnclosedInApplication();
-        var selectSize = enclosed ? 1 : 2;
         var selectClasses = enclosed ? "" : "expanded-profile-list";
         var profileButtonClasses = enclosed ? "col-sm-6" : "col-md-3 col-sm-6";
 
@@ -125,7 +120,7 @@ var PolicyConfigurationView = React.createClass({
                 <div className="row">
                     <div className="col-md-4 col-sm-6 adaptation-profile-list">
                         <h3>Stored profiles</h3>
-                        <select size={selectSize} className={selectClasses} onChange={this.selectProfile} value={this.state.activeProfileIndex}>
+                        <select size="2" className={selectClasses} onChange={this.selectProfile} value={this.state.activeProfileIndex}>
                             {this.state.profiles.map(function(profile, index) {
                                 return (<option value={index}>{profile}</option>);
                             })}
