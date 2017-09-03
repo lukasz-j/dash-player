@@ -53,7 +53,7 @@ var VideoControlContainer = React.createClass({
 var AdaptationControlView = React.createClass({
     getInitialState: function () {
         return {
-            value: 'Off'
+            value: dashPlayer.adaptationManager.isAdapting() ? 'On' : 'Off'
         };
     },
 
@@ -64,7 +64,7 @@ var AdaptationControlView = React.createClass({
         if (adaptationValue === 'Off') {
             dashPlayer.disableAdaptation();
         } else {
-            dashPlayer.enableAdaptation(adaptationValue);
+            dashPlayer.enableAdaptation();
         }
     },
 
@@ -77,7 +77,7 @@ var AdaptationControlView = React.createClass({
                     <button className="btn btn-default" type="button" disabled={this.state.value === "Off"}
                             onClick={this.adaptationChanged}>Off
                     </button>
-                    <button className="btn btn-default" type="button" disabled={this.state.value === "PID"}
+                    <button className="btn btn-default" type="button" disabled={this.state.value === "On"}
                             onClick={this.adaptationChanged}>On
                     </button>
                 </div>
@@ -93,7 +93,8 @@ var QualityControlView = React.createClass({
         return {
             representations: [],
             chosen: null,
-            updating: true
+            updating: true,
+            enabled: !dashPlayer.adaptationManager.isAdapting()
         };
     },
 
@@ -129,9 +130,16 @@ var QualityControlView = React.createClass({
     onRepresentationChanged: function (event) {
         var representation = event.value;
         if (representation.getAdaptationSet().getMediaType() === this.props.mediaType) {
-            React.findDOMNode(this.refs.dropDownButton).innerHTML = representation.toShortForm();
+            var node = React.findDOMNode(this.refs.dropDownButton);
+            if (node) {
+                node.innerHTML = representation.toShortForm();
+            }
             this.setState({updating: false, chosen: representation.toShortForm()});
         }
+    },
+
+    onAdaptationToggle: function(event) {
+        this.setState({enabled: !event.enabled});
     },
 
     getTitle: function () {
@@ -163,11 +171,12 @@ var QualityControlView = React.createClass({
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_INITIALIZED, this.onRepresentationChanged);
         eventBus.addEventListener(Dash.event.Events.REPRESENTATION_CHANGED, this.onRepresentationChanged);
         eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, this.onAdaptationSetInitialized);
+        eventBus.addEventListener(Dash.event.Events.ADAPTATION_TOGGLE, this.onAdaptationToggle);
 
         return (
             <div>
                 <span>{this.getTitle()}</span> &nbsp;
-
+                {this.state.enabled &&
                 <div className="btn-group">
                     <button type="button" ref="dropDownButton" className="btn btn-default dropdown-toggle"
                             data-toggle="dropdown"
@@ -178,7 +187,8 @@ var QualityControlView = React.createClass({
                     <ul className="dropdown-menu">
                         {this.getOptions()}
                     </ul>
-                </div>
+                </div>}
+                {!this.state.enabled && <span>{this.state.chosen}</span>}
             </div>
         );
     }

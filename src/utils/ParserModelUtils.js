@@ -117,21 +117,34 @@ Dash.utils.ParserModelUtils = {
         return baseURL + '&range=' + startIndex + '-' + endIndex;
     },
 
+    extractUInt32FromByteArray: function(ba, startOffset) {
+        return ba[startOffset] * 16777216 + ba[startOffset + 1] *
+                65536 + ba[startOffset + 2] * 256 + ba[startOffset + 3];
+    },
+
     findSegmentRangedInBaseSegment: function (initializationHeader, segmentBaseStartIndex, segmentBaseEndIndex) {
         var sampleLengths = [],
+            segmentDurations = [],
             segmentBase = initializationHeader.subarray(segmentBaseStartIndex, segmentBaseEndIndex + 1),
 
             segmentRanges = [],
             startIndex = segmentBaseEndIndex + 1,
             i;
 
+        // get timescale from
+        var timeScale = this.extractUInt32FromByteArray(segmentBase, 16),
+                segmentDuration;
+        // at 32th byte of box subsegments are starting, each taking 12 bytes
+        // first 4 bytes are length in bytes, next 4 bytes are duration
+        // (seconds = duration / timeScale)
         for (i = 32; i < segmentBase.length; i += 12) {
-            sampleLengths.push(segmentBase[i] * 16777216 + segmentBase[i + 1] *
-                65536 + segmentBase[i + 2] * 256 + segmentBase[i + 3] - 1);
+            sampleLengths.push(this.extractUInt32FromByteArray(segmentBase, i) - 1);
+            segmentDuration = this.extractUInt32FromByteArray(segmentBase, i + 4);
+            segmentDurations.push(segmentDuration / timeScale);
         }
 
         for (i = 0; i < sampleLengths.length; i += 1) {
-            segmentRanges.push({begin: startIndex, end: startIndex + sampleLengths[i]});
+            segmentRanges.push({begin: startIndex, end: startIndex + sampleLengths[i], duration: segmentDurations[i]});
             startIndex += sampleLengths[i] + 1;
         }
 

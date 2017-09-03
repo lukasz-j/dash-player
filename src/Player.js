@@ -77,13 +77,13 @@ Dash.Player = function ($window, eventBus) {
         },
 
         disableAdaptation: function () {
-            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received disabling adaptation request');
-            playbackManager.disableAdaptation();
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received disable adaptation request');
+            adaptationManager.disableAdaptation();
         },
 
         enableAdaptation: function (adaptationAlgorithmName) {
-            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received enabling adaptation request, using ' + adaptationAlgorithmName + ' method');
-            playbackManager.enableAdaptation(adaptationAlgorithmName);
+            eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Received enabling adaptation request, using enabling adaptation engine');
+            adaptationManager.enableAdaptation();
         },
 
         setBufferingThreshold: function(seconds) {

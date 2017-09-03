@@ -9,7 +9,9 @@ Dash.adaptation.AdaptationManager = function () {
     var profiles = [],
         activeProfile = -1,
         statsCollector,
-        playbackManager;
+        playbackManager,
+        representations = {},
+        adaptationEngine = null;
 
     var initEmptyProfile = function(name) {
         return {
@@ -27,9 +29,36 @@ Dash.adaptation.AdaptationManager = function () {
         eventBus.dispatchEvent({type: Dash.event.Events.ADAPTATION_PROFILES_UPDATE});
     };
 
+    var dispatchToggleEvent = function(enabled) {
+        eventBus.dispatchEvent({type: Dash.event.Events.ADAPTATION_TOGGLE, enabled: enabled});
+    };
+
+    var onMpdLoaded = function() {
+        representations = {};
+    };
+
+    var onAdaptationSetInitialized = function(event) {
+        var adaptationSet = event.value;
+        var asReps = adaptationSet.getRepresentations();
+        var reps = [];
+        for (var rep in asReps) {
+            reps.push({id: asReps[rep].getId(), bw: asReps[rep].getBandwidth()});
+        }
+        reps.sort(function(a, b) {
+            return a.bw - b.bw;
+        });
+        representations[adaptationSet.getMediaType().name] = reps;
+    };
+
+    eventBus.addEventListener(Dash.event.Events.MPD_LOADED, onMpdLoaded);
+    eventBus.addEventListener(Dash.event.Events.ADAPTATION_SET_INITIALIZED, onAdaptationSetInitialized);
+
     return {
         setPlaybackManager: function(manager) {
             playbackManager = manager;
+        },
+        getPlaybackManager: function() {
+            return playbackManager;
         },
         newProfile: function(name) {
             profiles.push(initEmptyProfile(name));
@@ -75,6 +104,11 @@ Dash.adaptation.AdaptationManager = function () {
                 return false;
             }
             activeProfile = index;
+            if (this.isAdapting()) {
+                // @TODO restart adaptation engine in better way maybe?
+                this.disableAdaptation();
+                this.enableAdaptation();
+            }
             return true;
         },
         conditionsHolder: Dash.adaptation.PlaybackConditionsHolder(),
@@ -86,6 +120,25 @@ Dash.adaptation.AdaptationManager = function () {
         },
         getStatsCollector: function() {
             return statsCollector;
+        },
+        enableAdaptation: function() {
+            if (adaptationEngine === null) {
+                adaptationEngine = Dash.adaptation.AdaptationEngine(this, this.getActiveProfile());
+            }
+            dispatchToggleEvent(true);
+        },
+        disableAdaptation: function() {
+            if (adaptationEngine) {
+                adaptationEngine.detach();
+                adaptationEngine = null;
+            }
+            dispatchToggleEvent(false);
+        },
+        isAdapting: function() {
+            return adaptationEngine !== null;
+        },
+        getRepresentations: function() {
+            return representations;
         }
     };
 };

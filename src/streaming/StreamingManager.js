@@ -1,5 +1,5 @@
 Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, sourceBuffer,
-                                            initializationCallback, segmentDownloadCallback, eventBus) {
+                                            initializationCallback, segmentDownloadCallback, videoElement, eventBus) {
     'use strict';
 
     var bufferManager = Dash.streaming.BufferManager(sourceBuffer, adaptationSet.getMediaType()),
@@ -12,6 +12,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         highestRepresentationIndex = availableRepresentationSortedByBandwidth.length - 1,
         currentInitializationHeader,
         availableSegmentURLs,
+        segmentDurations,
         currentSegmentIndex = 0,
         isInitialized = false,
         isFrozen = false,
@@ -38,7 +39,9 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             currentRepresentationIndex = changedRepresentationIndex;
             currentRepresentation = availableRepresentationSortedByBandwidth[currentRepresentationIndex];
             currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-            availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs();
+            var segment = currentRepresentation.getSegment();
+            availableSegmentURLs = segment.getSegmentURLs();
+            segmentDurations = segment.name === 'RangeSegment' ? segment.getSegmentDurations() : null;
 
             notifyRepresentationChange(currentRepresentation);
             bufferManager.appendBuffer(currentInitializationHeader);
@@ -62,6 +65,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                         currentRepresentation: currentRepresentationIndex,
                         maxSegment: availableSegmentURLs.length,
                         requestDetails: requestOptions,
+                        segmentLength: segmentDurations ? segmentDurations[currentSegmentIndex] : null,
                         throughput: throughput
                     }
                 }
@@ -70,8 +74,6 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         },
 
         onSegmentDownload = function (request, options) {
-            notifySuccessfulSegmentDownload(options);
-
             var arrayBuffer = new Uint8Array(request.response);
 
             // when unable to append data due to full buffer, re-schedule it
@@ -83,6 +85,7 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
                 return;
             }
 //            representationRepository.appendBuffer(currentRepresentation, currentSegmentIndex, arrayBuffer);
+            notifySuccessfulSegmentDownload(options);
 
             if (pendingRepresentationChange.available && pendingRepresentationChange.index !== currentRepresentationIndex) {
                 updateValuesAfterChangingRepresentation(pendingRepresentationChange.index);
@@ -117,11 +120,14 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
         changeRepresentationByItsId = function (representationId) {
             var representationIndex = findRepresentationByItsId(representationId);
             if (representationIndex === -1) {
-                eventBus.logMessage(Dash.log.LogLevel.ERROR,
+                eventBus.dispatchLogEvent(Dash.log.LogLevel.ERROR,
                     'Cannot changed representation. Representations with index ' + representationId + ' not found');
             } else {
-                pendingRepresentationChange.available = true;
-                pendingRepresentationChange.index = representationIndex;
+                // do nothing if changing to current representation
+                if (currentRepresentationIndex != representationIndex) {
+                    pendingRepresentationChange.available = true;
+                    pendingRepresentationChange.index = representationIndex;
+                }
             }
         },
 
@@ -167,6 +173,21 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Starting downloading headers for all available representations for ' + adaptationSet.getMediaType().name);
             moveToNextRepresentation();
             downloadBinaryFile(initializationURL, onDownloadSuccess);
+        },
+
+        getLastBufferedPosition = function() {
+            var lastBuffer = sourceBuffer.buffered.length;
+            if (lastBuffer === 0) return 0;
+            lastBuffer--;
+            return sourceBuffer.buffered.end(lastBuffer);
+        },
+
+        getBufferedPlaybackLength = function() {
+            // simple model, assume we're at last existing buffered segment
+            // this can result in deadlocks when seeking randomly through video
+            var lastPlayed = videoElement.played.length - 1;
+            return getLastBufferedPosition() -
+                    (lastPlayed >= 0 ? videoElement.played.end(lastPlayed) : 0);
         };
 
     downloadAvailableHeaders();
@@ -185,7 +206,9 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             } else {
                 eventBus.dispatchLogEvent(Dash.log.LogLevel.DEBUG, 'Appending initialization header to source buffer for ' + adaptationSet.getMediaType().name);
                 currentInitializationHeader = representationRepository.getHeader(currentRepresentation);
-                availableSegmentURLs = currentRepresentation.getSegment().getSegmentURLs();
+                var segment = currentRepresentation.getSegment();
+                availableSegmentURLs = segment.getSegmentURLs();
+                segmentDurations = segment.name === 'RangeSegment' ? segment.getSegmentDurations() : null;
                 bufferManager.appendBuffer(currentInitializationHeader);
                 initializationCallback.call(this);
             }
@@ -232,13 +255,8 @@ Dash.streaming.StreamingManager = function (adaptationSet, initRepresentation, s
             isFrozen = frozen;
         },
 
-        getBufferedPlaybackLength: function(videoElement) {
-            // simple model, assume we're at last existing buffered segment
-            // this can result in deadlocks when seeking randomly through video
-            var lastPlayed = videoElement.played.length - 1;
-            var lastBuffer = sourceBuffer.buffered.length - 1;
-            return (lastBuffer >= 0 ? sourceBuffer.buffered.end(lastBuffer) : 0) -
-                    (lastPlayed >= 0 ? videoElement.played.end(lastPlayed) : 0);
+        getBufferedPlaybackLength: function() {
+            return getBufferedPlaybackLength(videoElement);
         }
     };
 };

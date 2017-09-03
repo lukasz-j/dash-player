@@ -27,10 +27,10 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
         },
 
         controlFreezing = function(streamingManager) {
-            if (bufferingThreshold > 0 && streamingManager.getBufferedPlaybackLength(videoElement) > bufferingThreshold) {
+            if (bufferingThreshold > 0 && streamingManager.getBufferedPlaybackLength() > bufferingThreshold) {
                 streamingManager.setFrozen(true);
             }
-            else if (streamingManager.isFrozen() && (bufferingThreshold <= 0 || streamingManager.getBufferedPlaybackLength(videoElement) < bufferingThreshold)) {
+            else if (streamingManager.isFrozen() && (bufferingThreshold <= 0 || streamingManager.getBufferedPlaybackLength() < bufferingThreshold)) {
                 streamingManager.setFrozen(false);
             }
             return streamingManager.isFrozen();
@@ -162,7 +162,7 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
             var initRepresentation = getInitRepresentationForMedia(adaptationSet, mediaType),
                 sourceBuffer = createSourceBufferObject(adaptationSet, initRepresentation);
             return Dash.streaming.StreamingManager(adaptationSet, initRepresentation, sourceBuffer,
-                onInitializationAppended, onSegmentAppended, eventBus);
+                onInitializationAppended, onSegmentAppended, videoElement, eventBus);
         },
 
         initializeStreamingManagers = function () {
@@ -230,18 +230,6 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
             }
         },
 
-        disableAdaptation: function () {
-            eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been disabled by user');
-            adaptationManager = undefined;
-        },
-
-        enableAdaptation: function (adaptationAlgorithmName) {
-            //FIXME implement me
-            eventBus.dispatchEvent(Dash.log.LogLevel.INFO, 'Adaptation has been enabled using algorithm ' + adaptationAlgorithmName);
-            eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Dynamic adaptation is not supported for now');
-            adaptationManager = null;
-        },
-
         setBufferingThreshold: function(seconds) {
             bufferingThreshold = seconds;
         },
@@ -249,9 +237,9 @@ Dash.streaming.PlaybackManager = function (mpdModel, mediaSource, videoElement, 
 
         getBufferedPlaybackTime: function (mediaType) {
             if (mediaType === Dash.model.MediaType.AUDIO && audioStreamingManager) {
-                return audioStreamingManager.getBufferedPlaybackLength(videoElement);
+                return audioStreamingManager.getBufferedPlaybackLength();
             } else if (mediaType === Dash.model.MediaType.VIDEO && videoStreamingManager) {
-                return videoStreamingManager.getBufferedPlaybackLength(videoElement);
+                return videoStreamingManager.getBufferedPlaybackLength();
             }
             eventBus.dispatchLogEvent(Dash.log.LogLevel.WARN, 'Unsupported media type found while changing representation to lower ' + mediaType);
             return 0;

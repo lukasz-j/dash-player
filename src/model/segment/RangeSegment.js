@@ -52,6 +52,12 @@ Dash.model.RangeSegment = function (segmentBaseNode, representation, useBytesRan
             }
         },
 
+        getSegmentDurations: function() {
+            return segmentRangeList.map(function(segment) {
+                return segment.duration;
+            });
+        },
+
         getSegmentURLs: function () {
             var segmentURLsWithRanges = [],
                 index;

@@ -9,5 +9,6 @@ Dash.event.Events = {
     ADAPTATION_PROFILES_UPDATE: 'adaptationProfilesUpdate',
     EXTERNAL_CONDITION_CHANGE: 'externalConditionChange',
     ENCLOSED_IN_APP_UPDATE: 'enclosedInApplicationUpdate',
-    ADAPTATION_STATS_UPDATE: 'adaptationStatsUpdate'
+    ADAPTATION_STATS_UPDATE: 'adaptationStatsUpdate',
+    ADAPTATION_TOGGLE: 'adaptationToggle'
 };
