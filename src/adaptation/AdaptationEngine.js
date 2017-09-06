@@ -1,7 +1,19 @@
 Dash.adaptation.AdaptationEngine = function(adaptationManager, profile) {
     var getNextVideoRepresentation = function(event, available) {
         var targetPI = 0.25;
-        
+        var n = event.value.throughput;
+        var lambda = n / (1 - targetPI);
+        var target = 0;
+
+        for (var av in available[Dash.model.MediaType.VIDEO.name]) {
+            if (available[Dash.model.MediaType.VIDEO.name][av].bw >= lambda) {
+                return target;
+            }
+            else {
+                target = av;
+            }
+        }
+        return target;
     };
 
     var onSegmentDownload = function(event) {
